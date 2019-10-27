@@ -1,0 +1,5 @@
+class party
+{
+public:
+private:
+}

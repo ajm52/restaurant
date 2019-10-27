@@ -1,0 +1,92 @@
+@startuml classes
+    class person {
+        -act : activity
+        -stat : status
+    }
+    class cook {
+
+    }
+    class server {
+        -serving_ : tables[]
+    }
+    class guest {
+        
+    }
+    class task {
+        
+    }
+    class order {
+        -tableId_ : int
+        -guestId_ : int
+        <<constructor>> order(table: int, guests: int[])
+        int getTableID()
+        int getGuestID()
+    }
+    class drink_order {
+        <<constructor>> drink_order(table: int, guests: int[], drinks: drink[])
+    }
+    class food_order {
+        <<constructor>> food_order(table: int, guests: int[], grub: food[])
+    }
+    enum drink {
+        WATER
+        BEER
+        TEA
+    }
+    enum food {
+        FRIES
+        CHEESEBURGER
+        BURGER
+        SOUP
+        WINGS
+    }
+    class status {
+
+    }
+    class party {
+        -master_ : thread
+        -guests_ : guest[]
+        -numGuests_ : int
+
+        int guestCount()
+        guest[] getGuests()
+    }
+    class restaurant {
+        -kitchen_ : kitchen
+        -tablespace_ : tablespace
+    }
+    class table {
+        -id_ : int
+        -isTaken_ : boolean
+        -cap_ : int
+
+        int getId()
+        boolean isTaken()
+        int getCapacity()      
+    }
+    class kitchen <<struct>> {
+        -workers_ : cook[]
+    }
+    class tablespace <<struct>> {
+        -tables_ : table[]
+        -workers_ : servers[]
+    }
+
+    restaurant *-- "1" tablespace : contains
+    restaurant *-- "1" kitchen : contains 
+    kitchen *-- "1+" cook : contains 
+    tablespace *-- "1+" table : contains
+    tablespace *-- "1+" server : waited by
+    hide kitchen circle
+    hide tablespace circle
+    person <|-- cook
+    person <|-- server
+    person <|-- guest
+    order <|-- food_order
+    order <|-- drink_order
+
+    guest "1+" --* party : are apart of
+    server "1+" o-- "1+" table : serves
+
+    
+@enduml
