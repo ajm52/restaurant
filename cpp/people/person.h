@@ -1,13 +1,15 @@
 #ifndef PERSON_H
 #define PERSON_H
 
-/*
-abstract class used to describe customers, servers, and cooks.
-*/
+#include <string>
 
 class person
 {
 private:
+    std::string id_;
+
 public:
+    explicit person::person();
+    const std::string person::getId();
 };
-#endif
+#endif //PERSON_H

@@ -1,12 +1,14 @@
-#ifndef CUSTOMER_H
-#define CUSTOMER_H
+#ifndef GUEST_H
+#define GUEST_H
 
 #include "person.h"
 
-class customer : public person
+class guest : public person
 {
 private:
 public:
+    explicit guest::guest();
+    bool guest::sit()
 };
 
-#endif
+#endif //GUEST_H

@@ -1,20 +1,68 @@
 @startuml classes
+
+    class simulation {
+        -restaurant_ : restaurant
+        -parties_ : party[]
+
+        void start()
+        void stop()
+    }
+
+    class restaurant {
+        -kitchen_ : kitchen
+        -tablespace_ : tablespace
+
+        tablespace getTablespace()
+        kitchen getKitchen()
+
+    }
+
+    class door <<struct>> {
+        -flag_ : atomic_flag
+
+        boolean acquire()
+        void clear()
+    }
+
+    class party {
+        -master_ : thread
+        -guests_ : guest[]
+        -numGuests_ : int
+
+        int guestCount()
+        guest[] getGuests()
+        boolean enter(r: restaurant)
+        boolean exit(r: restaurant,)
+    }
+
     class person {
-        -act : activity
-        -stat : status
+        -stat_ : status
+        -id_ : int
+
+        status getStatus()
+        int getId()
+
     }
     class cook {
-
+        -cooking_ : jobs[]
+        -kCounter_ : kitchen_counter
     }
     class server {
         -serving_ : tables[]
+        -kCounter_ : kitchen_counter
+        -bCounter_ : bar_counter
     }
     class guest {
-        
+        boolean enter(r : restaurant)
+        boolean leave(r : restaurant)
     }
-    class task {
-        
+    class employee {
+        -thread_ : thread
     }
+    class bartender {
+        -bCounter_ : bar_counter
+    }
+   
     class order {
         -tableId_ : int
         -guestId_ : int
@@ -43,33 +91,37 @@
     class status {
 
     }
-    class party {
-        -master_ : thread
-        -guests_ : guest[]
-        -numGuests_ : int
-
-        int guestCount()
-        guest[] getGuests()
-    }
-    class restaurant {
-        -kitchen_ : kitchen
-        -tablespace_ : tablespace
-    }
-    class table {
-        -id_ : int
-        -isTaken_ : boolean
-        -cap_ : int
-
-        int getId()
-        boolean isTaken()
-        int getCapacity()      
+    
+    class table <<struct>> {
+        id_ : int
+        isTaken_ : boolean
+        cap_ : int    
     }
     class kitchen <<struct>> {
-        -workers_ : cook[]
+        workers_ : cook[]
     }
     class tablespace <<struct>> {
-        -tables_ : table[]
-        -workers_ : servers[]
+        tables_ : table[]
+        workers_ : servers[]
+    }
+
+    class counter <<struct>> {
+        in_ : job[]
+        out_ : job[]
+
+        boolean submit_job(task: job)
+        boolean pull_job()
+        boolean submit_result(task: job)
+        boolean pull_result()
+
+    }
+
+    class kitchen_counter <<struct>> {
+
+    }
+
+    class bar_counter <<struct>> {
+
     }
 
     restaurant *-- "1" tablespace : contains
@@ -79,9 +131,11 @@
     tablespace *-- "1+" server : waited by
     hide kitchen circle
     hide tablespace circle
-    person <|-- cook
-    person <|-- server
     person <|-- guest
+    employee <|-- cook
+    employee <|-- server
+    employee <|-- bartender
+    person <|-- employee
     order <|-- food_order
     order <|-- drink_order
 

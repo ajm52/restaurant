@@ -1,8 +1,21 @@
+simulation:
+
+- the main container of the program.
+- one of these is created in main.cpp
+- must consist of the restaurant and a party-spawning mechanism.
+
 restaurant:
 
 - the main object of the entire simulation.
 - in the simulation, guests may enter and leave the restaurant.
 - the restaurant consists of a tablespace, kitchen, and bar.
+
+- should have a method, guestCount()
+
+door:
+
+- provides synchronized access to and from the restaurant.
+- in the simulation, parties spawn full of guests and enter the restaurant by this door.
 
 tablespace:
 
@@ -39,10 +52,13 @@ person:
 - could be a guest, cook, server, or bartender.
 - guests are controlled by their party thread, while the others have their own.
 
+- id consists of a letter denoting the type of person, followed by a number.
+
 guest:
 
 - a restaurant customer.
 - sits at a table, dines, then leaves.
+- inherits id from person.
 
 party:
 
@@ -53,9 +69,11 @@ cook:
 
 - works in the kitchen.
 - pulls and submits jobs to and from the tablespace via the counter.
+- must have access to the kitchen_counter, perhaps via a member var.
 - has a job table to track current jobs.
 
-server:
+- when the cook receives a job where the food_order, say, has 4 items, the cook starts the order that will take the longest to cook.
+  server:
 
 - works in the tablespace.
 - attends to guests that they are currently serving.
