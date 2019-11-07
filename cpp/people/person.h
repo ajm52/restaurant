@@ -3,13 +3,17 @@
 
 #include <string>
 
+/**
+ * a person may either be a guest or an employee.
+ */
 class person
 {
 private:
-    std::string id_;
+    const std::string id_; //identifier (ex: "S1", "G1", etc.)
 
 public:
-    explicit person::person();
-    const std::string person::getId();
+    person::person(std::string &id);
+    person::person(const std::string &id);
+    const std::string &person::getId() const;
 };
 #endif //PERSON_H

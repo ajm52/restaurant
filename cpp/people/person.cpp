@@ -1,16 +1,6 @@
 #include "person.h"
 
-/* 
-This class is intended to be used abstractly
-to describe customers, servers, and cooks.
+person::person(const std::string &id) : id_(id) {}
+person::person(std::string &id) : id_(id) {}
 
-a person is a lightweight object with a status.
-we also might find a reason to attach activity as well.
-
-*/
-
-class person
-{
-private:
-public:
-};
+const std::string &person::getId() const { return id_; }
