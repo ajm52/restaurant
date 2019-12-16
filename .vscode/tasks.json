@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build with Clang",
+      "type": "shell",
+      "command": "clang++",
+      "args": [
+        "-Wall",
+        "-std=c++17",
+        "-stdlib=libc++",
+        "-o",
+        "main.out",
+        "${workspaceFolder}/cpp/main/main.cpp",
+        "-I${workspaceFolder}/cpp/main/",
+        "-I${workspaceFolder}/cpp/restaurant/",
+        "-I${workspaceFolder}/cpp/people/",
+        "-I${workspaceFolder}/cpp/people/workers/",
+        "-I${workspaceFolder}/cpp/data/",
+        "--debug"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

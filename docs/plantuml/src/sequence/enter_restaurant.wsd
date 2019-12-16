@@ -1,0 +1,12 @@
+@startuml entering the restaurant
+    
+    actor Party
+    control Door
+    entity Restaurant
+
+    loop Handle is Locked
+        Party -> Door : Grab Handle
+    
+    Restaurant -> Party : Admit Party
+
+@enduml
