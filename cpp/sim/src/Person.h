@@ -6,9 +6,9 @@
 /**
  * A base class for Guests and Workers.
  * 
- * auth: ajm
+ * author: ajm
  * created: 1/21/20
- * last modified: 1/21/20
+ * last modified: 1/28/20
  **/
 class Person
 {
@@ -19,14 +19,14 @@ public:
     Person &operator=(const Person &) = delete;
     virtual ~Person() = default;
     //accessors
-    inline const std::string &const getId() const
+    inline const std::string &getId() const
     {
         return id_;
     }
-    inline const std::string &const getId()
+    inline const std::string &getId()
     {
-        return const_cast<std::string &const>(
-            static_cast<const std::string &const>(id_));
+        return const_cast<std::string &>(
+            static_cast<const Person &>(*this).getId());
     }
 
 private:

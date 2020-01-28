@@ -5,14 +5,13 @@
 
 class Guest : public Person
 {
-private:
 public:
+private:
 };
 
 #endif // GUEST_H
 
 /**
- * TODO: design the Status enum/class for Party and Worker.
  * TODO: design the Activity class that will use Status.
  * 
  * NOTE: Can we use OOP at all here? (i.e. GuestStatus, WorkerActivity, etc)
