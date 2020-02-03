@@ -8,25 +8,24 @@
  * 
  * author: ajm
  * created: 1/21/20
- * last modified: 1/28/20
+ * last modified: 1/29/20
  **/
 class Person
 {
 public:
-    //ctors and copy control
-    Person(const std::string id = "DEFAULT_PID") : id_(id) {}
+    // ctors and copy control
+    Person(std::string id = "DEFAULT_PID") : id_(id) {}
     Person(const Person &) = delete;
     Person &operator=(const Person &) = delete;
     virtual ~Person() = default;
-    //accessors
+    // accessors
     inline const std::string &getId() const
     {
         return id_;
     }
     inline const std::string &getId()
     {
-        return const_cast<std::string &>(
-            static_cast<const Person &>(*this).getId());
+        return static_cast<const Person &>(*this).getId();
     }
 
 private:
