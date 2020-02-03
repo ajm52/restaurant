@@ -5,8 +5,8 @@
 
 PROG = main
 CC = g++
-CPPFLAGS = -Wall -I$(ODIR_TEST) -I$(SDIR_TEST) \
--I$(SDIR) -I$(ODIR) -I$(BOOST_ROOT)
+CPPFLAGS = -Wall -std=c++11 -I$(ODIR_TEST) -I$(SDIR_TEST) \
+-I$(SDIR) -I$(SDIR)/data -I$(ODIR) -I$(BOOST_ROOT)
 ODIR_TEST = ./bin
 SDIR_TEST = ./src
 OUTDIR = ./execs
