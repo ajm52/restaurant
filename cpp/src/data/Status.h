@@ -13,7 +13,7 @@
  * as well as 0 or more inputs (i.e. table #). Statuses requiring
  * inputs are indicated by comments below.
  * 
- * auth: ajm
+ * author: ajm
  * created: 1/21/20
  * last modified: 1/21/20
  **/
@@ -49,6 +49,16 @@ enum class Party
     PayingBill
 };
 
+/**
+ * Table statuses
+ **/
+enum class Table
+{
+    Clean,
+    Occupied, // party #
+    Dirty
+};
+
 namespace Worker
 {
 
@@ -73,7 +83,7 @@ enum class TableService
 /**
  * Used by Cooks and Bartenders.
  **/
-enum class FoodAndDrink
+enum class ConsumableService
 {
     //all of these require an order #.
     PullingOrder,

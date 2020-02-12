@@ -48,8 +48,8 @@ public:
 
 private:
     OrderStatus status_;
-    std::string orderId_;
-    std::vector<int> orders_; // a set of menu selections
+    const std::string orderId_;
+    const std::vector<int> orders_; // a set of menu selections
 };
 
 #endif // ORDER_H

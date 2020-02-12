@@ -8,7 +8,6 @@ need to implement the following, not necessarily fully:
 -party
 -guest
 -table
--tablespace
 
 --milestone 2--
 

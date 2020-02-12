@@ -1,0 +1,28 @@
+@startuml people 
+
+class Person
+class Guest
+class Party
+class Worker
+class Waiter
+class Cook
+class HeadCook
+class Bartender
+class Doorman
+class Messenger
+
+Person <|-- Guest
+Person <|-- Worker
+Worker <|-- Waiter 
+Worker <|-- Cook
+Worker <|-- Bartender
+Cook <|-- HeadCook
+Party *-- Guest : has 1+ >
+
+HeadCook -- Waiter : rec.\nnew \norders\nfrom >
+Waiter -- Cook : rec.\nfinished\norders\nfrom >
+Cook -- HeadCook : rec.\nnew\norders\nfrom >
+
+note bottom of Bartender : relationship with Waiter\nis similar to the Cook-Waiter\nrelationship without a\nHeadBartender.
+
+@enduml
