@@ -15,9 +15,11 @@ class Restaurant
 {
 public:
     Restaurant() : door_(), foyer_() {}
-    Restaurant(const Restaurant &);
-    Restaurant &operator=(const Restaurant &);
+    Restaurant(const Restaurant &) = delete;
+    Restaurant &operator=(const Restaurant &) = delete;
     ~Restaurant() {}
+    inline const Door &getDoor() const { return door_; }
+    inline const Foyer &getFoyer() const { return foyer_; }
 
 private:
     Door door_;

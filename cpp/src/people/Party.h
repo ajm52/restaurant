@@ -19,8 +19,8 @@ class Guest;
 class Party
 {
 public:
-    Party(Restaurant &, const std::vector<Guest const *> &);     // main ctor
-    Party(Restaurant &, std::vector<Guest const *> * = nullptr); // for thread debugging
+    Party(Restaurant &, const std::vector<Guest const *> &); // main ctor
+    Party(Restaurant &, std::vector<Guest const *> *);       // for thread debugging
     void init();
     void run();
 

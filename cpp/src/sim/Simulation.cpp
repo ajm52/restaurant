@@ -1,23 +1,25 @@
-#include <iostream>
-
-#include "Restaurant.h"
-#include "Party.h"
+#include "Party.cpp"
 #include "Simulation.h"
 
-Simulation::Simulation(Restaurant &restaurant) : restaurant_(restaurant)
+#include <memory>
+#include <iostream>
+#include <vector>
+
+Simulation::Simulation() : restaurant_()
 {
     init();
-}
-
-void Simulation::init()
-{
-    run();
 }
 
 void Simulation::run()
 {
     // spawn a thread-based Party and get it to enter via the Door.
     std::cout << "spawning party\n";
-    Party party(getRestaurant());
+    std::vector<const Guest *> guests;
+    std::shared_ptr<Party> pP(new Party(getRestaurant(), guests));
     std::cout << "after spawn\n";
+}
+
+void Simulation::init()
+{
+    run();
 }

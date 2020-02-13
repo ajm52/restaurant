@@ -12,7 +12,7 @@ class Party;
  * 
  * author: ajm
  * created: 2/6/20
- * last modified: 2/6/20
+ * last modified: 2/12/20
  **/
 class Door
 {
@@ -25,3 +25,9 @@ private:
 };
 
 #endif // DOOR_H
+
+/**
+ * NOTE: Door should not be copyable or moveable.
+ * It is shared amongst guests/workers by way of
+ * pointers.
+ **/

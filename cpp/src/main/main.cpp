@@ -1,5 +1,5 @@
 #include <iostream>
-#include <boost/lambda/lambda.hpp>
+#include "Simulation.cpp"
 
 /**
  * Main program of sim.
@@ -11,7 +11,6 @@
 
 int main()
 {
-    using namespace boost::lambda;
-    std::cout << "Hello World!\n";
+    Simulation sim;
     return 0;
 }

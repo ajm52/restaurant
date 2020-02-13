@@ -1,20 +1,22 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-class Restaurant;
+#include "Restaurant.h"
+
+#include <iostream>
 
 /**
  * main container of the Restaurant simulation.
  * 
  * author: ajm
  * created: 2/6/20
- * last modified: 2/6/20
+ * last modified: 2/12/20
  **/
 class Simulation
 {
 public:
     // ctor, dtor, copy control
-    Simulation(Restaurant &restaurant);
+    Simulation();
     Simulation &operator=(const Simulation &) = delete;
     Simulation(const Simulation &) = delete;
     ~Simulation() {}
@@ -27,7 +29,7 @@ public:
     inline Restaurant &getRestaurant() { return restaurant_; }
 
 private:
-    Restaurant &restaurant_;
+    Restaurant restaurant_;
 };
 
 #endif // SIMULATION_H
