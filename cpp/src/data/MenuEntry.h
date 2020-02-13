@@ -8,7 +8,7 @@
  * @class MenuEntry : A menu entry.
  * @author ajm
  * @created: 2/5/20
- * @modified: 2/7/20
+ * @modified: 2/12/20
  **/
 class MenuEntry
 {
@@ -47,15 +47,15 @@ public:
      **/
     inline std::string getName() const { return name_; }
 
-private:
-    std::string name_;  ///< name of the MenuEntry.
-    unsigned prepTime_; ///< preparation time.
-
     /**
      * @description: preparation time accessor for MenuEntries.
      * @returns a copy of this MenuEntry's preparation time.
      **/
     inline unsigned getPrepTime() const { return prepTime_; }
+
+private:
+    std::string name_;  ///< name of the MenuEntry.
+    unsigned prepTime_; ///< preparation time.
 };
 
 /**

@@ -3,15 +3,13 @@
 #include "MenuEntryKey.cpp"
 
 /**
- * Unit test for Order.h
+ * Unit test for MenuEntryKey.
  * author: ajm
- * created: 2/3/20
- * last modified: 2/3/20
+ * created: 2/12/20
+ * last modified: 2/12/20
  **/
 
 BOOST_AUTO_TEST_SUITE(menuEntryKey_test_suite)
-
-std::vector<int> selections{1, 2, 3, 4};
 
 BOOST_AUTO_TEST_CASE(case1)
 { //mek with default args.
