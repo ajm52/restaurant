@@ -1,6 +1,10 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <cstdlib>
+#include <map>
+#include <string>
+
 class MenuEntry;
 class MenuEntryKey;
 

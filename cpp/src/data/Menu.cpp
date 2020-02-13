@@ -2,10 +2,6 @@
 #include "MenuEntry.h"
 #include "Menu.h"
 
-#include <cstdlib>
-#include <map>
-#include <string>
-
 bool MenuEntryKeyComparator::operator()(const MenuEntryKey &lhs, const MenuEntryKey &rhs) const
 {
     if (lhs.getType() == rhs.getType())
