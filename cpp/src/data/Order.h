@@ -1,55 +1,77 @@
 #ifndef ORDER_H
 #define ORDER_H
 
-#include <string>
-#include <vector>
 #include "OrderStatus.h"
 
+#include <string>
+#include <vector>
+
 /**
- * An order. 
- * 
- * Could be further subclassed into FoodOrder 
- * and DrinkOrder, but it really is not necessary,
- * so long as respective methods are called based on
- * the party-waiter messaging protocol.
- * 
- * author: ajm
- * created: 1/29/20
- * last modified: 1/29/20
+ * @class Order
+ * @description: Represents a set of either drink or food orders from a given table.
+ * @author ajm
+ * @created: 1/29/20
+ * @modified: 2/17/20
  **/
 class Order
 {
-
 public:
-    // ctors and copy control
-    // should never be used, really.
+    /**
+     * @description: <code>Order</code> default constructor, mainly for debugging.
+     * Data members are defaulted initialized.
+     **/
     Order() : status_(OrderStatus::Defaulted),
               orderId_("DEFAULT_OID"),
               orders_() {}
-    // the ctor that should almost always be used
+
+    /**
+     * @description: <code>Order</code> go-to constructor.
+     * @param id order id string.
+     * @param orders attached orders.
+     **/
     Order(std::string id, std::vector<int> &orders) : status_(OrderStatus::Initializing),
                                                       orderId_(id),
                                                       orders_(orders) {}
-    Order(const Order &) = delete;
-    Order &operator=(const Order &) = delete;
+
+    /**
+     * @description: <code>Order</code> copy constructor.
+     * @param order what <code>this</code> copies from.
+     */
+    Order(const Order &);
+
+    /**
+     * @description: <code>Order</code> copy assignment operator.
+     * @param order what <code>this</code> copies from.
+     */
+    Order &operator=(const Order &);
+
+    /**
+     * @description: <code>Order</code> destructor.
+     */
     ~Order() {}
-    // accessors for const and non-const Orders (mems should always be const)
+
+    /**
+     * @description: accessor for <code>this Order</code>'s status.
+     * @returns a copy of <code>this Order</code>'s status.
+     */
     inline OrderStatus getStatus() const { return status_; }
+
+    /**
+     * @description: accessor for <code>this Order</code>'s id string.
+     * @returns a const reference to <code>this Order</code>'s id string.
+     */
     inline const std::string &getOrderId() const { return orderId_; }
-    inline const std::string &getOrderId()
-    {
-        return (static_cast<const Order &>(*this)).getOrderId();
-    }
+
+    /**
+     * @description: accessor for <code>this Order</code>'s order set.
+     * @returns a const reference to <code>this Order</code>'s order set.
+     */
     inline const std::vector<int> &getOrders() const { return orders_; }
-    inline const std::vector<int> &getOrders()
-    {
-        return (static_cast<const Order &>(*this)).getOrders();
-    }
 
 private:
-    OrderStatus status_;
-    const std::string orderId_;
-    const std::vector<int> orders_; // a set of menu selections
+    OrderStatus status_;      ///< Status, to be displayed by front-end.
+    std::string orderId_;     ///< id string, unique to each order.
+    std::vector<int> orders_; ///< menu selections.
 };
 
 #endif // ORDER_H

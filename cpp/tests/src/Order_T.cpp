@@ -36,18 +36,4 @@ BOOST_AUTO_TEST_CASE(case2)
     }
 }
 
-BOOST_AUTO_TEST_CASE(case3)
-{ //testing const accessors
-    //NOTE: How to catch potential compile time errors?
-    const Order o("Some order", selections);
-    BOOST_TEST(o.getOrderId() == "Some order");
-    BOOST_TEST(o.getStatus() == OrderStatus::Initializing);
-}
-
-BOOST_AUTO_TEST_CASE(case4)
-{ //uncopyable test
-    BOOST_TEST(std::is_copy_constructible<Order>::value == 0);
-    BOOST_TEST(std::is_copy_assignable<Order>::value == 0);
-}
-
 BOOST_AUTO_TEST_SUITE_END()
