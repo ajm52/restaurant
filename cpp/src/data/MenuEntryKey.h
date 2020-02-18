@@ -66,6 +66,13 @@ public:
     inline unsigned getNum() const { return num_; }
 
     /**
+     * @description: increments <code>this MenuEntryKey</code>'s id number by <code>num</code>.
+     * @param num amount to increment by.
+     * @returns <code></code> with a modified entry number.
+     **/
+    MenuEntryKey &operator+=(const unsigned);
+
+    /**
      * @description: prints <code>MenuEntryKey</code>'s data in a concise format.
      * @param out the <code>ostream</code> object. 
      * @param mek <code>MenuEntryKey</code>'s data being printed.

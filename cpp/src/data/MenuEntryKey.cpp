@@ -12,6 +12,12 @@ MenuEntryKey &MenuEntryKey::operator=(const MenuEntryKey &rhs)
     return *this;
 }
 
+MenuEntryKey &MenuEntryKey::operator+=(const unsigned num)
+{
+    this->num_ += num;
+    return *this;
+}
+
 std::ostream &operator<<(std::ostream &out, const MenuEntryKey &mek)
 {
     out << mek.type_ << "-" << mek.num_;
