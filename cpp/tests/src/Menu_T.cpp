@@ -10,7 +10,7 @@
  * Unit test for Menu.
  * author: ajm
  * created: 2/12/20
- * last modified: 2/12/20
+ * last modified: 2/19/20
  **/
 BOOST_AUTO_TEST_SUITE(menu_test_suite)
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(case1)
 
 BOOST_AUTO_TEST_CASE(case2)
 { //m with args provided.
-    Menu m(opts, numF, numD);
+    Menu m(opts);
     BOOST_CHECK(&m);
     BOOST_TEST(m.getNumFoodOptions() == numF);
     BOOST_TEST(m.getNumDrinkOptions() == numD);

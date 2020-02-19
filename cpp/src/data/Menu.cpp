@@ -16,3 +16,14 @@ std::string Menu::selectOption(char entryType)
     MenuEntryKey k(entryType, num);
     return this->getOptions().at(k).getName();
 }
+
+const unsigned Menu::countOptions(char type) const
+{
+    int count = 0;
+    for (auto pair : options_)
+    {
+        if (pair.first.getType() == type)
+            count += 1;
+    }
+    return count;
+}
