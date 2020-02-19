@@ -4,39 +4,55 @@
 #include <string>
 
 /**
- * A base class for Guests and Workers.
- * 
- * author: ajm
- * created: 1/21/20
- * last modified: 1/29/20
+ * @class <code>Party</code>
+ * @description: A base class for Guests and Workers.
+ * @author ajm
+ * @created: 1/21/20
+ * @modified: 2/19/20
  **/
 class Person
 {
 public:
-    // ctors and copy control
+    /**
+     * @description: default constructor.
+     * @param id <code>this Person</code>'s id string.
+     */
     Person(std::string id = "DEFAULT_PID") : id_(id) {}
-    Person(const Person &) = delete;
-    Person &operator=(const Person &) = delete;
+
+    /**
+     * @description: copy constructor.
+     * @param p <code>Person</code> to be copied.
+     */
+    Person(const Person &);
+
+    /**
+     * @description: copy assignment operator.
+     * @param p <code>Person</code> to be copied.
+     * @returns <code>this</code> as a copy of p.
+     */
+    Person &operator=(const Person &);
+
+    /**
+     * @description: destructor. Must be virtual for inheriting classes.
+     */
     virtual ~Person() = default;
-    // accessors
+
+    /**
+     * @description: id accessor.
+     * @returns a const reference to <code>this Person</code>'s id string.
+     */
     inline const std::string &getId() const
     {
         return id_;
     }
-    inline const std::string &getId()
-    {
-        return static_cast<const Person &>(*this).getId();
-    }
 
 private:
-    const std::string id_;
+    std::string id_; ///< A unique identifier. Consists of a letter and number.
 };
 
 #endif // PERSON_H
 
 /**
- * TODO: line 19, replace 'DEFAULT_ID' with a metadata constant.
- * TODO: write a Publisher interface.
- * 
- * NOTE: func on line 29 may need revision for proper casting.
+ * TODO: line 19, replace 'DEFAULT_ID' with a metadata constant?
+ * TODO: write a Publisher class.
  * */
