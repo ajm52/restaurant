@@ -77,7 +77,6 @@ private:
 #endif // ORDER_H
 
 /**
- * TODO: write a unit test for Order.
  * TODO: make Order serializable. Can be done using Boost.
  * TODO: how should OrderStatus be updated to maximize encapsulation?
  **/
