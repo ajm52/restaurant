@@ -10,11 +10,11 @@
  * Unit test for Menu.
  * author: ajm
  * created: 2/12/20
- * last modified: 2/19/20
+ * modified: 2/19/20
  **/
 BOOST_AUTO_TEST_SUITE(menu_test_suite)
 
-static std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> opts = {
+std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> opts = {
     {MenuEntryKey('F', 0), MenuEntry("burger", 10)},
     {MenuEntryKey('F', 1), MenuEntry("fish", 15)},
     {MenuEntryKey('F', 2), MenuEntry("fries", 5)},

@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(case1)
 }
 
 BOOST_AUTO_TEST_CASE(case2)
-{ // q of size 1.
+{ // q of size 1
     Queue q;
     int value = 0;
     q.enqueue(value);
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(case2)
 }
 
 BOOST_AUTO_TEST_CASE(case3)
-{ // q of size 5.
+{ // q of size 5
     Queue q;
     int size = 5;
     for (int i = 0; i < size; ++i)
