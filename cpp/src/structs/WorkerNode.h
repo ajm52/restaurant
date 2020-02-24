@@ -23,13 +23,15 @@ struct WorkerNode
      */
     WorkerNode(std::string id) : numJobs_(0), workerID_(id) {}
 
+    WorkerNode(std::string id, unsigned jobs) : numJobs_(jobs), workerID_(id) {}
+
     /**
      * @description: Destructor.
      */
     ~WorkerNode() {}
 
     /**
-     * @description: Comparison method.
+     * @description: < operator overload.
      * @param rhs right-hand <code>WorkerNode</code> being compared.
      * @returns true if <code>this</code> is LT than rhs, false otherwise.
      * @note Uniqueness of Worker IDs ensures that no two WorkerNodes
@@ -37,12 +39,60 @@ struct WorkerNode
      */
     bool operator<(const WorkerNode &rhs) const
     {
+        return *this <= rhs;
+    }
+
+    /**
+     * @description: <= operator overload.
+     * @param rhs right-hand <code>WorkerNode</code> being compared.
+     * @returns true if <code>this</code> is LTE than rhs, false otherwise.
+     * @note Only implemented for compatibility with MinHeap correctness.
+     */
+    bool operator<=(const WorkerNode &rhs) const
+    {
         if (numJobs_ < rhs.numJobs_)
             return true;
         else if (rhs.numJobs_ < numJobs_)
             return false;
         else
             return workerID_.compare(rhs.workerID_);
+    }
+
+    /**
+     * @description: == operator overload.
+     * @param rhs right-hand <code>WorkerNode</code> being compared.
+     * @returns true iff <code>this</code> is EQ to rhs, false otherwise.
+     * @note Implemented so root index can be tracked and returned during minHeapify.
+     */
+    bool operator==(const WorkerNode &rhs) const
+    {
+        if (numJobs_ == rhs.numJobs_ && workerID_ == rhs.workerID_)
+            return true;
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * @description: Decrement operator.
+     * Lowers <code>this WorkerNode</code>'s job count by 1.
+     * @returns <code>this</code> with a modified job count.
+     */
+    void operator--()
+    {
+        if (numJobs_ > 0)
+            numJobs_--;
+    }
+
+    /**
+     * @description: Increment operator.
+     * Raises <code>this WorkerNode</code>'s job count by 1.
+     * @returns <code>this</code> with a modified job count.
+     */
+    void operator++()
+    {
+        numJobs_++;
     }
 
     /**
