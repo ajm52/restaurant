@@ -10,6 +10,7 @@
  * @created: 2/21/20
  * @modified: 2/21/20
  */
+template <typename T>
 struct MinHeap
 {
     /**
@@ -39,9 +40,9 @@ struct MinHeap
      * @description: inserts data into the heap.
      * @param value data to be inserted.
      */
-    void insert(int);
+    void insert(const T &);
 
-    std::vector<int> heap_; ///< the heap.
+    std::vector<T> heap_; ///< the heap.
 };
 
 #endif // MINHEAP_H

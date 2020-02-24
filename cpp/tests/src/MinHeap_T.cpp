@@ -14,14 +14,14 @@ BOOST_AUTO_TEST_SUITE(minheap_test_suite)
 
 BOOST_AUTO_TEST_CASE(case1)
 { // empty heap
-    MinHeap h;
+    MinHeap<int> h;
     BOOST_CHECK(&h);
     BOOST_TEST(h.heap_.size() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(case2)
 { // heap of size 1
-    MinHeap h;
+    MinHeap<int> h;
     int size = 1, value = 1;
     BOOST_CHECK(&h);
     h.insert(value);
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(case2)
 
 BOOST_AUTO_TEST_CASE(case3)
 { // heap of size 5
-    MinHeap h;
+    MinHeap<int> h;
     int size = 5;
     BOOST_CHECK(&h);
     for (int i = size; i > 0; --i)
