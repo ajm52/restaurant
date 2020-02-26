@@ -6,10 +6,11 @@ template <typename T>
 MinHeap<T>::MinHeap() : heap_() {}
 
 template <typename T>
-int MinHeap<T>::minHeapify(int root)
+std::map<T, int> MinHeap<T>::minHeapify(int root)
 {
     int size = heap_.size();
-    int retIndex = root;
+    bool swapped = false;
+    std::map<T, int> tracker;
 
     for (int i = root; i >= 0; --i)
     {
@@ -26,40 +27,40 @@ int MinHeap<T>::minHeapify(int root)
             if (heap_[i] <= heap_[smallerChild])
                 break;
 
-            // tracking root index that must be returned.
-            // reversed, as the index saving is pre-swap.
-            if (heap_[i] == heap_[root])
-                retIndex = smallerChild;
-            else if (heap_[smallerChild] == heap_[root])
-                retIndex = i;
+            // index tracking
+            tracker[heap_[i]] = smallerChild;
+            tracker[heap_[smallerChild]] = i;
 
             // swap heap_[i] and heap_[smallerChild]
+            swapped = true;
             T temp = heap_[i];
             heap_[i] = heap_[smallerChild];
             heap_[smallerChild] = temp;
             i = smallerChild;
         }
     }
+    if (!swapped) // avoids bad access
+        tracker[heap_[root]] = root;
 
-    return retIndex;
+    return tracker;
 }
 
 template <typename T>
-int MinHeap<T>::insert(const T &value)
+std::map<T, int> MinHeap<T>::insert(const T &value)
 {
     heap_.push_back(value);
-    return minHeapify(heap_.size() - 1);
+    return minHeapify((int)heap_.size() - 1);
 }
 
 template <typename T>
-int MinHeap<T>::decr(int index)
+std::map<T, int> MinHeap<T>::decr(int index)
 {
     --heap_[index];
     return minHeapify(index);
 }
 
 template <typename T>
-int MinHeap<T>::incr(int index)
+std::map<T, int> MinHeap<T>::incr(int index)
 {
     ++heap_[index];
     return minHeapify(index);

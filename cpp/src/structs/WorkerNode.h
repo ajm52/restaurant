@@ -10,7 +10,7 @@
  * Used in MinHeap.
  * @author ajm
  * @created: 2/24/20
- * @modified: 2/24/20
+ * @modified: 2/26/20
  */
 struct WorkerNode
 {
@@ -21,9 +21,27 @@ struct WorkerNode
      * @description: Constructor.
      * @param id worker id string.
      */
-    WorkerNode(std::string id) : numJobs_(0), workerID_(id) {}
+    WorkerNode(std::string id = "", unsigned jobs = 0) : numJobs_(jobs), workerID_(id) {}
 
-    WorkerNode(std::string id, unsigned jobs) : numJobs_(jobs), workerID_(id) {}
+    /**
+     * @description: Copy constructor.
+     * @param other object to be copied.
+     */
+    WorkerNode(const WorkerNode &other) : numJobs_(other.numJobs_), workerID_(other.workerID_) {}
+
+    /**
+     * @description: Copy assignment operator.
+     * @param other object to be copied.
+     * @returns <code>this</code> with other's parameters.
+     */
+    WorkerNode &operator=(const WorkerNode &other)
+    {
+        if (this == &other)
+            return *this;
+        this->numJobs_ = other.numJobs_;
+        this->workerID_ = other.workerID_;
+        return *this;
+    }
 
     /**
      * @description: Destructor.
@@ -39,7 +57,12 @@ struct WorkerNode
      */
     bool operator<(const WorkerNode &rhs) const
     {
-        return *this <= rhs;
+        if (numJobs_ < rhs.numJobs_)
+            return true;
+        else if (rhs.numJobs_ < numJobs_)
+            return false;
+        else
+            return workerID_.compare(rhs.workerID_) < 0 ? true : false;
     }
 
     /**
@@ -55,7 +78,9 @@ struct WorkerNode
         else if (rhs.numJobs_ < numJobs_)
             return false;
         else
-            return workerID_.compare(rhs.workerID_);
+        {
+            return workerID_.compare(rhs.workerID_) <= 0 ? true : false;
+        }
     }
 
     /**
@@ -82,7 +107,7 @@ struct WorkerNode
     void operator--()
     {
         if (numJobs_ > 0)
-            numJobs_--;
+            numJobs_ -= 1;
     }
 
     /**
@@ -92,7 +117,7 @@ struct WorkerNode
      */
     void operator++()
     {
-        numJobs_++;
+        numJobs_ += 1;
     }
 
     /**
