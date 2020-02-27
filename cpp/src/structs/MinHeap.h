@@ -53,18 +53,20 @@ struct MinHeap
     /**
      * @description: Decrements the node at a given index.
      * @param index index of the node to decrement.
+     * @param amt amount to decrement by.
      * @returns a map, where each entry represents an element that has
      * changed positions and it's new index.
      */
-    std::map<T, int> decr(int);
+    std::map<T, int> decr(int, int);
 
     /**
      * @description: Increments the node at the given index.
      * @param index index of the node to increment.
+     * @param amt amount to increment by.
      * @returns a map, where each entry represents an element that has
      * changed positions and it's new index.
      */
-    std::map<T, int> incr(int);
+    std::map<T, int> incr(int, int);
 
     /**
      * @description: prints heap contents in a linear fashion; semi-useful for debugging.

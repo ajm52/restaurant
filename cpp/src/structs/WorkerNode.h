@@ -101,23 +101,27 @@ struct WorkerNode
 
     /**
      * @description: Decrement operator.
-     * Lowers <code>this WorkerNode</code>'s job count by 1.
+     * Lowers <code>this WorkerNode</code>'s job count by a given amount.
+     * @param amt amount to decrement job count by.
+     * @note job count >= 0.
      * @returns <code>this</code> with a modified job count.
      */
-    void operator--()
+    WorkerNode &operator-=(int amt)
     {
-        if (numJobs_ > 0)
-            numJobs_ -= 1;
+        numJobs_ = numJobs_ < amt ? 0 : numJobs_ - amt;
+        return *this;
     }
 
     /**
      * @description: Increment operator.
-     * Raises <code>this WorkerNode</code>'s job count by 1.
+     * Raises <code>this WorkerNode</code>'s job count by a given amount.
+     * @param amt amount to inrement job count by.
      * @returns <code>this</code> with a modified job count.
      */
-    void operator++()
+    WorkerNode &operator+=(int amt)
     {
-        numJobs_ += 1;
+        numJobs_ += amt;
+        return *this;
     }
 
     /**
