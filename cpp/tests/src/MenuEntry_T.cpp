@@ -1,17 +1,20 @@
-#define BOOST_TEST_MODULE MenuEntry_Test
-#include <boost/test/included/unit_test.hpp>
+#define BOOST_TEST_DYN_LINK
+
+#include <boost/test/unit_test.hpp>
 #include "MenuEntry.cpp"
+
+#include "MenuEntry_T.h"
+
+using namespace boost::unit_test;
 
 /**
  * Unit test for MenuEntry.
  * author: ajm
  * created: 2/12/20
- * last modified: 2/12/20
+ * last modified: 2/28/20
  **/
 
-BOOST_AUTO_TEST_SUITE(menuEntry_test_suite)
-
-BOOST_AUTO_TEST_CASE(case1)
+void MenuEntry_T::test_case1()
 { //me with default args.
     MenuEntry me;
     BOOST_CHECK(&me);
@@ -19,7 +22,7 @@ BOOST_AUTO_TEST_CASE(case1)
     BOOST_TEST(me.getPrepTime() == 0);
 }
 
-BOOST_AUTO_TEST_CASE(case2)
+void MenuEntry_T::test_case2()
 { //me with args provided.
     MenuEntry me("cheeseburger", 10);
     BOOST_CHECK(&me);
@@ -27,7 +30,7 @@ BOOST_AUTO_TEST_CASE(case2)
     BOOST_TEST(me.getPrepTime() == 10);
 }
 
-BOOST_AUTO_TEST_CASE(case3)
+void MenuEntry_T::test_case3()
 { //testing copy control.
     MenuEntry me1("onion soup", 5);
     MenuEntry me2(me1);
@@ -44,11 +47,20 @@ BOOST_AUTO_TEST_CASE(case3)
     BOOST_TEST(me3.getPrepTime() == me2.getPrepTime());
 }
 
-BOOST_AUTO_TEST_CASE(case4)
+void MenuEntry_T::test_case4()
 { //testing factory method.
     std::shared_ptr<MenuEntry> pMe = makeMenuEntry("some food", 20);
     BOOST_TEST(pMe.get()->getName() == "some food");
     BOOST_TEST(pMe.get()->getPrepTime() == 20);
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+test_suite *MenuEntry_T::init_test_suite()
+{
+    test_suite *ts = BOOST_TEST_SUITE("menu_entry_test_suite");
+    ts->add(BOOST_TEST_CASE(&MenuEntry_T::test_case1));
+    ts->add(BOOST_TEST_CASE(&MenuEntry_T::test_case2));
+    ts->add(BOOST_TEST_CASE(&MenuEntry_T::test_case3));
+    ts->add(BOOST_TEST_CASE(&MenuEntry_T::test_case4));
+    framework::master_test_suite().add(ts);
+    return 0;
+}

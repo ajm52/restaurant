@@ -1,7 +1,11 @@
-#define BOOST_TEST_MODULE WorkerNode_Test
+#define BOOST_TEST_DYN_LINK
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include "WorkerNode.cpp"
+
+#include "WorkerNode_T.h"
+
+using namespace boost::unit_test;
 
 /**
  * Unit test for WorkerNode.
@@ -10,9 +14,7 @@
  * modified: 2/28/20
  */
 
-BOOST_AUTO_TEST_SUITE(workernode_test_suite)
-
-BOOST_AUTO_TEST_CASE(case1)
+void WorkerNode_T::test_case1()
 { // testing '<' operator with different job counts
     WorkerNode w0("W0");
     WorkerNode w1("W1");
@@ -23,7 +25,7 @@ BOOST_AUTO_TEST_CASE(case1)
     BOOST_CHECK_LT(w1, w0);
 }
 
-BOOST_AUTO_TEST_CASE(case2)
+void WorkerNode_T::test_case2()
 { // testing '<' with equal job counts
     WorkerNode w0("W0");
     WorkerNode w1("W1");
@@ -34,7 +36,7 @@ BOOST_AUTO_TEST_CASE(case2)
     BOOST_CHECK_LT(w0, w1);
 }
 
-BOOST_AUTO_TEST_CASE(case3)
+void WorkerNode_T::test_case3()
 { // '<=' with different and equal job counts
     WorkerNode w0("W0");
     WorkerNode w1("W1");
@@ -46,7 +48,7 @@ BOOST_AUTO_TEST_CASE(case3)
     BOOST_CHECK_LE(w0, w1);
 }
 
-BOOST_AUTO_TEST_CASE(case4)
+void WorkerNode_T::test_case4()
 { // '==' with different worker ids
     WorkerNode w0("W0");
     WorkerNode w1("W0");
@@ -57,7 +59,7 @@ BOOST_AUTO_TEST_CASE(case4)
     BOOST_CHECK_NE(w0, w1);
 }
 
-BOOST_AUTO_TEST_CASE(case5)
+void WorkerNode_T::test_case5()
 { // testing '+=' and '-='
     WorkerNode w0("W0");
     w0.numJobs_ = 3;
@@ -67,4 +69,14 @@ BOOST_AUTO_TEST_CASE(case5)
     BOOST_TEST(w0.numJobs_ == 0);
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+test_suite *WorkerNode_T::init_test_suite()
+{
+    test_suite *ts = BOOST_TEST_SUITE("worker_node_test_suite");
+    ts->add(BOOST_TEST_CASE(&WorkerNode_T::test_case1));
+    ts->add(BOOST_TEST_CASE(&WorkerNode_T::test_case2));
+    ts->add(BOOST_TEST_CASE(&WorkerNode_T::test_case3));
+    ts->add(BOOST_TEST_CASE(&WorkerNode_T::test_case4));
+    ts->add(BOOST_TEST_CASE(&WorkerNode_T::test_case5));
+    framework::master_test_suite().add(ts);
+    return 0;
+}

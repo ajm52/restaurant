@@ -1,20 +1,22 @@
-#define BOOST_TEST_MODULE Order_Test
-#include <boost/test/included/unit_test.hpp>
+#define BOOST_TEST_DYN_LINK
+
+#include <boost/test/unit_test.hpp>
 #include "Order.h"
 #include "OrderStatus.h"
+
+#include "Order_T.h"
+
+using namespace boost::unit_test;
 
 /**
  * Unit test for Order.h
  * author: ajm
  * created: 2/3/20
- * last modified: 2/3/20
+ * last modified: 2/28/20
  **/
-
-BOOST_AUTO_TEST_SUITE(order_test_suite)
-
 std::vector<int> selections{1, 2, 3, 4};
 
-BOOST_AUTO_TEST_CASE(case1)
+void Order_T::test_case1()
 { //Order using zero arg ctor
     Order o;
     BOOST_CHECK(&o);
@@ -23,7 +25,7 @@ BOOST_AUTO_TEST_CASE(case1)
     BOOST_TEST(o.getOrders().size() == 0);
 }
 
-BOOST_AUTO_TEST_CASE(case2)
+void Order_T::test_case2()
 { //Order using standard ctor
     Order o("Some order", selections);
     BOOST_CHECK(&o);
@@ -36,4 +38,11 @@ BOOST_AUTO_TEST_CASE(case2)
     }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+test_suite *Order_T::init_test_suite()
+{
+    test_suite *ts = BOOST_TEST_SUITE("order_test_suite");
+    ts->add(BOOST_TEST_CASE(&Order_T::test_case1));
+    ts->add(BOOST_TEST_CASE(&Order_T::test_case2));
+    framework::master_test_suite().add(ts);
+    return 0;
+}

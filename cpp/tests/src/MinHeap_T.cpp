@@ -1,10 +1,14 @@
-#define BOOST_TEST_MODULE MinHeap_Test
+#define BOOST_TEST_DYN_LINK
 
 #include <ostream>
 #include <map>
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
+#include "WorkerNode.h"
 #include "MinHeap.cpp"
-#include "WorkerNode.cpp"
+
+#include "MinHeap_T.h"
+
+using namespace boost::unit_test;
 
 /**
  * Unit test for MinHeap.
@@ -13,16 +17,14 @@
  * modified: 2/28/20
  */
 
-BOOST_AUTO_TEST_SUITE(minheap_test_suite)
-
-BOOST_AUTO_TEST_CASE(case1)
+void MinHeap_T::test_case1()
 { // empty heap
     MinHeap<int> h;
     BOOST_CHECK(&h);
     BOOST_TEST(h.heap_.size() == 0);
 }
 
-BOOST_AUTO_TEST_CASE(case2)
+void MinHeap_T::test_case2()
 { // heap<int> of size 1
     MinHeap<int> h;
     int size = 1, value = 1;
@@ -32,7 +34,7 @@ BOOST_AUTO_TEST_CASE(case2)
     BOOST_TEST(h.heap_[0] == value);
 }
 
-BOOST_AUTO_TEST_CASE(case3)
+void MinHeap_T::test_case3()
 { // heap<int> of size 5
     MinHeap<int> h;
     int size = 5;
@@ -60,7 +62,7 @@ BOOST_AUTO_TEST_CASE(case3)
     delete[] testArray;
 }
 
-BOOST_AUTO_TEST_CASE(case4)
+void MinHeap_T::test_case4()
 { // testing decr(int) w/ Heap<int> of size 3
     MinHeap<int> h;
     int size = 3;
@@ -87,7 +89,7 @@ BOOST_AUTO_TEST_CASE(case4)
     delete[] testArray;
 }
 
-BOOST_AUTO_TEST_CASE(case5)
+void MinHeap_T::test_case5()
 { // testing incr(int) w/ Heap<int> of size 3
     MinHeap<int> h;
     int size = 3;
@@ -113,7 +115,7 @@ BOOST_AUTO_TEST_CASE(case5)
     delete[] testArray;
 }
 
-BOOST_AUTO_TEST_CASE(case6)
+void MinHeap_T::test_case6()
 { // testing incr(int) and decr(int) w/ Heap<WorkerNode> of size 5.
     MinHeap<WorkerNode> h;
     int size = 5;
@@ -161,7 +163,7 @@ BOOST_AUTO_TEST_CASE(case6)
     BOOST_TEST(tracker[key] == 3);
 }
 
-BOOST_AUTO_TEST_CASE(case7)
+void MinHeap_T::test_case7()
 { // ensuring minHeapify can accurately report multiple index changes.
     MinHeap<WorkerNode> h;
     h.insert(WorkerNode("W1", 1));
@@ -191,4 +193,16 @@ BOOST_AUTO_TEST_CASE(case7)
     BOOST_TEST(indices[key] == 3);
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+test_suite *MinHeap_T::init_test_suite()
+{
+    test_suite *ts = BOOST_TEST_SUITE("min_heap_test_suite");
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case1));
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case2));
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case3));
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case4));
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case5));
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case6));
+    ts->add(BOOST_TEST_CASE(&MinHeap_T::test_case7));
+    framework::master_test_suite().add(ts);
+    return 0;
+}

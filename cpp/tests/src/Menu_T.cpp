@@ -1,18 +1,21 @@
-#define BOOST_TEST_MODULE Menu_Test
+#define BOOST_TEST_DYN_LINK
 
-#include "MenuEntryKey.cpp"
-#include "MenuEntry.cpp"
+#include "MenuEntryKey.h"
+#include "MenuEntry.h"
 #include "Menu.cpp"
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include <iterator>
+
+#include "Menu_T.h"
+
+using namespace boost::unit_test;
 
 /**
  * Unit test for Menu.
  * author: ajm
  * created: 2/12/20
- * modified: 2/19/20
+ * modified: 2/28/20
  **/
-BOOST_AUTO_TEST_SUITE(menu_test_suite)
 
 std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> opts = {
     {MenuEntryKey('F', 0), MenuEntry("burger", 10)},
@@ -24,7 +27,7 @@ std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> opts = {
 
 unsigned numF = 3, numD = 2;
 
-BOOST_AUTO_TEST_CASE(case1)
+void Menu_T::test_case1()
 { //m with default args.
     Menu m;
     BOOST_CHECK(&m);
@@ -33,7 +36,7 @@ BOOST_AUTO_TEST_CASE(case1)
     BOOST_TEST(m.getNumDrinkOptions() == 0);
 }
 
-BOOST_AUTO_TEST_CASE(case2)
+void Menu_T::test_case2()
 { //m with args provided.
     Menu m(opts);
     BOOST_CHECK(&m);
@@ -49,10 +52,18 @@ BOOST_AUTO_TEST_CASE(case2)
     }
 }
 
-BOOST_AUTO_TEST_CASE(case3)
+void Menu_T::test_case3()
 { //testing copy control.
     BOOST_TEST(std::is_copy_constructible<Menu>::value == 0);
     BOOST_TEST(std::is_copy_assignable<Menu>::value == 0);
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+test_suite *Menu_T::init_test_suite()
+{
+    test_suite *ts = BOOST_TEST_SUITE("menu_test_suite");
+    ts->add(BOOST_TEST_CASE(&Menu_T::test_case1));
+    ts->add(BOOST_TEST_CASE(&Menu_T::test_case2));
+    ts->add(BOOST_TEST_CASE(&Menu_T::test_case3));
+    framework::master_test_suite().add(ts);
+    return 0;
+}

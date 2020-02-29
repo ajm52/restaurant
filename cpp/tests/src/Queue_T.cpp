@@ -1,18 +1,20 @@
-#define BOOST_TEST_MODULE Queue_Test
+#define BOOST_TEST_DYN_LINK
 
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include "Queue.cpp"
+
+#include "Queue_T.h"
+
+using namespace boost::unit_test;
 
 /**
  * Unit test for Queue.
  * author: ajm
  * created: 2/21/20
- * modified: 2/21/20
+ * modified: 2/28/20
  */
 
-BOOST_AUTO_TEST_SUITE(queue_test_suite)
-
-BOOST_AUTO_TEST_CASE(case1)
+void Queue_T::test_case1()
 { // empty queue
     Queue q;
     BOOST_CHECK(&q);
@@ -21,7 +23,7 @@ BOOST_AUTO_TEST_CASE(case1)
     BOOST_TEST(q.head_ == nullptr);
 }
 
-BOOST_AUTO_TEST_CASE(case2)
+void Queue_T::test_case2()
 { // q of size 1
     Queue q;
     int value = 0;
@@ -33,7 +35,7 @@ BOOST_AUTO_TEST_CASE(case2)
     BOOST_TEST(q.tail_->next_ == q.head_);
 }
 
-BOOST_AUTO_TEST_CASE(case3)
+void Queue_T::test_case3()
 { // q of size 5
     Queue q;
     int size = 5;
@@ -54,4 +56,12 @@ BOOST_AUTO_TEST_CASE(case3)
     BOOST_TEST(current == q.tail_);
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+test_suite *Queue_T::init_test_suite()
+{
+    test_suite *ts = BOOST_TEST_SUITE("queue_test_suite");
+    ts->add(BOOST_TEST_CASE(&Queue_T::test_case1));
+    ts->add(BOOST_TEST_CASE(&Queue_T::test_case2));
+    ts->add(BOOST_TEST_CASE(&Queue_T::test_case3));
+    framework::master_test_suite().add(ts);
+    return 0;
+}
