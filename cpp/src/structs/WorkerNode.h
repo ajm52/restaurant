@@ -1,16 +1,13 @@
 #ifndef WORKERNODE_H
 #define WORKERNODE_H
 
-#include <ostream>
-#include <string>
-
 /**
  * @struct <code>WorkerNode</code>
  * @description: Wrapper struct for a worker stat pair.
  * Used in MinHeap.
  * @author ajm
  * @created: 2/24/20
- * @modified: 2/26/20
+ * @modified: 2/28/20
  */
 struct WorkerNode
 {
@@ -34,14 +31,7 @@ struct WorkerNode
      * @param other object to be copied.
      * @returns <code>this</code> with other's parameters.
      */
-    WorkerNode &operator=(const WorkerNode &other)
-    {
-        if (this == &other)
-            return *this;
-        this->numJobs_ = other.numJobs_;
-        this->workerID_ = other.workerID_;
-        return *this;
-    }
+    WorkerNode &operator=(const WorkerNode &other);
 
     /**
      * @description: Destructor.
@@ -55,15 +45,7 @@ struct WorkerNode
      * @note Uniqueness of Worker IDs ensures that no two WorkerNodes
      * can be equal, which is convenient.
      */
-    bool operator<(const WorkerNode &rhs) const
-    {
-        if (numJobs_ < rhs.numJobs_)
-            return true;
-        else if (rhs.numJobs_ < numJobs_)
-            return false;
-        else
-            return workerID_.compare(rhs.workerID_) < 0 ? true : false;
-    }
+    bool operator<(const WorkerNode &rhs) const;
 
     /**
      * @description: <= operator overload.
@@ -71,17 +53,7 @@ struct WorkerNode
      * @returns true if <code>this</code> is LTE than rhs, false otherwise.
      * @note Only implemented for compatibility with MinHeap correctness.
      */
-    bool operator<=(const WorkerNode &rhs) const
-    {
-        if (numJobs_ < rhs.numJobs_)
-            return true;
-        else if (rhs.numJobs_ < numJobs_)
-            return false;
-        else
-        {
-            return workerID_.compare(rhs.workerID_) <= 0 ? true : false;
-        }
-    }
+    bool operator<=(const WorkerNode &rhs) const;
 
     /**
      * @description: == operator overload.
@@ -89,15 +61,7 @@ struct WorkerNode
      * @returns true iff <code>this</code> is EQ to rhs, false otherwise.
      * @note Implemented so root index can be tracked and returned during minHeapify.
      */
-    bool operator==(const WorkerNode &rhs) const
-    {
-        if (numJobs_ == rhs.numJobs_ && workerID_ == rhs.workerID_)
-            return true;
-        else
-        {
-            return false;
-        }
-    }
+    bool operator==(const WorkerNode &rhs) const;
 
     /**
      * @description: Decrement operator.
@@ -106,11 +70,7 @@ struct WorkerNode
      * @note job count >= 0.
      * @returns <code>this</code> with a modified job count.
      */
-    WorkerNode &operator-=(int amt)
-    {
-        numJobs_ = numJobs_ < amt ? 0 : numJobs_ - amt;
-        return *this;
-    }
+    WorkerNode &operator-=(int amt);
 
     /**
      * @description: Increment operator.
@@ -118,24 +78,16 @@ struct WorkerNode
      * @param amt amount to inrement job count by.
      * @returns <code>this</code> with a modified job count.
      */
-    WorkerNode &operator+=(int amt)
-    {
-        numJobs_ += amt;
-        return *this;
-    }
+    WorkerNode &operator+=(int amt);
+};
 
-    /**
+/**
      * @description: Print method.
      * Required for Boost.Test; will also serve use for debugging.
      * @param out Output stream object.
      * @param n <code>WorkerNode</code> to be printed.
      * @returns the ostream object.
      */
-    friend std::ostream &operator<<(std::ostream &out, const WorkerNode &n)
-    {
-        out << n.workerID_ << "-" << n.numJobs_;
-        return out;
-    }
-};
+std::ostream &operator<<(std::ostream &out, const WorkerNode &n);
 
 #endif // WORKERNODE_H

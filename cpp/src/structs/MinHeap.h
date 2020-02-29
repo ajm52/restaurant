@@ -11,7 +11,7 @@
  * @description: A generic min heap.
  * @author ajm
  * @created: 2/21/20
- * @modified: 2/26/20
+ * @modified: 2/27/20
  */
 template <typename T>
 struct MinHeap
@@ -57,7 +57,7 @@ struct MinHeap
      * @returns a map, where each entry represents an element that has
      * changed positions and it's new index.
      */
-    std::map<T, int> decr(int, int);
+    std::map<T, int> decr(int, int = 1);
 
     /**
      * @description: Increments the node at the given index.
@@ -66,7 +66,7 @@ struct MinHeap
      * @returns a map, where each entry represents an element that has
      * changed positions and it's new index.
      */
-    std::map<T, int> incr(int, int);
+    std::map<T, int> incr(int, int = 1);
 
     /**
      * @description: prints heap contents in a linear fashion; semi-useful for debugging.

@@ -53,14 +53,14 @@ std::map<T, int> MinHeap<T>::insert(const T &value)
 }
 
 template <typename T>
-std::map<T, int> MinHeap<T>::decr(int index, int amt = 1)
+std::map<T, int> MinHeap<T>::decr(int index, int amt)
 {
     heap_[index] -= amt;
     return minHeapify(index);
 }
 
 template <typename T>
-std::map<T, int> MinHeap<T>::incr(int index, int amt = 1)
+std::map<T, int> MinHeap<T>::incr(int index, int amt)
 {
     heap_[index] += amt;
     return minHeapify(index);

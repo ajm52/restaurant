@@ -1,16 +1,16 @@
 #define BOOST_TEST_MODULE MinHeap_Test
 
-#include <boost/test/included/unit_test.hpp>
-#include "MinHeap.cpp"
-#include "WorkerNode.h"
 #include <ostream>
 #include <map>
+#include <boost/test/included/unit_test.hpp>
+#include "MinHeap.cpp"
+#include "WorkerNode.cpp"
 
 /**
  * Unit test for MinHeap.
  * author ajm
  * created: 2/21/20
- * modified: 2/26/20
+ * modified: 2/28/20
  */
 
 BOOST_AUTO_TEST_SUITE(minheap_test_suite)
