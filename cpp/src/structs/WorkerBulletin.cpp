@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 
-#include "WorkerNode.cpp"
-#include "MinHeap.cpp"
+#include "WorkerNode.h"
+#include "MinHeap.h"
 
 #include "WorkerBulletin.h"
 

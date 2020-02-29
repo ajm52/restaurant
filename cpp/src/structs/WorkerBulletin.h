@@ -3,10 +3,10 @@
 
 #include "Worker.h"
 
-class WorkerNode;
+struct WorkerNode;
 
 template <typename T>
-class MinHeap;
+struct MinHeap;
 
 /**
  * @struct <code>WorkerBulletin</code>
