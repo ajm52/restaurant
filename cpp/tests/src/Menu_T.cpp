@@ -1,12 +1,11 @@
 #define BOOST_TEST_DYN_LINK
 
+#include "Menu_T.h"
 #include "MenuEntryKey.h"
 #include "MenuEntry.h"
 #include "Menu.cpp"
 #include <boost/test/unit_test.hpp>
 #include <iterator>
-
-#include "Menu_T.h"
 
 using namespace boost::unit_test;
 
@@ -14,7 +13,7 @@ using namespace boost::unit_test;
  * Unit test for Menu.
  * author: ajm
  * created: 2/12/20
- * modified: 2/28/20
+ * modified: 3/2/20
  **/
 
 std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> opts = {

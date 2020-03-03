@@ -1,9 +1,8 @@
 #define BOOST_TEST_DYN_LINK
 
-#include <boost/test/unit_test.hpp>
-#include "Guest.h"
-
 #include "Guest_T.h"
+#include "Guest.h"
+#include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
@@ -11,7 +10,7 @@ using namespace boost::unit_test;
  * Unit test for Guest.h
  * author: ajm
  * created: 2/3/20
- * last modified: 2/28/20
+ * last modified: 3/2/20
  **/
 void Guest_T::test_case1()
 { //Guest with default id arg

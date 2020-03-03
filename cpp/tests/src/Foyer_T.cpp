@@ -1,12 +1,18 @@
 #define BOOST_TEST_DYN_LINK
 
 #include "Foyer_T.h"
-#include <boost/test/unit_test.hpp>
 #include "Party.cpp"
 #include "Foyer.cpp"
+#include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
+/**
+ * Unit test for Foyer
+ * author: ajm
+ * created: 3/2/20
+ * modified: 3/2/20
+ */
 void Foyer_T::test_case1()
 { // test party insertions and removals
     BOOST_TEST_CHECKPOINT("starting foyer_test_suite");

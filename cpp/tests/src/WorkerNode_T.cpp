@@ -1,9 +1,8 @@
 #define BOOST_TEST_DYN_LINK
 
-#include <boost/test/unit_test.hpp>
-#include "WorkerNode.cpp"
-
 #include "WorkerNode_T.h"
+#include "WorkerNode.cpp"
+#include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
@@ -11,7 +10,7 @@ using namespace boost::unit_test;
  * Unit test for WorkerNode.
  * author ajm
  * created: 2/24/20
- * modified: 2/28/20
+ * modified: 3/2/20
  */
 
 void WorkerNode_T::test_case1()

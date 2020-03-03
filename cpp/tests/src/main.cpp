@@ -1,5 +1,4 @@
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
 
 #include "Order_T.h"
 #include "MenuEntryKey_T.h"
@@ -10,7 +9,9 @@
 #include "WorkerNode_T.h"
 #include "MinHeap_T.h"
 #include "Queue_T.h"
+#include "Foyer_T.h"
 #include "WorkerBulletin_T.h"
+#include <boost/test/unit_test.hpp>
 
 bool init_unit_test()
 {
@@ -23,6 +24,7 @@ bool init_unit_test()
     WorkerNode_T::init_test_suite();
     MinHeap_T::init_test_suite();
     Queue_T::init_test_suite();
+    Foyer_T::init_test_suite();
     WorkerBulletin_T::init_test_suite();
     return true;
 }
@@ -31,7 +33,7 @@ bool init_unit_test()
  * Boost.Test's main entry point.
  * author ajm
  * created 2/3/20
- * modified 2/28/20
+ * modified 3/2/20
  */
 int main(int argc, char *argv[])
 {

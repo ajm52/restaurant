@@ -1,12 +1,11 @@
 #define BOOST_TEST_DYN_LINK
 
-#include <ostream>
-#include <map>
-#include <boost/test/unit_test.hpp>
+#include "MinHeap_T.h"
 #include "WorkerNode.h"
 #include "MinHeap.cpp"
-
-#include "MinHeap_T.h"
+#include <boost/test/unit_test.hpp>
+#include <ostream>
+#include <map>
 
 using namespace boost::unit_test;
 
@@ -14,7 +13,7 @@ using namespace boost::unit_test;
  * Unit test for MinHeap.
  * author ajm
  * created: 2/21/20
- * modified: 2/28/20
+ * modified: 3/2/20
  */
 
 void MinHeap_T::test_case1()

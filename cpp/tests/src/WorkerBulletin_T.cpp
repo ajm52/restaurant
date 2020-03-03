@@ -1,9 +1,8 @@
 #define BOOST_TEST_DYN_LINK
 
-#include <boost/test/unit_test.hpp>
-#include "WorkerBulletin.cpp"
-
 #include "WorkerBulletin_T.h"
+#include "WorkerBulletin.cpp"
+#include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
@@ -11,7 +10,7 @@ using namespace boost::unit_test;
  * Unit test for WorkerBulletin.
  * author ajm
  * created: 2/27/20
- * modified: 2/28/20
+ * modified: 3/2/20
  */
 
 void WorkerBulletin_T::test_case1()
