@@ -1,7 +1,6 @@
+#include "WorkerNode.h"
 #include <ostream>
 #include <string>
-
-#include "WorkerNode.h"
 
 WorkerNode &WorkerNode::operator=(const WorkerNode &other)
 {

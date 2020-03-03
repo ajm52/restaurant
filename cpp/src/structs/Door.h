@@ -1,10 +1,10 @@
 #ifndef DOOR_H
 #define DOOR_H
 
-#include <sys/socket.h>
+#include <boost/signals2.hpp>
 #include <queue>
 #include <mutex>
-#include <boost/signals2.hpp>
+#include <sys/socket.h>
 
 class Party;
 
@@ -13,7 +13,7 @@ class Party;
  * @description: Entry callback used by <code>Door</code>.
  * @author ajm
  * @created: 2/13/20
- * @modified: 2/13/20
+ * @modified: 3/2/20
  **/
 struct EntrySlot
 {

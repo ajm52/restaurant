@@ -2,11 +2,11 @@
 #define WORKERBULLETIN_H
 
 #include "Worker.h"
+#include "MinHeap.cpp"
+#include <string>
+#include <map>
 
 struct WorkerNode;
-
-template <typename T>
-struct MinHeap;
 
 /**
  * @struct <code>WorkerBulletin</code>
@@ -16,7 +16,7 @@ struct MinHeap;
  * Least Busy Worker (LBW) can be done in O(1).
  * @author ajm
  * @created: 2/20/20
- * @modified: 2/28/20
+ * @modified: 3/2/20
  */
 struct WorkerBulletin
 {

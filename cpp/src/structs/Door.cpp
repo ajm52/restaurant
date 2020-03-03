@@ -1,5 +1,4 @@
 #include "Door.h"
-
 #include <iostream>
 
 Door::Door() : comingIn_(),

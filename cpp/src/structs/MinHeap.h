@@ -1,17 +1,16 @@
 #ifndef MINHEAP_H
 #define MINHEAP_H
 
-#include <map>
+#include <cmath>
 #include <vector>
-
-#include "WorkerNode.h"
+#include <map>
 
 /**
  * @struct <code>MinHeap</code>
  * @description: A generic min heap.
  * @author ajm
  * @created: 2/21/20
- * @modified: 2/27/20
+ * @modified: 3/2/20
  */
 template <typename T>
 struct MinHeap

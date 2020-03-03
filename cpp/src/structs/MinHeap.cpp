@@ -1,6 +1,6 @@
-#include <math.h>
-#include <ostream>
 #include "MinHeap.h"
+#include <cmath>
+#include <iostream>
 
 template <typename T>
 MinHeap<T>::MinHeap() : heap_() {}

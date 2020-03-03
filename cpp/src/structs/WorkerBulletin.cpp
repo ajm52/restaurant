@@ -1,13 +1,11 @@
-#include <utility>
-#include <algorithm>
-#include <map>
-#include <vector>
-#include <string>
-
+#include "WorkerBulletin.h"
 #include "WorkerNode.h"
 #include "MinHeap.h"
-
-#include "WorkerBulletin.h"
+#include <utility>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <map>
 
 WorkerBulletin::~WorkerBulletin()
 {

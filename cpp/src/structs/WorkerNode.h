@@ -1,13 +1,15 @@
 #ifndef WORKERNODE_H
 #define WORKERNODE_H
 
+#include <string>
+
 /**
  * @struct <code>WorkerNode</code>
  * @description: Wrapper struct for a worker stat pair.
  * Used in MinHeap.
  * @author ajm
  * @created: 2/24/20
- * @modified: 2/28/20
+ * @modified: 3/2/20
  */
 struct WorkerNode
 {
