@@ -5,6 +5,7 @@
 #include "MinHeap.cpp"
 #include <string>
 #include <map>
+#include <mutex>
 
 struct WorkerNode;
 
@@ -16,19 +17,20 @@ struct WorkerNode;
  * Least Busy Worker (LBW) can be done in O(1).
  * @author ajm
  * @created: 2/20/20
- * @modified: 3/2/20
+ * @modified: 3/3/20
  */
 struct WorkerBulletin
 {
     int size_;                               ///< size of heap.
     std::map<std::string, int> workerFDs_;   ///< maps worker ID to FD.
     std::map<std::string, int> heapIndices_; ///< maps worker ID to heap index.
+    mutable std::mutex m_;                   ///< bulletin mutex.
     MinHeap<WorkerNode> minHeap_;            ///< worker min heap.
 
     /**
      * @description: Constructor.
      */
-    WorkerBulletin() : size_(0), workerFDs_(), heapIndices_(), minHeap_() {}
+    WorkerBulletin() : size_(0), workerFDs_(), heapIndices_(), m_(), minHeap_() {}
 
     /**
      * @description: Destructor.
@@ -56,10 +58,16 @@ struct WorkerBulletin
      * @param amt amount to adjust worker's job count by.
      */
     void modifyJobCount(std::string, int);
+
+    /**
+     * @description: Retrieves and returns the Least Busy Worker's file descriptor.
+     * @returns LBW's fd.
+     */
+    int LBW() const;
 };
 
 /**
- * TODO: add a mutex for concurrent LBW access.
+ * TODO: modify WorkerBulletin_T to test LBW().
  */
 
 #endif // WORKERBULLETIN_H

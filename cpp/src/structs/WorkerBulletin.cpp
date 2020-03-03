@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <mutex>
 
 WorkerBulletin::~WorkerBulletin()
 {
@@ -26,9 +27,20 @@ void WorkerBulletin::registerWorker(Worker w)
 
 void WorkerBulletin::modifyJobCount(std::string workerID, int amt)
 {
+    std::lock_guard<std::mutex> lg(m_); // lock before modifying
     int index = heapIndices_[workerID];
     if (amt < 0)
         correctHeapIndices(minHeap_.decr(index, -amt));
     else
         correctHeapIndices(minHeap_.incr(index, amt));
+}
+
+int WorkerBulletin::LBW() const
+{
+    std::string lbw;
+    {
+        std::lock_guard<std::mutex> lg(m_); // lock before reading
+        lbw = minHeap_.top().workerID_;
+    }
+    return workerFDs_.at(lbw);
 }

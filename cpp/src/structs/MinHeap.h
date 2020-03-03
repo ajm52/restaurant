@@ -68,6 +68,11 @@ struct MinHeap
     std::map<T, int> incr(int, int = 1);
 
     /**
+     * @description: Returns the heap's top node.
+     */
+    T top() const;
+
+    /**
      * @description: prints heap contents in a linear fashion; semi-useful for debugging.
      * @note this method should see some improvement, such that contents are printed
      * in a more readable, heap-like fashion.
@@ -80,6 +85,10 @@ struct MinHeap
 #endif // MINHEAP_H
 
 /**
+ * TODO: Implement a HeapEmpty exception for when top is called and size == 0.
+ * 
+ * TODO: modify MinHeap_T to test top().
+ * 
  * TODO: make printHeap() output more readable.
  * 
  * TODO: investigate resource cleanup of heap nodes;

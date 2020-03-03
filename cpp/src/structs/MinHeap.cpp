@@ -67,6 +67,12 @@ std::map<T, int> MinHeap<T>::incr(int index, int amt)
 }
 
 template <typename T>
+T MinHeap<T>::top() const
+{
+    return heap_[0];
+}
+
+template <typename T>
 void MinHeap<T>::printHeap()
 {
     std::cout << "heap: ";
