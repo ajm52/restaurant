@@ -1,6 +1,5 @@
-#include <algorithm>
-
 #include "Multiplexer.h"
+#include <algorithm>
 
 void Multiplexer::resetFDs()
 {
@@ -26,10 +25,22 @@ int Multiplexer::registerReadSocket(int fd)
     return 0;
 }
 
+void Multiplexer::buildSelectList()
+{
+    resetFDs();
+
+    for (int &sock : readSockets_)
+        FD_SET(sock, &readfds_);
+    for (int &sock : writeSockets_)
+        FD_SET(sock, &writefds_);
+    for (int &sock : exceptSockets_)
+        FD_SET(sock, &exceptfds_);
+}
+
 std::vector<int> Multiplexer::getNextActiveFDs()
 {
     std::vector<int> activeFDs;
-    int numFDs = select(nfds_, &readfds_, &writefds_, &exceptfds_, nullptr);
+    int numFDs = select(nfds_ + 1, &readfds_, &writefds_, &exceptfds_, nullptr);
     if (numFDs <= 0)
         return activeFDs;
 

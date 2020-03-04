@@ -8,10 +8,10 @@
 /**
  * @class Multiplexer
  * @description: Handles I/O operations on a set of file descriptors.
- * Mostly to be used for read operations.
+ * Will mostly be used for reads in our use case.
  * @author ajm
  * @created: 2/17/20
- * @modified: 2/20/20
+ * @modified: 3/4/20
  * 
  * http://man7.org/linux/man-pages/man2/select.2.html#top_of_page
  * 
@@ -58,11 +58,16 @@ public:
     int registerReadSocket(int);
 
     /**
+     * @description: Using our running socket lists, initializes the fd_set bit fields.
+     */
+    void buildSelectList();
+
+    /**
      * @description: Selects on the given FDs for activity.
      * When <code>select()</code> returns, the active FD is returned.
      * @note mainly to be used for read file descriptors.
      * @returns a set of active file descriptors, 
-     * or an empty set in case of error.
+     * or an empty set in case of error or timeout.
      */
     std::vector<int> getNextActiveFDs();
 
