@@ -6,6 +6,7 @@
 #include <mutex>
 #include <sys/socket.h>
 
+class SimLoader;
 class Party;
 
 /**
@@ -48,11 +49,25 @@ struct ExitSlot
  * @description: Enables concurrent entry and exit to the restaurant.
  * @author ajm
  * @created: 2/6/20
- * @modified: 2/13/20
+ * @modified: 3/4/20
  **/
 class Door
 {
 public:
+    /**
+     * @class LoaderAccess
+     * @description: Allows SimLoader to set the door's FD
+     * in a relatively safe manner.
+     * @author ajm
+     * @created: 3/4/20
+     * @modified: 3/4/20
+     */
+    class LoaderAccess
+    {
+        static void setFD(Door *d, int fd) { d->fd_ = fd; }
+        friend class SimLoader;
+    };
+
     /**
      * @description: <code>Door</code> constructor.
      * Initializes member data appropriately.
@@ -109,6 +124,7 @@ private:
     boost::signals2::signal<void()> exitSig_;  ///< exit signal.
     EntrySlot entrySlot_;                      ///< entry callback.
     ExitSlot exitSlot_;                        ///< exit callback.
+    int fd_;                                   ///< door fd; used to message waiters.
 };
 
 #endif // DOOR_H

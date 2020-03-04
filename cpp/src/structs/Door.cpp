@@ -8,7 +8,8 @@ Door::Door() : comingIn_(),
                entrySig_(),
                exitSig_(),
                entrySlot_(),
-               exitSlot_()
+               exitSlot_(),
+               fd_()
 {
     entrySig_.connect(entrySlot_);
     exitSig_.connect(exitSlot_);
