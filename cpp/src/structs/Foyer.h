@@ -2,6 +2,7 @@
 #define FOYER_H
 
 #include <map>
+#include <mutex>
 
 class Party;
 
@@ -10,11 +11,12 @@ class Party;
  * @description: Where parties wait to be seated.
  * @author ajm
  * @created: 2/6/20
- * @modified: 3/2/20
+ * @modified: 3/4/20
  **/
 struct Foyer
 {
     std::map<int, Party *> table_; ///< map of <Table #, Party*> pairs
+    mutable std::mutex m_;         ///< foyer mutex.
 
     /**
      * @description: place a party in the foyer.

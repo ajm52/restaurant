@@ -1,21 +1,21 @@
 #include "Foyer.h"
 #include <iterator>
 #include <map>
+#include <mutex>
 
 bool Foyer::putParty(int id, Party *pPtr)
 {
+    std::lock_guard<std::mutex> lg(m_); // lock before reading/modifying
     if (table_.find(id) != table_.end())
         return false;
-    //lock
     table_.insert(std::pair<int, Party *>(id, pPtr));
-    //unlock
     return true;
 }
 
 Party *Foyer::removeParty(int id)
 {
     Party *ret = nullptr;
-    //lock
+    std::lock_guard<std::mutex> lg(m_); // lock before reading/modifying
     auto itr = table_.find(id);
     if (itr != table_.end())
     {
