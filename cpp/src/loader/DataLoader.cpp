@@ -1,16 +1,16 @@
-#include <memory>
+#include "DataLoader.h"
+#include "MenuEntryKey.h"
+#include "MenuEntry.h"
+#include "Menu.cpp"
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <iostream>
 #include <fstream>
 #include <map>
-#include <vector>
 #include <ctype.h>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-
-#include "Menu.h"
-#include "MenuEntry.h"
-#include "MenuEntryKey.h"
-#include "DataLoader.h"
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 struct MenuEntryKeyComparator;
 
@@ -23,10 +23,10 @@ struct MenuEntryKeyComparator;
  * NOTE: parser should be robust against:
  * 
  **/
-const Menu &DataLoader::createMenu()
+const std::shared_ptr<Menu> DataLoader::createMenu()
 {
     std::ifstream in;
-    in.open("../../../../meta/menu.md");
+    in.open("../../../meta/menu.md");
 
     if (!in)
     {
@@ -53,10 +53,75 @@ const Menu &DataLoader::createMenu()
             {
                 boost::algorithm::split(tokens, line, boost::algorithm::is_any_of(" "));
                 // we expect to have 2 tokens per line.
-                std::shared_ptr<MenuEntryKey> key = makeMenuEntryKey(entryType, num);
+                std::string dishName = tokens[0];
+                unsigned prepTime = std::stoi(tokens[1]);
+                // insert menu entry
+                options.insert(std::pair<MenuEntryKey, MenuEntry>(MenuEntryKey(entryType, num), MenuEntry(dishName, prepTime)));
+
+                std::getline(in, line);
+                num += 1;
             }
         }
     } // end while
-    Menu *menu;
-    return *menu;
+    return std::shared_ptr<Menu>(new Menu(options));
+}
+
+/**
+ * TODO: Alter this method so that it takes 2 params,
+ * count and starting port. SimLoader will read the file
+ * and pass that info in, no need for multiple methods to
+ * read the file.
+ */
+const std::shared_ptr<std::vector<int>> createFDs(std::string filepath)
+{
+    std::ifstream in;
+    in.open(filepath);
+    if (!in)
+    {
+        std::cout << "bad filepath, exiting.\n";
+        exit(-1);
+    }
+    std::vector<int> descriptors;
+    std::vector<std::string> tokens;
+    std::string line;
+    while (std::getline(in, line))
+    {
+        if (line.find("COUNT") == std::string::npos)
+            continue; // keep parsing.
+        else
+        { // we've found the data.
+            // first, get the count.
+            boost::algorithm::split(tokens, line, boost::algorithm::is_any_of(" "));
+            unsigned fdCount = std::stoi(tokens[1]);
+            descriptors.reserve(fdCount);
+            // then get the starting port.
+            std::getline(in, line);
+            boost::algorithm::split(tokens, line, boost::algorithm::is_any_of(" "));
+            unsigned portNumber = std::stoi(tokens[1]);
+            // create the file descriptors.
+            for (int i = 0; i < fdCount; ++i)
+            {
+                int fd = socket(AF_INET, SOCK_STREAM, 0);
+                if (!fd)
+                {
+                    std::cout << "unable to create socket, continuing.\n";
+                    continue;
+                }
+                struct sockaddr_in address;
+                address.sin_family = AF_INET;
+                address.sin_port = htons(portNumber);
+                int addr_len = sizeof(address);
+                inet_aton("127.0.0.1", &address.sin_addr);
+                // binding the socket to localhost:portNumber
+                if (bind(fd, (struct sockaddr *)(&address), addr_len) != 0)
+                {
+                    std::cout << "failed to bind socket, continuing.\n";
+                    continue;
+                }
+                // if bind is successful, we have a good file descriptor.
+                descriptors[i] = fd;
+            }
+        }
+    }
+    return std::shared_ptr<std::vector<int>>(new std::vector<int>(descriptors));
 }
