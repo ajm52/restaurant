@@ -35,14 +35,6 @@ public:
     ~SimLoader() {}
 
     /**
-     * @description: Loads the simulation.
-     */
-    void loadSim();
-
-private:
-    DataLoader dataLoader_;
-
-    /**
      * @description: Initializes the restaurant door's FD from metadata.
      * @param d Door pointer whose fd needs initializing.
      * @note this method expects door_io_data.md to exist
@@ -51,11 +43,25 @@ private:
     void initDoorFD(Door *);
 
     /**
-     * @description: loads a given worker bulletin with a given set of worker information.
-     * @param wb the bulletin.
-     * @param workers workers whose data requires loading.
+     * @description: creates and returns a set of waiters, with the given set of FDs.
+     * @returns a shared pointer to a set of newly created waiters.
+     * @note expects waiter_io_data.md to exist in 'meta'.
      */
-    void loadWorkerBulletin(WorkerBulletin &, const std::shared_ptr<std::vector<Worker>>);
+    std::shared_ptr<std::vector<Waiter>> createWaiters();
+
+    /**
+     * @description: Initializes the restaurant waiter staff.
+     * @param r restaurant to be configured.
+     * @param w smart pointer to a set of waiters to be staffed.
+     */
+    void initRestaurantWaiters(Restaurant *, const std::shared_ptr<std::vector<Waiter>>);
+
+    /**
+     * @description: loads a given waiter bulletin with a given set of waiter information.
+     * @param wb the bulletin.
+     * @param waiters waiters whose data requires loading.
+     */
+    void loadWaiterBulletin(WorkerBulletin &, const std::shared_ptr<std::vector<Waiter>>);
 
     /**
      * @description: creates and returns a set of parties with the given set of FDs.
@@ -65,12 +71,8 @@ private:
      */
     std::shared_ptr<std::vector<Party>> createParties(Restaurant *);
 
-    /**
-     * @description: creates and returns a set of waiters, with the given set of FDs.
-     * @returns a shared pointer to a set of newly created waiters.
-     * @note expects waiter_io_data.md to exist in 'meta'.
-     */
-    std::shared_ptr<std::vector<Waiter>> createWaiters();
+private:
+    DataLoader dataLoader_; ///< data-related loading helper.
 };
 
 #endif // SIMLOADER_H

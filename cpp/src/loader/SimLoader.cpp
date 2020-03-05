@@ -1,4 +1,5 @@
 #include "SimLoader.h"
+#include "Restaurant.h"
 #include "Party.h"
 #include "Waiter.h"
 #include "Door.h"
@@ -18,10 +19,10 @@ void SimLoader::initDoorFD(Door *d)
     Door::LoaderAccess::setFD(d, doorFD.get()->at(0));
 }
 
-void SimLoader::loadWorkerBulletin(WorkerBulletin &wb, const std::shared_ptr<std::vector<Worker>> workers)
+void SimLoader::loadWaiterBulletin(WorkerBulletin &wb, const std::shared_ptr<std::vector<Waiter>> waiters)
 {
-    for (auto worker : *(workers.get()))
-        wb.registerWorker(worker);
+    for (auto waiter : *(waiters.get()))
+        wb.registerWorker(waiter);
 }
 
 std::shared_ptr<std::vector<Party>> SimLoader::createParties(Restaurant *r)
@@ -54,4 +55,9 @@ std::shared_ptr<std::vector<Waiter>> SimLoader::createWaiters()
         i++;
     }
     return std::make_shared<std::vector<Waiter>>(std::move(waiters));
+}
+
+void SimLoader::initRestaurantWaiters(Restaurant *r, std::shared_ptr<std::vector<Waiter>> w)
+{
+    Restaurant::LoaderAccess::assignWaiters(r, *(w.get()));
 }
