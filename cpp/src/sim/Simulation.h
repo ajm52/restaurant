@@ -2,14 +2,17 @@
 #define SIMULATION_H
 
 #include "Restaurant.h"
+#include "SimLoader.h"
+#include "Party.h"
 #include <iostream>
+#include <vector>
 
 /**
  * @class <code>Simulation</code>
  * @description: Contains the restaurant simulation.
  * @author ajm
  * @created: 2/6/20
- * @modified: 3/2/20
+ * @modified: 3/4/20
  **/
 class Simulation
 {
@@ -52,7 +55,9 @@ public:
     inline Restaurant *getRestaurant() { return (&restaurant_); }
 
 private:
-    Restaurant restaurant_; ///< where dreams become reality.
+    Restaurant restaurant_;      ///< where dreams become reality.
+    std::vector<Party> parties_; ///< sim parties.
+    SimLoader loader_;           ///< sim loader.
 };
 
 #endif // SIMULATION_H
