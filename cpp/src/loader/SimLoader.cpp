@@ -25,7 +25,7 @@ void SimLoader::loadWaiterBulletin(WorkerBulletin &wb, const std::shared_ptr<std
         wb.registerWorker(waiter);
 }
 
-std::shared_ptr<std::vector<Party>> SimLoader::createParties(Restaurant *r)
+std::shared_ptr<std::vector<Party>> SimLoader::createParties(Restaurant &r)
 {
     std::string partyConfigPath = "../../meta/party_io_data.md";
     std::shared_ptr<std::vector<int>> fds = dataLoader_.createFDs(partyConfigPath);
@@ -34,7 +34,7 @@ std::shared_ptr<std::vector<Party>> SimLoader::createParties(Restaurant *r)
     while (i < fds.get()->size())
     {
         std::string id("P" + std::to_string(i));
-        Party p(nullptr, r, id);
+        Party p(r, nullptr, id);
         parties.push_back(p);
         i++;
     }

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <thread>
+#include <string>
 
 #include "Status.h"
 
@@ -14,20 +15,22 @@ class Guest;
  * 
  * author: ajm
  * created: 1/28/20
- * last modified: 2/6/20
+ * last modified: 5/24/20
  **/
 class Party
 {
 public:
-    Party(Restaurant &, const std::vector<Guest const *> &); // main ctor
-    Party(Restaurant &, std::vector<Guest const *> *);       // for thread debugging
+    Party(Restaurant &, const std::vector<Guest const *> &, std::string); // main ctor
+    Party(Restaurant &, std::vector<Guest const *> *, std::string);       // for thread debugging
     void init();
     void run();
+    void enterRestaurant();
 
 private:
-    Status::Party status_;              // describes party state
-    std::vector<Guest const *> guests_; // pointer can't change, but Guest can.
-    Restaurant &theSpot_;               // where we're headed!
+    std::string pid_;                   ///< the party's unique identifier.
+    Status::Party status_;              ///< describes party state
+    std::vector<Guest const *> guests_; ///< pointer can't change, but Guest can.
+    Restaurant &theSpot_;               ///< where we're headed.
     //need a socket object.
 };
 

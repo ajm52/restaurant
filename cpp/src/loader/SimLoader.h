@@ -69,7 +69,7 @@ public:
      * @returns a shared pointer to a set of newly created parties.
      * @note expects party_io_data.md to exist in 'meta'.
      */
-    std::shared_ptr<std::vector<Party>> createParties(Restaurant *);
+    std::shared_ptr<std::vector<Party>> createParties(Restaurant &);
 
 private:
     DataLoader dataLoader_; ///< data-related loading helper.

@@ -1,8 +1,9 @@
 #include "Simulation.h"
 #include "Door.h"
 #include "Waiter.h"
-#include "Party.cpp"
+#include "Party.h"
 #include <memory>
+#include <string>
 #include <iostream>
 #include <vector>
 
@@ -14,8 +15,8 @@ Simulation::Simulation() : restaurant_(), parties_(), loader_()
 void Simulation::run()
 {
     // spawn a thread-based Party and get it to enter the Door.
-    std::vector<const Guest *> guests;
-    std::shared_ptr<Party> pP(new Party(&guests, getRestaurant(), "P1"));
+    std::vector<Guest const *> guests;
+    std::shared_ptr<Party> pP(new Party(getRestaurant(), guests, std::string("P1")));
     std::cout << "party has spawned\n";
 }
 

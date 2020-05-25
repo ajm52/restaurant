@@ -52,7 +52,7 @@ public:
     /**
      * @description: Accessor for <code>this Simulation</code>'s restaurant.
      **/
-    inline Restaurant *getRestaurant() { return (&restaurant_); }
+    inline Restaurant &getRestaurant() { return restaurant_; }
 
 private:
     Restaurant restaurant_;      ///< where dreams become reality.
