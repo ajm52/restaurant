@@ -1,7 +1,7 @@
+#include "Party.h"
 #include "Guest.h"
 #include "Door.h"
 #include "Restaurant.h"
-#include "Party.h"
 
 #include <iostream>
 #include <queue>
@@ -16,19 +16,15 @@ Party::Party(Restaurant &theSpot, const std::vector<Guest const *> &guests, std:
     init();
 }
 
-Party::Party(Restaurant &theSpot, std::vector<Guest const *> *guests = nullptr, std::string pid)
+Party::Party(Restaurant *theSpot, std::vector<Guest const *> *guests = nullptr, std::string pid)
     : pid_(pid),
       status_(Status::Party::Outside),
       guests_(*guests),
-      theSpot_(theSpot)
+      theSpot_(*theSpot)
 {
-    std::cout << "got here\n";
     init();
 }
 
-/**
- * boots up the Party thread.
- **/
 void Party::init()
 {
     std::cout << "got here\n";
@@ -37,17 +33,11 @@ void Party::init()
     t.join();
 }
 
-/**
- * main thread of execution for Party.
- **/
 void Party::run()
 {
     std::cout << "Hello\n";
 }
 
-/**
- * used by parties to enter the restaurant.
- */
 void Party::enterRestaurant()
 {
     Door *d = theSpot_.getDoor();

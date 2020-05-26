@@ -15,15 +15,27 @@ class Guest;
  * 
  * author: ajm
  * created: 1/28/20
- * last modified: 5/24/20
+ * last modified: 5/25/20
  **/
 class Party
 {
 public:
     Party(Restaurant &, const std::vector<Guest const *> &, std::string); // main ctor
-    Party(Restaurant &, std::vector<Guest const *> *, std::string);       // for thread debugging
+    Party(Restaurant *, std::vector<Guest const *> *, std::string);       // for thread debugging
+
+    /**
+    * boots up the Party thread.
+    **/
     void init();
+
+    /**
+    * main thread of execution for Party.
+    **/
     void run();
+
+    /**
+    * used by parties to enter the restaurant.
+    */
     void enterRestaurant();
 
 private:
@@ -31,7 +43,7 @@ private:
     Status::Party status_;              ///< describes party state
     std::vector<Guest const *> guests_; ///< pointer can't change, but Guest can.
     Restaurant &theSpot_;               ///< where we're headed.
-    //need a socket object.
+    //need a socket object (?)
 };
 
 #endif // PARTY_H
