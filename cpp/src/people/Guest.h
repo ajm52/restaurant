@@ -8,18 +8,35 @@
  * 
  * author: ajm
  * created: 1/28/20
- * last modified: 2/3/20
+ * last modified: 5/25/20
  **/
 
 class Guest : public Person
 {
 public:
-    // ctors and copy control
+    /**
+     * default Guest ctor.
+     * @param id Guest id
+     */
     Guest(std::string id = "DEFAULT_GID") : Person(id) {}
-    Guest(const Guest &) = delete;
-    Guest &operator=(const Guest &) = delete;
+
+    /**
+     * copy ctor.
+     * @param g Guest to copy from.
+     */
+    Guest(const Guest &);
+
+    /**
+     * copy assignment operator.
+     * @param g Guest to copy from.
+     */
+    Guest &operator=(const Guest &);
+
+    /**
+     * destructor.
+     */
     ~Guest() {}
-    // no addtnl accessors needed
+
     // will eventually have methods for choosing food/drink
 };
 
