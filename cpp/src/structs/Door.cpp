@@ -27,7 +27,7 @@ void Door::signalEntry()
         if (p)
             comingIn_.pop();
     }
-    entrySlot_(foyer_, p);
+    entrySig_(foyer_, p);
 }
 
 void EntrySlot::operator()(Foyer f, Party *p)
@@ -35,8 +35,9 @@ void EntrySlot::operator()(Foyer f, Party *p)
     std::cout << "A party has entered the restaurant.\n";
     {
         std::lock_guard<std::mutex> lg(f.m_);
-        f.putParty(0, p); // will eventually need a method nextTableID().
-        }
+        f.putParty(0, p);     // will eventually need a method nextTableID().
+        f.signalWaiter(0, 0); // will also need a way to map TableIDs to WaiterIDs.
+    }
 }
 
 void ExitSlot::operator()()
