@@ -5,6 +5,7 @@
 #include <boost/signals2.hpp>
 #include <memory>
 #include <vector>
+#include <queue>
 #include <map>
 #include <mutex>
 
@@ -18,14 +19,22 @@ typedef boost::signals2::signal<void(Waiter *, unsigned)> NewPartySignal;
  * @description: Where parties wait to be seated.
  * @author ajm
  * @created: 2/6/20
- * @modified: 5/26/20
+ * @modified: 5/29/20
  **/
 struct Foyer
 {
     /**
      * @description: default constructor.
+     * @param tableCount # of tables in the restaurant.
      */
-    Foyer();
+    Foyer(int);
+
+    /**
+     * @description: removes and returns the ID of the next Table
+     * to have a Party.
+     * @returns the ID of the Table.
+     */
+    int getNextTableID();
 
     /**
      * @description: called from the Door's EntrySlot
@@ -53,6 +62,7 @@ struct Foyer
      * @description: place a party in the foyer.
      * @param id table # where the party should be seated.
      * @param pPtr a pointer to the party to be seated.
+     * @returns true if the Party was placed successfully, false otherwise.
      */
     bool putParty(int id, Party *pPtr);
 
@@ -64,14 +74,19 @@ struct Foyer
      */
     Party *removeParty(int id);
 
-    std::map<int, Party *> table_;                                 ///< map of <Table #, Party*> pairs
+    int tableCount_;                                               ///< # of restaurant tables.
+    std::queue<int> readyForSeating_;                              ///< table indices that are ready to be used.
+    std::map<int, Party *> toBeSeated_;                            ///< map of <Table #, Party*> pairs
     mutable std::mutex m_;                                         ///< foyer mutex.
     std::vector<std::shared_ptr<NewPartySignal>> newPartySignals_; ///< called when a Party needs seating.
     std::vector<Waiter *> *waiters_;                               ///< the restaurant waiters.
+
+private:
+    /**
+     * @description: builds the table ID queue.
+     * should only be called once when Foyer is first created.
+     */
+    void prepSeatingQueue();
 };
 
 #endif // FOYER_H
-
-/**
- * TODO: make Foyer threadsafe with mutex.
- */

@@ -5,10 +5,12 @@
 #include <boost/signals2.hpp>
 #include <queue>
 #include <mutex>
+#include <future>
 #include <sys/socket.h>
 
 class SimLoader;
 class Party;
+class Waiter;
 
 /**
  * @struct <code>EntrySlot</code>
@@ -27,7 +29,7 @@ struct EntrySlot
      * 
      * @note blocks until entry mutex is free.
      **/
-    void operator()(Foyer, Party *);
+    void operator()(Foyer *, Party *);
 };
 
 /**
@@ -61,7 +63,7 @@ public:
      * in a relatively safe manner.
      * @author ajm
      * @created: 3/4/20
-     * @modified: 5/26/20
+     * @modified: 5/29/20
      */
     class LoaderAccess
     {
@@ -116,17 +118,25 @@ public:
      **/
     inline std::queue<Party *> &getExitQueue() const { return goingOut_; }
 
+    /**
+     * @description: queues a Party for service while returning 
+     * access to their Waiter.
+     * @param p the Party that needs service.
+     * @returns the Waiter that will be servicing.
+     */
+    Waiter *queueForService(Party *);
+
 private:
-    mutable std::queue<Party *> comingIn_;                   ///< queue of incoming parties.
-    mutable std::queue<Party *> goingOut_;                   ///< queue of outgoing parties.
-    mutable std::mutex mIn_;                                 ///< synchronizes access to incoming queue.
-    mutable std::mutex mOut_;                                ///< synchronizes access to outgoing queue.
-    boost::signals2::signal<void(Foyer, Party *)> entrySig_; ///< entry signal.
-    boost::signals2::signal<void()> exitSig_;                ///< exit signal.
-    EntrySlot entrySlot_;                                    ///< entry callback.
-    ExitSlot exitSlot_;                                      ///< exit callback.
-    int fd_;                                                 ///< door fd; used to message waiters.
-    Foyer foyer_;                                            ///< where parties wait to be seated.
+    mutable std::queue<Party *> comingIn_;                     ///< queue of incoming parties.
+    mutable std::queue<Party *> goingOut_;                     ///< queue of outgoing parties.
+    mutable std::mutex mIn_;                                   ///< synchronizes access to incoming queue.
+    mutable std::mutex mOut_;                                  ///< synchronizes access to outgoing queue.
+    boost::signals2::signal<void(Foyer *, Party *)> entrySig_; ///< entry signal.
+    boost::signals2::signal<void()> exitSig_;                  ///< exit signal.
+    EntrySlot entrySlot_;                                      ///< entry callback.
+    ExitSlot exitSlot_;                                        ///< exit callback.
+    int fd_;                                                   ///< door fd; used to message waiters.
+    Foyer foyer_;                                              ///< where parties wait to be seated.
 };
 
 #endif // DOOR_H

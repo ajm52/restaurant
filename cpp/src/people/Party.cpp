@@ -1,11 +1,14 @@
 #include "Party.h"
+#include "Menu.h"
 #include "Guest.h"
 #include "Door.h"
+#include "Waiter.h"
+#include "Table.h"
 #include "Restaurant.h"
-
 #include <iostream>
 #include <queue>
 #include <mutex>
+#include <future>
 
 Party::Party(Restaurant &theSpot, const std::vector<Guest const *> &guests, std::string pid)
     : pid_(pid),
@@ -27,15 +30,17 @@ Party::Party(Restaurant *theSpot, std::vector<Guest const *> *guests = nullptr, 
 
 void Party::init()
 {
-    std::cout << "got here\n";
     std::thread t(&Party::run, this);
-    std::cout << "and here\n";
     t.join();
 }
 
 void Party::run()
 {
-    std::cout << "Hello\n";
+    std::cout << "Party#" << this->getPID() << " says hello.\n";
+    enterRestaurant();
+    Waiter *theWaiter;
+
+    std::future<Table *> theTable;
 }
 
 void Party::enterRestaurant()
@@ -46,5 +51,8 @@ void Party::enterRestaurant()
         std::queue<Party *> q = d->getEntryQueue();
         q.push(this);
     } // End critical section
-    d->signalEntry();
+}
+
+Waiter *Party::awaitService()
+{
 }

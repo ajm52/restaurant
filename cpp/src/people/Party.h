@@ -1,21 +1,21 @@
 #ifndef PARTY_H
 #define PARTY_H
 
+#include "Status.h"
 #include <vector>
 #include <thread>
 #include <string>
 
-#include "Status.h"
-
 class Restaurant;
 class Guest;
+class Waiter;
+class Table;
 
 /**
- * manages a group of guests.
- * 
- * author: ajm
- * created: 1/28/20
- * last modified: 5/25/20
+ * @description: Undergoes the Restaurant experience while managing a group of Guests.
+ * @author ajm
+ * @created: 1/28/20
+ * @modified: 5/26/20
  **/
 class Party
 {
@@ -38,11 +38,24 @@ public:
     */
     void enterRestaurant();
 
+    /**
+     * this method triggers an asynchronous callback 
+     * meant to queue this Party for table service.
+     * @returns a Waiter for this Party.
+     */
+    Waiter *awaitService();
+
+    /**
+     * accessor for this Party's identifier.
+     */
+    inline std::string getPID() { return pid_; }
+
 private:
     std::string pid_;                   ///< the party's unique identifier.
     Status::Party status_;              ///< describes party state
     std::vector<Guest const *> guests_; ///< pointer can't change, but Guest can.
     Restaurant &theSpot_;               ///< where we're headed.
+
     //need a socket object (?)
 };
 

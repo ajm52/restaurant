@@ -5,7 +5,29 @@
 #include <map>
 #include <mutex>
 
-Foyer::Foyer() : table_(), m_(), newPartySignals_(), waiters_() {}
+Foyer::Foyer(int tableCount)
+    : tableCount_(tableCount),
+      readyForSeating_(),
+      toBeSeated_(),
+      m_(),
+      newPartySignals_(),
+      waiters_()
+{
+    prepSeatingQueue();
+}
+
+void Foyer::prepSeatingQueue()
+{
+    for (unsigned i = 1; i <= tableCount_; ++i)
+        readyForSeating_.push(i);
+}
+
+int Foyer::getNextTableID()
+{
+    int id = readyForSeating_.front();
+    readyForSeating_.pop();
+    return id;
+}
 
 void Foyer::signalWaiter(unsigned wid, unsigned tid)
 {
@@ -34,10 +56,9 @@ void Foyer::initConnections()
 
 bool Foyer::putParty(int id, Party *pPtr)
 {
-    std::lock_guard<std::mutex> lg(m_); // lock before reading/modifying
-    if (table_.find(id) != table_.end())
+    if (toBeSeated_.find(id) != toBeSeated_.end())
         return false;
-    table_.insert(std::pair<int, Party *>(id, pPtr));
+    toBeSeated_.insert(std::pair<int, Party *>(id, pPtr));
     return true;
 }
 
@@ -45,11 +66,11 @@ Party *Foyer::removeParty(int id)
 {
     Party *ret = nullptr;
     std::lock_guard<std::mutex> lg(m_); // lock before reading/modifying
-    auto itr = table_.find(id);
-    if (itr != table_.end())
+    auto itr = toBeSeated_.find(id);
+    if (itr != toBeSeated_.end())
     {
         ret = (*itr).second;
-        table_.erase(id);
+        toBeSeated_.erase(id);
     }
     //unlock
     return ret;
