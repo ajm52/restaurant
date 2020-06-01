@@ -49,17 +49,34 @@ public:
     std::shared_ptr<std::vector<Job>> acquireAllJobs(unsigned);
 
     /**
+     * @description: checks a given job flag to see if there is 
+     * work to be done.
+     * @param index points to a specific job flag.
+     * @returns true if there is work to be done, false otherwise.
+     */
+    bool workToBeDone(unsigned);
+
+    /**
      * @description: Accessor method for a given condition variable.
      * @param index points to a particular condition variable.
-     * @returns a pointer to a given condition variable; return nullptr
+     * @returns a pointer to a given condition variable; returns nullptr
      * if the provided index is invalid.
      */
     std::condition_variable *getCV(unsigned);
+
+    /**
+     * @description: Accessor method for a given mutex.
+     * @param index points to a particular mutex.
+     * @returns a pointer to a given mutex; returns nullptr
+     * if the provided index is invalid.
+     */
+    std::mutex *getMutex(unsigned);
 
 private:
     std::vector<std::condition_variable> cvList_; ///< worker CVs
     std::vector<std::queue<Job>> jobQueues_;      ///< worker job queues
     mutable std::vector<std::mutex> mList_;       ///< job queue mutexes
+    std::vector<bool> jobFlags_;                  ///< job flags
 };
 #endif // JOBTABLE_H
 

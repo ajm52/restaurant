@@ -5,35 +5,20 @@
 #include "Worker.h"
 #include "Table.h"
 #include "Foyer.h"
-#include "Multiplexer.h"
+#include "JobTable.h"
+#include "Job.h"
+#include "OrderJob.h"
+#include "SeatingJob.h"
 #include <boost/signals2.hpp>
+#include <string>
 #include <vector>
-
-/**
-* @struct IncomingPartySlot
-* @description: callback used by Foyer to assign a waiting job to this Waiter.
-* @author ajm
-* @created: 5/26/20
-* @modified: 5/26/20
-**/
-struct IncomingPartySlot
-{
-    /**
-     * @description: callback for new waiting job assignment.
-     * notifies this Waiter that a Party is waiting to be seated
-     * in the Foyer.
-     * @param w the assigned Waiter.
-     * @param tID table where the Party shall be seated.
-     */
-    void operator()(Waiter *, unsigned);
-};
 
 /**
  * @class <code>Waiter</code>
  * @description: A restaurant waiter. Inherits from <code>Worker</code>.
  * @author ajm
  * @created: 2/19/20
- * @modified: 5/26/20
+ * @modified: 6/1/20
  */
 class Waiter : public Worker
 {
@@ -44,21 +29,9 @@ public:
      * @param fd waiter fd.
      * @param tables the tablespace.
      * @param foyer the foyer.
+     * @param jt the job table.
      */
-    Waiter(std::string, int, std::vector<Table> &, Foyer &);
-
-    /**
-     * @description: Registers waiter's main FD in Multiplexer.
-     * @returns true on success, false otherwise.
-     */
-    bool registerMainFD();
-
-    /**
-     * @description: Registers a party FD in Multiplexer.
-     * @param fd party fd to register.
-     * @returns true on success, false otherwise.
-     */
-    bool registerPartyFD(int);
+    Waiter(std::string, int, std::vector<Table> &, Foyer &, JobTable &);
 
     /**
      * @description: Used to seat Parties.
@@ -78,15 +51,48 @@ public:
     inline std::vector<Table> &getTablespace() { return tablespace_; }
 
     /**
-     * @description: Accessor for slot.
+     * @description: Accessor for the job table.
+     * @returns a reference to the restaurant job table.
      */
-    inline IncomingPartySlot &getSlot() { return slot_; }
+    inline JobTable &getJobTable() { return jobTable_; }
+
+    /**
+     * @description: Splits on '-', returning the second half 
+     * of this waiter's id.
+     * @returns the numeric half of this waiter's id.
+     */
+    const unsigned getIDNumber() const;
+
+    /**
+     * @description: job handler method for SeatingJobs.
+     * @param sj seating job that requires handling.
+     */
+    void handleJob(SeatingJob);
+
+    /**
+     * @description: job handler method for OrderJobs.
+     * @param oj order job that requires handling.
+     */
+    void handleJob(OrderJob);
+
+    /**
+     * @description: ensures that everything is prepared for run().
+     */
+    void init();
+
+    /**
+     * @description: the waiter thread's main course of action.
+     */
+    void run();
 
 private:
-    Multiplexer selector_;           ///< I/O multiplexer.
+    std::string wID_;                ///< this waiter's unique id.
     std::vector<Table> &tablespace_; ///< where parties are seated.
+    std::vector<Job> jobs_;          ///< the waiter's current jobs.
     Foyer &foyer_;                   ///< where Parties wait to be seated.
-    IncomingPartySlot slot_;         ///< called when a Party requires seating.
+    JobTable &jobTable_;             ///< used to acquire jobs.
+    std::condition_variable &cv_;    ///< this waiter's cv, pulled from the job table.
+    mutable std::mutex &m_;          ///< this waiter's mutex, pulled from the job table.
 };
 
 /**

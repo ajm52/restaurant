@@ -47,11 +47,29 @@ std::shared_ptr<std::vector<Job>> JobTable::acquireAllJobs(unsigned index)
     return std::make_shared<std::vector<Job>>(jobs);
 }
 
+bool JobTable::workToBeDone(unsigned index)
+{
+    if (index < jobQueues_.size() && !jobQueues_[index].empty())
+    {
+        return true;
+    }
+    return false;
+}
+
 std::condition_variable *JobTable::getCV(unsigned index)
 {
     if (index < cvList_.size())
     {
         return &cvList_[index];
+    }
+    return nullptr;
+}
+
+std::mutex *JobTable::getMutex(unsigned index)
+{
+    if (index < mList_.size())
+    {
+        return &mList_[index];
     }
     return nullptr;
 }
