@@ -3,6 +3,7 @@
 #include <vector>
 #include <mutex>
 #include <memory>
+#include <condition_variable>
 
 void JobTable::queueJob(unsigned index, Job job)
 {
@@ -44,4 +45,13 @@ std::shared_ptr<std::vector<Job>> JobTable::acquireAllJobs(unsigned index)
         } //end critical section
     }
     return std::make_shared<std::vector<Job>>(jobs);
+}
+
+std::condition_variable *JobTable::getCV(unsigned index)
+{
+    if (index < cvList_.size())
+    {
+        return &cvList_[index];
+    }
+    return nullptr;
 }

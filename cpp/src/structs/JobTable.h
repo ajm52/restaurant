@@ -20,7 +20,7 @@
  * 
  * @author ajm
  * @created: 5/29/20
- * @modified: 5/29/20
+ * @modified: 6/1/20
  */
 class JobTable
 {
@@ -47,6 +47,14 @@ public:
      * an empty list of there are no jobs to pull.
      */
     std::shared_ptr<std::vector<Job>> acquireAllJobs(unsigned);
+
+    /**
+     * @description: Accessor method for a given condition variable.
+     * @param index points to a particular condition variable.
+     * @returns a pointer to a given condition variable; return nullptr
+     * if the provided index is invalid.
+     */
+    std::condition_variable *getCV(unsigned);
 
 private:
     std::vector<std::condition_variable> cvList_; ///< worker CVs
