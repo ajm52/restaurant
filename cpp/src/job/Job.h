@@ -16,5 +16,10 @@
  */
 struct Job
 {
+    /**
+     * @description: virtual handler method to be implemented 
+     * by concrete Job structs.
+     */
+    virtual void handleJob() = 0;
 };
 #endif // JOB_H
