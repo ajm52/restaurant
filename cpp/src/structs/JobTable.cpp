@@ -3,15 +3,36 @@
 #include <vector>
 #include <mutex>
 #include <memory>
+#include <queue>
 #include <condition_variable>
 
-void JobTable::queueJob(unsigned index, Job job)
+JobTable::JobTable(unsigned numWaiters)
+    : numWaiters_(numWaiters)
+{
+    init();
+}
+
+void JobTable::init()
+{
+    for (int i = 1; i <= numWaiters_; ++i)
+    {
+        std::condition_variable<std::mutex> cv;
+        std::mutex m;
+        std::queue<Job> jobQ;
+        cvList_.push_back(cv);
+        jobQueues_.push_back(jobQ);
+        mList_.push_back(m);
+        jobFlags_.push_back(false);
+    }
+}
+
+void JobTable::queueJob(unsigned index, Job *job)
 {
     if (index >= mList_.size()) //TODO throw an exception here.
         return;
     { //begin critical section
         std::lock_guard<std::mutex> lg(mList_[index]);
-        jobQueues_[index].push(job);
+        jobQueues_[index].push(*job);
     } //end critical section
     cvList_[index].notify_one();
 }

@@ -26,11 +26,22 @@ class JobTable
 {
 public:
     /**
+     * @description: constructor.
+     * @param numWaiters # of restaurant waiters.
+     */
+    JobTable(unsigned);
+
+    /**
+     * @description: builds the job table.
+     */
+    void init();
+
+    /**
      * @description: queues a job into the appropriate job list.
      * @param index used to identify the correct job queue.
      * @param job the job to be queued.
      */
-    void queueJob(unsigned, Job);
+    void queueJob(unsigned, Job *);
 
     /**
      * @description: acquires a job from a given job queue.
@@ -73,6 +84,7 @@ public:
     std::mutex *getMutex(unsigned);
 
 private:
+    unsigned numWaiters_;                         ///< # of restaurant waiters
     std::vector<std::condition_variable> cvList_; ///< worker CVs
     std::vector<std::queue<Job>> jobQueues_;      ///< worker job queues
     mutable std::vector<std::mutex> mList_;       ///< job queue mutexes
