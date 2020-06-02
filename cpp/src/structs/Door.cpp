@@ -5,31 +5,39 @@
 #include <future>
 #include <iostream>
 
-Door::Door() : comingIn_(),
-               goingOut_(),
-               mIn_(),
-               mOut_(),
-               entrySig_(),
-               exitSig_(),
-               entrySlot_(),
-               exitSlot_(),
-               fd_(),
-               foyer_()
+Door::Door(Foyer &f) : comingIn_(),
+                       goingOut_(),
+                       mIn_(),
+                       mOut_(),
+                       foyer_(f)
 {
-    entrySig_.connect(entrySlot_);
-    exitSig_.connect(exitSlot_);
+    init();
 }
 
-void Door::signalEntry()
+Door::Door(const Door &d)
 {
-    Party *p;
-    {
-        std::lock_guard<std::mutex> lg(mIn_);
-        p = comingIn_.front();
-        if (p)
-            comingIn_.pop();
-    }
-    entrySig_(&foyer_, p);
+    if (this == &d)
+        return;
+    this->comingIn_ = d.comingIn_;
+    this->goingOut_ = d.goingOut_;
+    this->mIn_ = d.mIn_;
+    this->mOut_ = d.mOut_;
+    this->foyer_ = d.foyer_;
+}
+
+Door &Door::operator=(const Door &d)
+{
+    if (this == &d)
+        return *this;
+    this->comingIn_ = d.comingIn_;
+    this->goingOut_ = d.goingOut_;
+    this->mIn_ = d.mIn_;
+    this->mOut_ = d.mOut_;
+    this->foyer_ = d.foyer_;
+}
+
+void Door::init()
+{
 }
 
 Waiter *Door::queueForService(Party *p)
@@ -48,19 +56,4 @@ Waiter *Door::queueForService(Party *p)
         else
             return nullptr;
     } // end critical section
-}
-
-void EntrySlot::operator()(Foyer *f, Party *p)
-{
-    std::cout << "A party has entered the restaurant.\n";
-    {
-        std::lock_guard<std::mutex> lg(f->m_);
-        f->putParty(0, p);     // will eventually need a method nextTableID().
-        f->signalWaiter(0, 0); // will also need a way to map TableIDs to WaiterIDs.
-    }
-}
-
-void ExitSlot::operator()()
-{
-    std::cout << "left\n";
 }
