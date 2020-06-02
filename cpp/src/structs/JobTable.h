@@ -20,7 +20,7 @@
  * 
  * @author ajm
  * @created: 5/29/20
- * @modified: 6/1/20
+ * @modified: 6/2/20
  */
 class JobTable
 {

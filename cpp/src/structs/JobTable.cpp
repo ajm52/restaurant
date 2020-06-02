@@ -16,7 +16,7 @@ void JobTable::init()
 {
     for (int i = 1; i <= numWaiters_; ++i)
     {
-        std::condition_variable<std::mutex> cv;
+        std::condition_variable cv;
         std::mutex m;
         std::queue<Job> jobQ;
         cvList_.push_back(cv);
