@@ -3,7 +3,8 @@
 
 #include "Job.h"
 #include "Order.h"
-#include "Waiter.h"
+
+class Waiter;
 
 /**
  * @struct OrderJob
@@ -11,7 +12,7 @@
  * a restaurant order.
  * @author ajm
  * @created: 5/29/20
- * @modified: 6/1/20
+ * @modified: 6/2/20
  */
 struct OrderJob : public Job
 {
@@ -23,6 +24,6 @@ struct OrderJob : public Job
      * @param w the waiter responsible for completing 
      * this job.
      */
-    void handleJob(Waiter &);
+    void handleJob(Waiter *);
 };
 #endif // ORDERJOB_H
