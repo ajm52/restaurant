@@ -46,7 +46,7 @@ public:
         return id_;
     }
 
-private:
+protected:
     std::string id_; ///< A unique identifier. Consists of a letter and number.
 };
 

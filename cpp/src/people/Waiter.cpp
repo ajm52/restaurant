@@ -11,12 +11,16 @@
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
-Waiter::Waiter(std::string id, int fd, std::vector<Table> &tables, Foyer &foyer, JobTable &jt)
-    : Worker(fd, id),
+Waiter::Waiter(std::string id, std::vector<Table> &tables, Foyer &foyer, JobTable &jt)
+    : Worker(id),
       tablespace_(tables),
       foyer_(foyer),
-      jobTable_(jt)
+      jobTable_(jt),
+      cv_(nullptr),
+      m_(nullptr)
 {
+    cv_ = this->getJobTable().getCV(this->getIDNumber());
+    m_ = this->getJobTable().getMutex(this->getIDNumber());
     init();
 }
 
@@ -54,8 +58,8 @@ void Waiter::run()
     {
         if (jobTable_.workToBeDone(this->getIDNumber()))
         {
-            std::unique_lock<std::mutex> ul(this->m_);
-            this->cv_.wait(ul, [this] {
+            std::unique_lock<std::mutex> ul(*this->m_); //begin critical section
+            this->cv_->wait(ul, [this] {
                 return this->getJobTable().workToBeDone(this->getIDNumber());
             });
             std::shared_ptr<std::vector<Job>> jobs = this->getJobTable().acquireAllJobs(this->getIDNumber());
@@ -63,8 +67,12 @@ void Waiter::run()
             { // push all new jobs into current job vector.
                 jobs_.push_back(jobs.get()->at(i));
             }
+            ul.unlock(); // end critical section
+
             for (int i = 0; i < jobs_.size(); ++i)
             {
+                jobs_[i].handleJob(this);
+                std::this_thread::sleep_for(std::chrono::seconds(2));
                 // call handleJob(Job) here.
             }
         }

@@ -8,31 +8,21 @@
  * @description: A restaurant employee. Inherits from <code>Person</code>.
  * @author ajm
  * @created: 2/19/20
- * @modified: 3/4/20
+ * @modified: 6/2/20
  */
 class Worker : public Person
 {
 public:
     /**
      * @description: constructor.
-     * @param fd worker fd.
      * @param id worker id string.
      */
-    Worker(int fd = 0, std::string id = "DEFAULT_PID") : fd_(fd), Person(id) {}
+    Worker(std::string id = "DEFAULT_WID") : Person(id) {}
 
     /**
      * @description: destructor.
      */
     virtual ~Worker() = default;
-
-    /**
-     * @description: fd accessor.
-     * @returns worker's fd.
-     */
-    inline int getFD() const { return fd_; }
-
-private:
-    int fd_; ///< file descriptor.
 };
 
 /**
