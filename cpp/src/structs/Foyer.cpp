@@ -1,17 +1,18 @@
 #include "Foyer.h"
 #include "Waiter.h"
+#include "JobTable.h"
+#include "SeatingJob.h"
 #include <iterator>
 #include <vector>
 #include <map>
 #include <mutex>
 
-Foyer::Foyer(int tableCount)
+Foyer::Foyer(unsigned tableCount, JobTable &jobTable)
     : tableCount_(tableCount),
-      readyForSeating_(),
+      nextTableIDs_(),
       toBeSeated_(),
       m_(),
-      newPartySignals_(),
-      waiters_()
+      jobTable_(jobTable)
 {
     prepSeatingQueue();
 }
@@ -19,59 +20,49 @@ Foyer::Foyer(int tableCount)
 void Foyer::prepSeatingQueue()
 {
     for (unsigned i = 1; i <= tableCount_; ++i)
-        readyForSeating_.push(i);
+        nextTableIDs_.push(i);
 }
 
-int Foyer::getNextTableID()
+unsigned Foyer::getNextTableID()
 {
-    int id = readyForSeating_.front();
-    readyForSeating_.pop();
+    int id = nextTableIDs_.front();
+    nextTableIDs_.pop();
     return id;
 }
 
-void Foyer::signalWaiter(unsigned wid, unsigned tid)
-{
-    Waiter *w;
-    if (waiters_)
-    {
-        w = (*waiters_)[wid];
-        (*newPartySignals_[wid])(w, tid); // signal the appropriate Waiter by index.
-    }
-}
-
-void Foyer::assignWaiters(std::vector<Waiter *> &waiters)
-{
-    waiters_ = &waiters;
-}
-
-void Foyer::initConnections()
-{
-    for (int i = 0; i < waiters_->size(); ++i)
-    {
-        std::shared_ptr<NewPartySignal> sPtr(new NewPartySignal());
-        sPtr->connect((*waiters_)[i]->getSlot());
-        newPartySignals_.push_back(sPtr);
-    }
-}
-
-bool Foyer::putParty(int id, Party *pPtr)
+bool Foyer::putParty(unsigned id, Party *pPtr)
 {
     if (toBeSeated_.find(id) != toBeSeated_.end())
+    {
         return false;
-    toBeSeated_.insert(std::pair<int, Party *>(id, pPtr));
+    }
+    toBeSeated_.insert(std::pair<unsigned, Party *>(id, pPtr));
+    SeatingJob *job = new SeatingJob(id);
+
+    //TODO write a method that maps tIDs to wIDs.
+    //for now, we assume only one waiter.
+
+    unsigned wID = 1; //NOTE this is a magic constant!!!
+
+    { // begin critical section
+        std::lock_guard<std::mutex> lg(*jobTable_.getMutex(wID));
+        jobTable_.queueJob(wID, job);
+    } // end critical section
     return true;
 }
 
-Party *Foyer::removeParty(int id)
+Party *Foyer::removeParty(unsigned id)
 {
     Party *ret = nullptr;
-    std::lock_guard<std::mutex> lg(m_); // lock before reading/modifying
-    auto itr = toBeSeated_.find(id);
-    if (itr != toBeSeated_.end())
-    {
-        ret = (*itr).second;
-        toBeSeated_.erase(id);
-    }
-    //unlock
+    { // begin critical section
+        std::lock_guard<std::mutex> lg(m_);
+        auto itr = toBeSeated_.find(id);
+        if (itr != toBeSeated_.end())
+        {
+            ret = (*itr).second; //NOTE this might give us trouble...
+            toBeSeated_.erase(id);
+        }
+    } // end critical section
+
     return ret;
 }
