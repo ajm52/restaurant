@@ -5,6 +5,8 @@
 #include "Foyer.h"
 #include "Waiter.h"
 #include "WorkerBulletin.h"
+#include "JobTable.h"
+#include "Table.h"
 #include <vector>
 
 class SimLoader;
@@ -14,34 +16,18 @@ class SimLoader;
  * 
  * author: ajm
  * created: 2/6/20
- * last modified: 3/4/20
+ * last modified: 6/1/20
  **/
 class Restaurant
 {
 public:
     /**
-     * @class LoaderAccess
-     * @description: Allows SimLoader to configure a Restaurant
-     * with relative safety and modularity.
-     * @author ajm
-     * @created: 3/4/20
-     * @modified: 3/4/20
-     */
-    class LoaderAccess
-    {
-        /**
-         * @description: Assigns a given set of waiters to a given restaurant.
-         * @param r the restaurant.
-         * @param w the waiters.
-         */
-        static void assignWaiters(Restaurant *, std::vector<Waiter> &);
-        friend class SimLoader;
-    };
-    /**
      * @description: constructor.
-     * default initializes practically everything.
+     * @param tCount table count.
+     * @param wCount waiter count.
+     * @param pCount party count.
      */
-    Restaurant() : door_(), foyer_(), waiters_(), waiterBulletin_() {}
+    Restaurant(unsigned = 0, unsigned = 0, unsigned = 0);
 
     /**
      * @description: deleted copy constructor.
@@ -59,6 +45,29 @@ public:
      * @description: destructor.
      */
     ~Restaurant() {}
+
+    /**
+     * @description: initializes sim parameters.
+     */
+    void init();
+
+    /**
+     * @description: responsible for building 
+     * the restaurant's tables.
+     */
+    void buildTables();
+
+    /**
+     * @description: responsible for building
+     * the restaurant's waiters.
+     */
+    void buildWaiters();
+
+    /**
+     * @description: Accessor for # of tables in restaurant.
+     * @returns # of restaurant tables.
+     */
+    inline unsigned tableCount() { return tableCount_; }
 
     /**
      * @description: door accessor for const access.
@@ -81,17 +90,15 @@ public:
      */
     inline Foyer *getFoyer() { return &foyer_; }
 
-    /**
-     * @description: waiter bulletin accessor.
-     * @returns the waiter bulletin.
-     */
-    inline WorkerBulletin &getWaiterBulletin() { return waiterBulletin_; }
-
 private:
-    Door door_;                     ///< the door.
-    Foyer foyer_;                   ///< the foyer.
-    std::vector<Waiter> waiters_;   ///< waiter staff.
-    WorkerBulletin waiterBulletin_; ///< waiter bulletin.
+    unsigned tableCount_;         ///< # of tables in restaurant.
+    unsigned waiterCount_;        ///< # of waiters in restaurant.
+    unsigned partyCount_;         ///< # of parties in the simulation.
+    JobTable jobTable_;           ///< communication interface for waiters.
+    Foyer foyer_;                 ///< the foyer.
+    Door door_;                   ///< the door.
+    std::vector<Table> tables_;   ///< the restaurant's tables.
+    std::vector<Waiter> waiters_; ///< waiter staff.
 };
 
 #endif // RESTAURANT_H
