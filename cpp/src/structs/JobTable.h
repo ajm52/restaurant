@@ -29,7 +29,7 @@ public:
      * @description: constructor.
      * @param numWaiters # of restaurant waiters.
      */
-    JobTable(unsigned);
+    JobTable(unsigned = 0);
 
     /**
      * @description: builds the job table.

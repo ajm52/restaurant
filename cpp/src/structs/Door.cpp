@@ -5,11 +5,23 @@
 #include <future>
 #include <iostream>
 
-Door::Door(Foyer &f) : comingIn_(),
-                       goingOut_(),
-                       mIn_(),
-                       mOut_(),
-                       foyer_(f)
+Door::Door()
+    : comingIn_(),
+      goingOut_(),
+      mIn_(),
+      mOut_(),
+      cvIn_(),
+      cvOut_(),
+      foyer_() {}
+
+Door::Door(Foyer &f)
+    : comingIn_(),
+      goingOut_(),
+      mIn_(),
+      mOut_(),
+      cvIn_(),
+      cvOut_(),
+      foyer_(f)
 {
     init();
 }

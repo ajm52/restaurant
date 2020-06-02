@@ -2,10 +2,10 @@
 #define DOOR_H
 
 #include "Foyer.h"
-#include <boost/signals2.hpp>
 #include <queue>
 #include <mutex>
 #include <future>
+#include <condition_variable>
 #include <sys/socket.h>
 
 class Party;
@@ -21,6 +21,11 @@ class Waiter;
 class Door
 {
 public:
+    /**
+     * @description: default constructor.
+     */
+    Door();
+
     /**
      * @description: constructor.
      * @param f the restaurant foyer.
@@ -89,6 +94,8 @@ private:
     mutable std::queue<Party *> goingOut_; ///< queue of outgoing parties.
     mutable std::mutex mIn_;               ///< synchronizes access to incoming queue.
     mutable std::mutex mOut_;              ///< synchronizes access to outgoing queue.
+    std::condition_variable cvIn_;         ///< for parties coming in.
+    std::condition_variable cvOut_;        ///< for parties going out.
     Foyer &foyer_;                         ///< where parties wait to be seated.
 };
 

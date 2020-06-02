@@ -7,6 +7,13 @@
 #include <map>
 #include <mutex>
 
+Foyer::Foyer()
+    : tableCount_(0),
+      nextTableIDs_(),
+      toBeSeated_(),
+      m_(),
+      jobTable_() {}
+
 Foyer::Foyer(unsigned tableCount, JobTable &jobTable)
     : tableCount_(tableCount),
       nextTableIDs_(),
@@ -15,6 +22,30 @@ Foyer::Foyer(unsigned tableCount, JobTable &jobTable)
       jobTable_(jobTable)
 {
     prepSeatingQueue();
+}
+
+Foyer::Foyer(const Foyer &f)
+{
+    if (this != &f)
+    {
+        this->tableCount_ = f.tableCount_;
+        this->nextTableIDs_ = f.nextTableIDs_;
+        this->toBeSeated_ = f.toBeSeated_;
+        this->m_ = f.m_;
+        this->jobTable_ = f.jobTable_;
+    }
+}
+
+Foyer &Foyer::operator=(const Foyer &f)
+{
+    if (this == &f)
+        return;
+    this->tableCount_ = f.tableCount_;
+    this->nextTableIDs_ = f.nextTableIDs_;
+    this->toBeSeated_ = f.toBeSeated_;
+    this->m_ = f.m_;
+    this->jobTable_ = f.jobTable_;
+    return *this;
 }
 
 void Foyer::prepSeatingQueue()

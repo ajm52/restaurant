@@ -30,16 +30,16 @@ public:
     Restaurant(unsigned = 0, unsigned = 0, unsigned = 0);
 
     /**
-     * @description: deleted copy constructor.
-     * no reason to copy construct this class.
+     * @description: copy constructor.
+     * @param r restaurant we're copying from.
      */
-    Restaurant(const Restaurant &) = delete;
+    Restaurant(const Restaurant &);
 
     /**
-     * @description: deleted copy assignment operator.
-     * no reason to copy assign this class.
+     * @description: copy assignment operator.
+     * @param r restaurant we're copying from.
      */
-    Restaurant &operator=(const Restaurant &) = delete;
+    Restaurant &operator=(const Restaurant &);
 
     /**
      * @description: destructor.

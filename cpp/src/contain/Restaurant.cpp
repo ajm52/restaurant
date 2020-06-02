@@ -15,6 +15,32 @@ Restaurant::Restaurant(unsigned tCount, unsigned wCount, unsigned pCount)
     init();
 }
 
+Restaurant::Restaurant(const Restaurant &r)
+{
+    if (this != &r)
+    {
+        this->tableCount_ = r.tableCount_;
+        this->waiterCount_ = r.waiterCount_;
+        this->partyCount_ = r.partyCount_;
+        this->jobTable_ = r.jobTable_;
+        this->foyer_ = r.foyer_;
+        this->door_ = r.door_;
+    }
+}
+
+Restaurant &Restaurant::operator=(const Restaurant &r)
+{
+    if (this == &r)
+        return;
+    this->tableCount_ = r.tableCount_;
+    this->waiterCount_ = r.waiterCount_;
+    this->partyCount_ = r.partyCount_;
+    this->jobTable_ = r.jobTable_;
+    this->foyer_ = r.foyer_;
+    this->door_ = r.door_;
+    return *this;
+}
+
 void Restaurant::init()
 {
     buildTables(); // important that this is done first

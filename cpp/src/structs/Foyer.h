@@ -24,10 +24,27 @@ struct Foyer
 {
     /**
      * @description: default constructor.
+     */
+    Foyer();
+
+    /**
+     * @description: constructor.
      * @param tableCount # of tables in the restaurant.
      * @param jobTable restaurant's job table.
      */
-    Foyer(unsigned, JobTable &);
+    explicit Foyer(unsigned, JobTable &);
+
+    /**
+     * @description: copy constructor.
+     * @param f foyer we're copying from.
+     */
+    Foyer(const Foyer &);
+
+    /**
+     * @description: copy assignment operator.
+     * @param f foyer we're copying from.
+     */
+    Foyer &operator=(const Foyer &);
 
     /**
      * @description: removes and returns the ID of the next Table
