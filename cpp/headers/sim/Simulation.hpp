@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_set>
+#include <memory>
 
 /**
  * @class <code>Simulation</code>
@@ -38,7 +39,9 @@ public:
     /**
      * @description: destructor.
      **/
-    ~Simulation() {}
+    ~Simulation()
+    {
+    }
 
     /**
      * @description: Initializes and prepares data.
@@ -57,12 +60,12 @@ public:
     void buildSimParties(Restaurant &);
 
 private:
-    unsigned partyCount_;                  ///< max sim party count.
-    unsigned waiterCount_;                 ///< max sim waiter count.
-    unsigned tableCount_;                  ///< max sim table count.
-    std::vector<Party> simParties_;        ///< sim parties.
-    std::vector<unsigned> partiesInside_;  ///< IDs of parties inside restaurant.
-    std::vector<unsigned> partiesOutside_; ///< IDs of parties outside restaurant.
+    unsigned partyCount_;                              ///< max sim party count.
+    unsigned waiterCount_;                             ///< max sim waiter count.
+    unsigned tableCount_;                              ///< max sim table count.
+    std::unique_ptr<std::vector<Party *>> simParties_; ///< sim parties.
+    std::vector<unsigned> partiesInside_;              ///< IDs of parties inside restaurant.
+    std::vector<unsigned> partiesOutside_;             ///< IDs of parties outside restaurant.
 };
 
 #endif // SIMULATION_HPP

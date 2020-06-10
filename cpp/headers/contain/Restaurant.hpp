@@ -68,22 +68,22 @@ public:
      * @description: door accessor for const access.
      * @returns a const pointer to the door.
      */
-    inline Door const *getDoor() const
+    inline Door const &getDoor() const
     {
-        return static_cast<Door const *>(&door_);
+        return static_cast<Door const &>(door_);
     }
 
     /**
      * @description: door accessor for non-const access.
      * @returns a pointer to the door.
      */
-    inline Door *getDoor() { return &door_; }
+    inline Door &getDoor() { return door_; }
 
     /**
      * @description: foyer accessor.
      * @returns a pointer to the foyer.
      */
-    inline Foyer *getFoyer() { return &foyer_; }
+    inline Foyer &getFoyer() { return foyer_; }
 
 private:
     unsigned tableCount_;         ///< # of tables in restaurant.

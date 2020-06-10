@@ -1,6 +1,7 @@
 #ifndef PARTY_HPP
 #define PARTY_HPP
 
+#include "Restaurant.hpp"
 #include "Status.hpp"
 #include <vector>
 #include <thread>
@@ -53,18 +54,6 @@ public:
     Party(Restaurant &, unsigned, std::string);
 
     /**
-     * @description: copy constructor.
-     * @param p
-     */
-    Party(const Party &);
-
-    /**
-     * @description: copy assignment operator.
-     * @param p party we're copying from.
-     */
-    Party &operator=(const Party &);
-
-    /**
     * boots up the Party thread.
     **/
     void init();
@@ -93,19 +82,22 @@ public:
     /**
      * accessor for this Party's identifier.
      */
-    inline std::string getPID() { return pid_; }
+    std::string getPID() { return pid_; }
 
 private:
+    Restaurant &theRestaurant_;         ///< a reference to the restaurant.
+    mutable std::mutex m_;              ///< party's mutex.
+    std::condition_variable cv_;        ///< party's condition variable.
+    std::thread mthread_;               ///< party's thread.
     std::string pid_;                   ///< the party's unique identifier.
-    Status::Party status_;              ///< describes party state
     std::vector<Guest const *> guests_; ///< pointer can't change, but Guest can.
     Waiter *theWaiter_;                 ///< the waiter.
     Table *theTable_;                   ///< the table.
     Menu *theMenu_;                     ///< the menu.
-    Restaurant *theRestaurant_;         ///< the restaurant;
-    std::condition_variable cv_;        ///< party's condition variable.
-    mutable std::mutex m_;              ///< party's mutex.
     bool hasBeenServiced_;              ///< service flag.
+
+    Party(const Party &) = delete;
+    Party &operator=(const Party &) = delete;
 
     //need a socket object (?)
 };
