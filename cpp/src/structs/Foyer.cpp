@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <mutex>
+#include <memory>
 
 Foyer::Foyer()
     : tableCount_(0),
@@ -18,6 +19,29 @@ Foyer::Foyer(unsigned tableCount)
       m_()
 {
     prepSeatingQueue();
+}
+
+Foyer::Foyer(const Foyer &f)
+    : tableCount_(f.tableCount_),
+      nextTableIDs_(f.nextTableIDs_),
+      toBeSeated_(f.toBeSeated_),
+      m() {}
+
+Foyer &Foyer::operator=(const Foyer &f)
+{
+    if (this == &f)
+        return *this;
+    tableCount_ = f.tableCount_;
+    nextTableIDs_ = f.nextTableIDs_;
+    toBeSeated_ = f.toBeSeated_;
+    return *this;
+}
+
+Foyer::~Foyer()
+{
+    std::queue<unsigned> q;
+    nextTableIDs_.swap(q);
+    toBeSeated_.clear();
 }
 
 void Foyer::prepSeatingQueue()

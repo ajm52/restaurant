@@ -15,7 +15,34 @@ JobTable::JobTable(unsigned numWaiters)
       mMap_(),
       jobFlags_(numWaiters_, false) {}
 
-void JobTable::queueJob(unsigned index, Job *job)
+JobTable::JobTable(const JobTable &jt)
+    : numWaiters_(jt.numWaiters_),
+      cvMap_(jt.cvMap_),
+      jobQueues_(jt.jobQueues_),
+      mMap_(jt.mMap_),
+      jobFlags_(jt.jobFlags_) {}
+
+JobTable &JobTable::operator=(const JobTable &jt)
+{
+    if (this == &jt)
+        return *this;
+    numWaiters_ = jt.numWaiters_;
+    cvMap_ = jt.cvMap_;
+    jobQueues_ = jt.jobQueues_;
+    mMap_ = jt.mMap_;
+    jobFlags_ = jt.jobFlags_;
+    return *this;
+}
+
+JobTable::~JobTable()
+{
+    mMap_.clear();
+    cvMap_.clear();
+    jobQueues_.clear();
+    jobFlags_.clear();
+}
+
+void JobTable::queueJob(unsigned index, Job job)
 {
     if (index >= numWaiters_) //TODO throw an exception here.
         return;
@@ -26,11 +53,11 @@ void JobTable::queueJob(unsigned index, Job *job)
     //(*cvList_)[index]->notify_one();
 }
 
-Job *JobTable::acquireJob(unsigned index)
+Job JobTable::acquireJob(unsigned index)
 {
-    if (index >= numWaiters_ || jobQueues_[index].size() == 0) //TODO throw an exception here.
-        return nullptr;
-    Job *job;
+    assert(index < numWaiters_ && jobQueues_[index].size() > 0);
+
+    Job job;
     { //begin critical section
         std::lock_guard<std::mutex> lg(*(mMap_[index]));
         job = jobQueues_[index].front();
@@ -39,22 +66,22 @@ Job *JobTable::acquireJob(unsigned index)
     return job;
 }
 
-std::shared_ptr<std::vector<Job *>> JobTable::acquireAllJobs(unsigned index)
+std::shared_ptr<std::vector<Job>> JobTable::acquireAllJobs(unsigned index)
 {
-    std::vector<Job *> jobs;
+    std::vector<Job> jobs;
     if (index < numWaiters_ && jobQueues_[index].size() > 0)
     {
         { //begin critical section
             std::lock_guard<std::mutex> lg(*(mMap_[index]));
             while (!jobQueues_[index].empty())
             {
-                Job *j = jobQueues_[index].front();
+                Job j = jobQueues_[index].front();
                 jobQueues_[index].pop();
                 jobs.push_back(j);
             }
         } //end critical section
     }
-    return std::make_shared<std::vector<Job *>>(jobs);
+    return std::make_shared<std::vector<Job>>(jobs);
 }
 
 bool JobTable::workToBeDone(unsigned index)

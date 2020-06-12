@@ -59,6 +59,7 @@ Party &Party::operator=(Party &&p)
     theTable_ = std::move(p.theTable_);
     theMenu_ = std::move(p.theMenu_);
     hasBeenServiced_ = p.hasBeenServiced_;
+    return *this;
 }
 
 void Party::init()
@@ -88,7 +89,7 @@ void Party::enterRestaurant()
             }
             catch (const std::exception &e)
             {
-                std::cerr << e.what() << '; trying again in 3 seconds.\n';
+                std::cerr << e.what() << "; trying again in 3 seconds.\n";
                 std::this_thread::sleep_for(std::chrono::seconds(3));
             }
         }

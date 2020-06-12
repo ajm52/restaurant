@@ -8,6 +8,17 @@
 Menu::Menu(std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> &opts)
     : options_(opts) {}
 
+Menu::Menu(const Menu &m)
+    : options_(m.options_) {}
+
+Menu &Menu::operator=(const Menu &m)
+{
+    if (this == &m)
+        return *this;
+    options_ = m.options_;
+    return *this;
+}
+
 std::string Menu::selectOption(char entryType)
 {
     // num calculation can be improved using a generic template approach.

@@ -32,12 +32,12 @@ public:
      * @description: deleted copy constructor.
      * The restaurant only has one <code>Menu</code>, which is shared amongst workers and guests.
      **/
-    Menu(const Menu &) = default;
+    Menu(const Menu &);
 
     /**
      * @description: deleted copy assignment operator.
      **/
-    Menu &operator=(const Menu &) = default;
+    Menu &operator=(const Menu &);
 
     /**
      * @description: selects a <code>Menu</code> option at random.
@@ -72,7 +72,7 @@ public:
     const unsigned countOptions(char) const;
 
 private:
-    const std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> options_; ///< a table of <code>Menu</code> options.
+    std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> options_; ///< a table of <code>Menu</code> options.
 };
 
 /**

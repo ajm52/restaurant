@@ -25,6 +25,7 @@ Door &Door::operator=(const Door &d)
     swapper = d.goingOut_;
     goingOut_.swap(swapper);
     outside_.assign(d.outside_.begin(), d.outside_.end());
+    return *this;
 }
 
 Door::Door(Door &&d)
