@@ -2,11 +2,30 @@
 #include <mutex>
 
 Door::Door()
-    : comingIn_(),
-      goingOut_(),
-      mIn_(),
+    : mIn_(),
       mOut_(),
+      comingIn_(),
+      goingOut_(),
       cv_() {}
+
+Door::Door(const Door &d)
+    : mIn_(),
+      mOut_(),
+      comingIn_(d.comingIn_),
+      goingOut_(d.goingOut_),
+      cv_(),
+      outside_(d.outside_) {}
+
+Door &Door::operator=(const Door &d)
+{
+    if (this == &d)
+        return *this;
+    std::queue<std::shared_ptr<Party>> swapper(d.comingIn_);
+    comingIn_.swap(swapper);
+    swapper = d.goingOut_;
+    goingOut_.swap(swapper);
+    outside_.assign(d.outside_.begin(), d.outside_.end());
+}
 
 Door::Door(Door &&d)
     : mIn_(), mOut_(), cv_()

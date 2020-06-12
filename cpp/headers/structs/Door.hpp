@@ -32,8 +32,18 @@ public:
      */
     Door();
 
-    Door(const Door &) = default;
-    Door &operator=(const Door &) = default;
+    /**
+     * @description: copy constructor.
+     * @param d door we're copying
+     */
+    Door(const Door &);
+
+    /**
+     * @description: copy assignment operator.
+     * @param d door we're copying
+     * @returns a reference to this door.
+     */
+    Door &operator=(const Door &);
 
     /**
      * @description: move constructor.
