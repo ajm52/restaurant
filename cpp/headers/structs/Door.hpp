@@ -32,6 +32,9 @@ public:
      */
     Door();
 
+    Door(const Door &) = default;
+    Door &operator=(const Door &) = default;
+
     /**
      * @description: move constructor.
      * @param d door object we are moving.
@@ -48,7 +51,7 @@ public:
     /**
      * @description: destructor.
      **/
-    ~Door() {}
+    ~Door() = default;
 
     /**
      * @description: initializes member data accordingly.
@@ -71,26 +74,23 @@ public:
      * @description: accessor to entry queue.
      * @note blocks until entry mutex is free.
      **/
-    inline std::queue<Party *> &getEntryQueue() const { return comingIn_; }
+    inline std::queue<std::shared_ptr<Party>> &getEntryQueue() { return comingIn_; }
 
     /**
      * @description: accessor to exit queue.
      * @note blocks until exit mutex is free.
      **/
-    inline std::queue<Party *> &getExitQueue() const { return goingOut_; }
+    inline std::queue<std::shared_ptr<Party>> &getExitQueue() { return goingOut_; }
 
     inline std::condition_variable &getCV() { return cv_; }
 
 private:
-    mutable std::mutex mIn_;               ///< synchronizes access to incoming queue.
-    mutable std::mutex mOut_;              ///< synchronizes access to outgoing queue.
-    mutable std::queue<Party *> comingIn_; ///< queue of incoming parties.
-    mutable std::queue<Party *> goingOut_; ///< queue of outgoing parties.
-    std::condition_variable cv_;           ///< for parties going in and out (waited on by doorman)
-    std::vector<Party *> outside_;         ///< parties that are not in the restaurant.
-
-    Door(const Door &) = default;
-    Door &operator=(const Door &) = default;
+    mutable std::mutex mIn_;                      ///< synchronizes access to incoming queue.
+    mutable std::mutex mOut_;                     ///< synchronizes access to outgoing queue.
+    std::queue<std::shared_ptr<Party>> comingIn_; ///< queue of incoming parties.
+    std::queue<std::shared_ptr<Party>> goingOut_; ///< queue of outgoing parties.
+    std::condition_variable cv_;                  ///< for parties going in and out (waited on by doorman)
+    std::vector<std::shared_ptr<Party>> outside_; ///< parties that are not in the restaurant.
 };
 
 #endif // DOOR_HPP

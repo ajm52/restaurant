@@ -6,6 +6,7 @@
 #include "JobTable.hpp"
 #include <string>
 #include <vector>
+#include <memory>
 
 struct Job;
 struct OrderJob;
@@ -29,7 +30,11 @@ public:
      * @param foyer the foyer.
      * @param jt the job table.
      */
-    Waiter(std::string, std::vector<Table> &, Foyer &, JobTable &);
+    Waiter(std::string, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &);
+
+    Waiter(Waiter &&);
+
+    Waiter &operator=(Waiter &&);
 
     /**
      * @description: Used to seat Parties.
@@ -46,7 +51,7 @@ public:
     /**
      * @description: Accessor for tablespace.
      */
-    inline std::vector<Table> &getTablespace() { return tablespace_; }
+    inline std::vector<std::shared_ptr<Table>> &getTablespace() { return tablespace_; }
 
     /**
      * @description: Accessor for the job table.
@@ -88,14 +93,20 @@ public:
     void handleJob(OrderJob *);
 
 private:
-    std::string wID_;                ///< this waiter's unique id.
-    std::vector<Table> &tablespace_; ///< where parties are seated.
-    std::vector<Job *> jobs_;        ///< the waiter's current jobs.
-    Foyer *foyer_;                   ///< where Parties wait to be seated.
-    JobTable &jobTable_;             ///< used to acquire jobs.
-    std::condition_variable *cv_;    ///< this waiter's cv, pulled from the job table.
-    mutable std::mutex *m_;          ///< this waiter's mutex, pulled from the job table.
+    std::string wID_;                                 ///< this waiter's unique id.
+    std::vector<std::shared_ptr<Table>> &tablespace_; ///< where parties are seated.
+    std::vector<Job *> jobs_;                         ///< the waiter's current jobs.
+    Foyer *foyer_;                                    ///< where Parties wait to be seated.
+    JobTable &jobTable_;                              ///< used to acquire jobs.
+    std::condition_variable &cv_;                     ///< this waiter's cv, pulled from the job table.
+    std::mutex &m_;                                   ///< this waiter's mutex, pulled from the job table.
+
+    Waiter(const Waiter &) = delete;
+    Waiter &operator=(const Waiter &) = delete;
 };
+
+//TODO change ordering of variables (cv and m at top)
+//TODO swap raw ptrs with smart ptrs
 
 /**
  * waiter read FDs:

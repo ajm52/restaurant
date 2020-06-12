@@ -1,8 +1,10 @@
-#include "Table.h"
+#include "Table.hpp"
+#include "Party.hpp"
 
-Table::Table(int id) : id_(id)
-{
-}
+Table::Table(int id)
+    : isOccupied_(false),
+      id_(id),
+      party_(nullptr) {}
 
 bool Table::WaiterAccess::setParty(Table *t, Party *p)
 {

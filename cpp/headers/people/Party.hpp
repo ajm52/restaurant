@@ -9,6 +9,7 @@
 #include <future>
 #include <condition_variable>
 #include <mutex>
+#include <memory>
 
 class Restaurant;
 class Guest;
@@ -28,18 +29,18 @@ class Party
 public:
     class WaiterAccess
     {
-        inline static void setWaiter(Party *p, Waiter *w)
-        {
-            p->theWaiter_ = w;
-        }
-        inline static void setTable(Party *p, Table *t)
-        {
-            p->theTable_ = t;
-        }
-        inline static void setMenu(Party *p, Menu *m)
-        {
-            p->theMenu_ = m;
-        }
+        // inline static void setWaiter(Party *p, Waiter *w)
+        // {
+        //     p->theWaiter_ = std::make_shared<Waiter>(std::move(w));
+        // }
+        // inline static void setTable(Party *p, Table *t)
+        // {
+        //     p->theTable_ = std::make_shared<Table>(std::move(t));
+        // }
+        // inline static void setMenu(Party *p, Menu *m)
+        // {
+        //     p->theMenu_ = std::make_shared<Menu>(std::move(m));
+        // }
         static void signalServiceStarted(Party *);
 
         friend class Waiter;
@@ -52,6 +53,12 @@ public:
      * @param pid the party's unique ID.
      */
     Party(Restaurant &, unsigned, std::string);
+
+    Party(Party &&);
+
+    Party &operator=(Party &&);
+
+    ~Party() = default;
 
     /**
     * boots up the Party thread.
@@ -82,7 +89,9 @@ public:
     /**
      * accessor for this Party's identifier.
      */
-    std::string getPID() { return pid_; }
+    inline std::string &getPID() { return pid_; }
+
+    static std::shared_ptr<Party> makeParty(Restaurant &, unsigned, std::string);
 
 private:
     Restaurant &theRestaurant_;         ///< a reference to the restaurant.
@@ -91,9 +100,9 @@ private:
     std::thread mthread_;               ///< party's thread.
     std::string pid_;                   ///< the party's unique identifier.
     std::vector<Guest const *> guests_; ///< pointer can't change, but Guest can.
-    Waiter *theWaiter_;                 ///< the waiter.
-    Table *theTable_;                   ///< the table.
-    Menu *theMenu_;                     ///< the menu.
+    std::shared_ptr<Waiter> theWaiter_; ///< the waiter.
+    std::shared_ptr<Table> theTable_;   ///< the table.
+    std::shared_ptr<Menu> theMenu_;     ///< the menu.
     bool hasBeenServiced_;              ///< service flag.
 
     Party(const Party &) = delete;

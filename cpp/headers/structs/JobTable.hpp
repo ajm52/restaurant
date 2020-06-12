@@ -6,6 +6,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <memory>
+#include <map>
 
 struct Job;
 
@@ -31,6 +32,14 @@ public:
      * @param numWaiters # of restaurant waiters.
      */
     JobTable(unsigned = 0);
+
+    ~JobTable()
+    {
+        mMap_.clear();
+        cvMap_.clear();
+        jobQueues_.clear();
+        jobFlags_.clear();
+    }
 
     /**
      * @description: move constructor.
@@ -81,7 +90,7 @@ public:
      * @returns a pointer to a given condition variable; returns nullptr
      * if the provided index is invalid.
      */
-    std::condition_variable *getCV(unsigned);
+    std::shared_ptr<std::condition_variable> getCV(unsigned);
 
     /**
      * @description: Accessor method for a given mutex.
@@ -89,18 +98,20 @@ public:
      * @returns a pointer to a given mutex; returns nullptr
      * if the provided index is invalid.
      */
-    std::mutex *getMutex(unsigned);
+    std::shared_ptr<std::mutex> getMutex(unsigned);
 
 private:
-    unsigned numWaiters_;                                          ///< # of restaurant waiters
-    std::unique_ptr<std::vector<std::condition_variable>> cvList_; ///< worker CVs
-    std::vector<std::queue<Job *>> jobQueues_;                     ///< worker job queues
-    mutable std::unique_ptr<std::vector<std::mutex>> mList_;       ///< job queue mutexes
-    std::vector<bool> jobFlags_;                                   ///< job flags
+    unsigned numWaiters_;                                                ///< # of restaurant waiters
+    std::map<unsigned, std::shared_ptr<std::condition_variable>> cvMap_; ///< worker CVs
+    std::vector<std::queue<Job *>> jobQueues_;                           ///< worker job queues
+    std::map<unsigned, std::shared_ptr<std::mutex>> mMap_;               ///< job queue mutexes
+    std::vector<bool> jobFlags_;                                         ///< job flags
 };
 #endif // JOBTABLE_HPP
 
 /**
  * TODO write methods validateJobQueueSize(unsigned) and validateIndex(unsigned)
  * to eliminate repeated code.
+ * 
+ * TODO change jobQ to work with smart ptrs of Jobs.
  */

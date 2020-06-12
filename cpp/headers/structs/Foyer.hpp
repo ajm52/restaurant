@@ -23,6 +23,13 @@ struct Foyer
      */
     Foyer();
 
+    ~Foyer()
+    {
+        std::queue<unsigned> q;
+        nextTableIDs_.swap(q);
+        toBeSeated_.clear();
+    }
+
     /**
      * @description: constructor.
      * @param tableCount # of tables in the restaurant.

@@ -1,5 +1,5 @@
-#include "Restaurant.h"
-#include "Waiter.h"
+#include "Restaurant.hpp"
+#include "Waiter.hpp"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -9,36 +9,9 @@ Restaurant::Restaurant(unsigned tCount, unsigned wCount, unsigned pCount)
       waiterCount_(wCount),
       partyCount_(pCount),
       jobTable_(wCount),
-      foyer_(tCount, jobTable_),
-      door_(foyer_)
+      foyer_(tCount),
+      door_()
 {
-    init();
-}
-
-Restaurant::Restaurant(const Restaurant &r)
-{
-    if (this != &r)
-    {
-        this->tableCount_ = r.tableCount_;
-        this->waiterCount_ = r.waiterCount_;
-        this->partyCount_ = r.partyCount_;
-        this->jobTable_ = r.jobTable_;
-        this->foyer_ = r.foyer_;
-        this->door_ = r.door_;
-    }
-}
-
-Restaurant &Restaurant::operator=(const Restaurant &r)
-{
-    if (this == &r)
-        return;
-    this->tableCount_ = r.tableCount_;
-    this->waiterCount_ = r.waiterCount_;
-    this->partyCount_ = r.partyCount_;
-    this->jobTable_ = r.jobTable_;
-    this->foyer_ = r.foyer_;
-    this->door_ = r.door_;
-    return *this;
 }
 
 void Restaurant::init()
@@ -49,18 +22,20 @@ void Restaurant::init()
 
 void Restaurant::buildTables()
 {
+    std::cout << "building tables...";
     for (int i = 1; i <= tableCount_; ++i)
     {
-        Table t(i);
-        tables_.push_back(t);
+        tables_.push_back(std::make_shared<Table>(i));
     }
+    std::cout << " done.\n";
 }
 
 void Restaurant::buildWaiters()
 {
+    std::cout << "building waiters...";
     for (int i = 1; i <= waiterCount_; ++i)
     {
-        Waiter w("W-" + std::to_string(i), tables_, foyer_, jobTable_);
-        waiters_.push_back(w);
+        waiters_.push_back(std::make_shared<Waiter>("W-" + std::to_string(i), tables_, foyer_, jobTable_));
     }
+    std::cout << " done.\n";
 }

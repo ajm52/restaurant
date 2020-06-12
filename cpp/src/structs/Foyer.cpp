@@ -1,7 +1,5 @@
-#include "Foyer.h"
-#include "Waiter.h"
-#include "JobTable.h"
-#include "SeatingJob.h"
+#include "Foyer.hpp"
+#include "Waiter.hpp"
 #include <iterator>
 #include <vector>
 #include <map>
@@ -11,41 +9,15 @@ Foyer::Foyer()
     : tableCount_(0),
       nextTableIDs_(),
       toBeSeated_(),
-      m_(),
-      jobTable_() {}
+      m_() {}
 
-Foyer::Foyer(unsigned tableCount, JobTable &jobTable)
+Foyer::Foyer(unsigned tableCount)
     : tableCount_(tableCount),
       nextTableIDs_(),
       toBeSeated_(),
-      m_(),
-      jobTable_(jobTable)
+      m_()
 {
     prepSeatingQueue();
-}
-
-Foyer::Foyer(const Foyer &f)
-{
-    if (this != &f)
-    {
-        this->tableCount_ = f.tableCount_;
-        this->nextTableIDs_ = f.nextTableIDs_;
-        this->toBeSeated_ = f.toBeSeated_;
-        this->m_ = f.m_;
-        this->jobTable_ = f.jobTable_;
-    }
-}
-
-Foyer &Foyer::operator=(const Foyer &f)
-{
-    if (this == &f)
-        return;
-    this->tableCount_ = f.tableCount_;
-    this->nextTableIDs_ = f.nextTableIDs_;
-    this->toBeSeated_ = f.toBeSeated_;
-    this->m_ = f.m_;
-    this->jobTable_ = f.jobTable_;
-    return *this;
 }
 
 void Foyer::prepSeatingQueue()
@@ -61,25 +33,13 @@ unsigned Foyer::getNextTableID()
     return id;
 }
 
-bool Foyer::putParty(unsigned id, Party *pPtr)
+void Foyer::putParty(unsigned id, Party *pPtr)
 {
-    if (toBeSeated_.find(id) != toBeSeated_.end())
-    {
-        return false;
-    }
-    toBeSeated_.insert(std::pair<unsigned, Party *>(id, pPtr));
-    SeatingJob *job = new SeatingJob(id);
-
-    //TODO write a method that maps tIDs to wIDs.
-    //for now, we assume only one waiter.
-
-    unsigned wID = 1; //NOTE this is a magic constant!!!
 
     { // begin critical section
-        std::lock_guard<std::mutex> lg(*jobTable_.getMutex(wID));
-        jobTable_.queueJob(wID, job);
+        std::lock_guard<std::mutex> lg(m_);
+        toBeSeated_.insert(std::pair<unsigned, Party *>(id, pPtr));
     } // end critical section
-    return true;
 }
 
 Party *Foyer::removeParty(unsigned id)

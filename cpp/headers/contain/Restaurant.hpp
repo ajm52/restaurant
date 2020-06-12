@@ -7,6 +7,7 @@
 #include "JobTable.hpp"
 #include "Table.hpp"
 #include <vector>
+#include <memory>
 
 /**
  * Contains all the elements of a restaurant emulation.
@@ -29,17 +30,7 @@ public:
     /**
      * @description: destructor.
      */
-    ~Restaurant()
-    {
-        for (int i = 0; i < tables_.size(); ++i)
-        {
-            delete &tables_[i];
-        }
-        for (int i = 0; i < waiters_.size(); ++i) //NOTE will need to join on the waiter threads.
-        {
-            delete &waiters_[i];
-        }
-    }
+    ~Restaurant() = default;
 
     /**
      * @description: initializes sim parameters.
@@ -86,14 +77,14 @@ public:
     inline Foyer &getFoyer() { return foyer_; }
 
 private:
-    unsigned tableCount_;         ///< # of tables in restaurant.
-    unsigned waiterCount_;        ///< # of waiters in restaurant.
-    unsigned partyCount_;         ///< # of parties in the simulation.
-    JobTable jobTable_;           ///< communication interface for waiters.
-    Foyer foyer_;                 ///< the foyer.
-    Door door_;                   ///< the door.
-    std::vector<Table> tables_;   ///< the restaurant's tables.
-    std::vector<Waiter> waiters_; ///< waiter staff.
+    unsigned tableCount_;                          ///< # of tables in restaurant.
+    unsigned waiterCount_;                         ///< # of waiters in restaurant.
+    unsigned partyCount_;                          ///< # of parties in the simulation.
+    JobTable jobTable_;                            ///< communication interface for waiters.
+    Foyer foyer_;                                  ///< the foyer.
+    Door door_;                                    ///< the door.
+    std::vector<std::shared_ptr<Table>> tables_;   ///< the restaurant's tables.
+    std::vector<std::shared_ptr<Waiter>> waiters_; ///< waiter staff.
 
     /**
      * @description: copy constructor.

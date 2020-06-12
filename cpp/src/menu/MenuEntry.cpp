@@ -1,4 +1,4 @@
-#include "MenuEntry.h"
+#include "MenuEntry.hpp"
 
 MenuEntry::MenuEntry(const MenuEntry &me) : name_(me.name_),
                                             prepTime_(me.prepTime_) {}

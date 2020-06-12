@@ -1,6 +1,6 @@
-#include "WorkerBulletin.h"
-#include "WorkerNode.h"
-#include "MinHeap.h"
+#include "WorkerBulletin.hpp"
+#include "WorkerNode.hpp"
+#include "MinHeap.hpp"
 #include <utility>
 #include <algorithm>
 #include <vector>
@@ -20,7 +20,7 @@ void WorkerBulletin::correctHeapIndices(std::map<WorkerNode, int> changes)
 
 void WorkerBulletin::registerWorker(Worker w)
 {
-    workerFDs_[w.getId()] = w.getFD();
+    //workerFDs_[w.getId()] = w.getFD();
     std::map<WorkerNode, int> changes = minHeap_.insert(*(new WorkerNode(w.getId())));
     correctHeapIndices(changes);
 }

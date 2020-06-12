@@ -1,4 +1,4 @@
-#include "Guest.h"
+#include "Guest.hpp"
 
 Guest::Guest(const Guest &g) : Person(g.getId()) {}
 

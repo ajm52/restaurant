@@ -28,20 +28,18 @@ public:
      * @description: copy constructor.
      * @note deleted; simulations should not be copied.
      **/
-    Simulation(const Simulation &) = delete;
+    Simulation(const Simulation &) = default;
 
     /**
      * @description: copy assignment operator.
      * @note deleted; simulations should not be copied.
      **/
-    Simulation &operator=(const Simulation &) = delete;
+    Simulation &operator=(const Simulation &) = default;
 
     /**
      * @description: destructor.
      **/
-    ~Simulation()
-    {
-    }
+    ~Simulation() = default;
 
     /**
      * @description: Initializes and prepares data.
@@ -60,12 +58,12 @@ public:
     void buildSimParties(Restaurant &);
 
 private:
-    unsigned partyCount_;                              ///< max sim party count.
-    unsigned waiterCount_;                             ///< max sim waiter count.
-    unsigned tableCount_;                              ///< max sim table count.
-    std::unique_ptr<std::vector<Party *>> simParties_; ///< sim parties.
-    std::vector<unsigned> partiesInside_;              ///< IDs of parties inside restaurant.
-    std::vector<unsigned> partiesOutside_;             ///< IDs of parties outside restaurant.
+    unsigned partyCount_;                            ///< max sim party count.
+    unsigned waiterCount_;                           ///< max sim waiter count.
+    unsigned tableCount_;                            ///< max sim table count.
+    std::vector<std::shared_ptr<Party>> simParties_; ///< sim parties.
+    std::vector<unsigned> partiesInside_;            ///< IDs of parties inside restaurant.
+    std::vector<unsigned> partiesOutside_;           ///< IDs of parties outside restaurant.
 };
 
 #endif // SIMULATION_HPP

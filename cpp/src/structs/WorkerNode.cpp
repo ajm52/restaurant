@@ -1,4 +1,4 @@
-#include "WorkerNode.h"
+#include "WorkerNode.hpp"
 #include <ostream>
 #include <string>
 

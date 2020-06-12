@@ -1,4 +1,4 @@
-#include "MenuEntryKey.h"
+#include "MenuEntryKey.hpp"
 #include <ostream>
 
 MenuEntryKey::MenuEntryKey(const MenuEntryKey &mek) : type_(mek.type_), num_(mek.num_) {}

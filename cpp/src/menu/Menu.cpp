@@ -1,13 +1,12 @@
-#include "MenuEntryKey.h"
-#include "MenuEntry.h"
-#include "Menu.h"
+#include "Menu.hpp"
+#include "MenuEntry.hpp"
+#include "MenuEntryKey.hpp"
+#include "MenuEntryKeyComparator.hpp"
+#include <map>
+#include <string>
 
-bool MenuEntryKeyComparator::operator()(const MenuEntryKey &lhs, const MenuEntryKey &rhs) const
-{
-    if (lhs.getType() == rhs.getType())
-        return lhs.getNum() < rhs.getNum();
-    return lhs.getType() < rhs.getType();
-}
+Menu::Menu(std::map<MenuEntryKey, MenuEntry, MenuEntryKeyComparator> &opts)
+    : options_(opts) {}
 
 std::string Menu::selectOption(char entryType)
 {
