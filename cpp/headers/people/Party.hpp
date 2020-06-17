@@ -2,7 +2,6 @@
 #define PARTY_HPP
 
 #include "Restaurant.hpp"
-#include "Status.hpp"
 #include <vector>
 #include <thread>
 #include <string>
@@ -11,7 +10,6 @@
 #include <mutex>
 #include <memory>
 
-class Restaurant;
 class Guest;
 class Waiter;
 class Table;
@@ -21,27 +19,53 @@ class Menu;
  * @class Party
  * @description: Undergoes the Restaurant experience while managing a group of Guests.
  * @author ajm
- * @created: 1/28/20
- * @modified: 6/2/20
  **/
 class Party
 {
 public:
+    /**
+     * @class WaiterAccess
+     * @description: used to give Waiters relatively safe access to specific Party member data.
+     * @author ajm
+     */
     class WaiterAccess
     {
-        // inline static void setWaiter(Party *p, Waiter *w)
-        // {
-        //     p->theWaiter_ = std::make_shared<Waiter>(std::move(w));
-        // }
-        // inline static void setTable(Party *p, Table *t)
-        // {
-        //     p->theTable_ = std::make_shared<Table>(std::move(t));
-        // }
-        // inline static void setMenu(Party *p, Menu *m)
-        // {
-        //     p->theMenu_ = std::make_shared<Menu>(std::move(m));
-        // }
-        static void signalServiceStarted(Party *);
+
+        /**
+         * @description: used by Waiters to tell Parties who their Waiter is.
+         * @param p party.
+         * @param w waiter.
+         */
+        inline static void setWaiter(std::shared_ptr<Party> p, std::shared_ptr<Waiter> w)
+        {
+            p->theWaiter_ = w;
+        }
+
+        /**
+         * @description: used by Waiters to provide Tables for Parties.
+         * @param p table receiver.
+         * @param t restaurant table.
+         */
+        inline static void setTable(std::shared_ptr<Party> p, std::shared_ptr<Table> t)
+        {
+            p->theTable_ = t;
+        }
+
+        /**
+         * @description: used by Waiters to provide Menus for Parties
+         * @param p menu receiver.
+         * @param m restaurant menu.
+         */
+        inline static void setMenu(std::shared_ptr<Party> p, std::shared_ptr<Menu> m)
+        {
+            p->theMenu_ = m;
+        }
+
+        /**
+         * @description: used by Waiters to signal Parties.
+         * @param p signal receiver.
+         */
+        static void signalServiceStarted(std::shared_ptr<Party>);
 
         friend class Waiter;
     };
@@ -54,25 +78,37 @@ public:
      */
     Party(Restaurant &, unsigned, std::string);
 
+    /**
+     * @description: move constructor.
+     * @param p party we're moving.
+     */
     Party(Party &&);
 
+    /**
+     * @description: move assignment operator.
+     * @param p party we're moving.
+     * @returns a reference to this party.
+     */
     Party &operator=(Party &&);
 
+    /**
+     * @description: destructor.
+     */
     ~Party() = default;
 
     /**
-    * boots up the Party thread.
-    **/
+     * @description: initializes the party thread.
+     */
     void init();
 
     /**
-    * main thread of execution for Party.
-    **/
+     * @description: main thread of execution for Party.
+     */
     void run();
 
     /**
-    * used by parties to enter the restaurant.
-    */
+     * @description: enters this party into the restaurant queue.
+     */
     void enterRestaurant();
 
     /**
@@ -87,28 +123,49 @@ public:
     inline bool checkServiceFlag() { return hasBeenServiced_; }
 
     /**
-     * accessor for this Party's identifier.
+     * @description: PID accessor.
+     * @returns this party's PID string.
      */
     inline std::string &getPID() { return pid_; }
 
+    /**
+     * @description: factory method for creating Parties.
+     * @param r the restaurant.
+     * @param gCount # of guests.
+     * @param pid unique party id.
+     * @returns a smart pointer to this party.
+     */
     static std::shared_ptr<Party> makeParty(Restaurant &, unsigned, std::string);
 
 private:
-    Restaurant &theRestaurant_;         ///< a reference to the restaurant.
-    mutable std::mutex m_;              ///< party's mutex.
-    std::condition_variable cv_;        ///< party's condition variable.
-    std::thread mthread_;               ///< party's thread.
-    std::string pid_;                   ///< the party's unique identifier.
-    std::vector<Guest const *> guests_; ///< pointer can't change, but Guest can.
-    std::shared_ptr<Waiter> theWaiter_; ///< the waiter.
-    std::shared_ptr<Table> theTable_;   ///< the table.
-    std::shared_ptr<Menu> theMenu_;     ///< the menu.
-    bool hasBeenServiced_;              ///< service flag.
+    Restaurant &theRestaurant_; ///< a reference to the restaurant.
 
+    /**
+     * Synchronization/Threading variables
+     */
+    std::mutex m_;               ///< party's mutex.
+    std::condition_variable cv_; ///< party's condition variable.
+    std::thread mthread_;        ///< party's thread.
+
+    /**
+     * Party-specific data variables
+     */
+    std::string pid_;                            ///< the party's unique identifier.
+    std::vector<std::shared_ptr<Guest>> guests_; ///< party guests.
+    std::shared_ptr<Waiter> theWaiter_;          ///< the waiter.
+    std::shared_ptr<Table> theTable_;            ///< the table.
+    std::shared_ptr<Menu> theMenu_;              ///< the menu.
+    bool hasBeenServiced_;                       ///< service flag.
+
+    /**
+     * @description: inaccessible copy constructor; Parties shouldn't be copyable, as they are threaded.
+     */
     Party(const Party &) = delete;
-    Party &operator=(const Party &) = delete;
 
-    //need a socket object (?)
+    /**
+     * @description: inaccessible copy assignment operator.
+     */
+    Party &operator=(const Party &) = delete;
 };
 
 #endif // PARTY_HPP
