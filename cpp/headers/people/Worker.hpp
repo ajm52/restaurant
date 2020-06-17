@@ -27,8 +27,8 @@ public:
      */
     virtual ~Worker() = default;
 
-    virtual void handleJob(SeatingJob *){};
-    virtual void handleJob(OrderJob *){};
+    virtual void handleJob(SeatingJob &) = 0;
+    virtual void handleJob(OrderJob &) = 0;
 };
 
 /**
