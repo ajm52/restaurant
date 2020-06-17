@@ -4,16 +4,16 @@
 #include "Status.hpp"
 #include <iostream>
 #include <vector>
+#include <memory>
+#include <optional>
 
 class Party;
 class Waiter;
 
 /**
- * Used to seat restaurant guests.
- * 
- * author: ajm
- * created: 1/28/20
- * last modified: 5/26/20
+ * @class Table
+ * @description: Used to seat restaurant guests.
+ * @author ajm
  **/
 class Table
 {
@@ -22,34 +22,40 @@ public:
      * @class WaiterAccess
      * @description: Allows Waiters to seat Parties.
      * @author ajm
-     * @created: 5/26/20
-     * @modified: 5/26/20
      */
     class WaiterAccess
     {
-        static bool setParty(Table *, Party *);
+        /**
+         * @description: allows Waiters to seat Parties at Tables.
+         * @param t target table.
+         * @param p to be seated.
+         */
+        static bool seatParty(std::shared_ptr<Table>, std::shared_ptr<Party>);
         friend class Waiter;
     };
 
     /**
-     * Table constructor.
+     * @description: constructor.
+     * @param id table id.
      */
     Table(int);
 
     /**
-     * occupation status accessor.
+     * @description: occupation status accessor.
+     * @returns whether or not this table is occupied.
      */
     inline constexpr const bool isOccupied() { return isOccupied_; }
 
     /**
-     * table ID accessor.
+     * @description: table ID accessor.
+     * @returns the table's id.
      */
     inline constexpr const unsigned tableId() { return id_; }
 
 private:
-    mutable bool isOccupied_; ///< occupation flag.
-    const unsigned id_;       ///< a unique table identifier.
-    Party *party_;            ///< pointer to the Party at this Table (null if unoccupied).
+    mutable bool isOccupied_;                     ///< occupation flag.
+    const unsigned id_;                           ///< a unique table identifier.
+    std::optional<std::shared_ptr<Party>> party_; ///< pointer to the Party at this Table (null if unoccupied).
 };
 
 #endif // TABLE_HPP
