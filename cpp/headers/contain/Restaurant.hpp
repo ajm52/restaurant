@@ -6,15 +6,14 @@
 #include "Waiter.hpp"
 #include "JobTable.hpp"
 #include "Table.hpp"
+#include "Doorman.hpp"
+#include "Menu.hpp"
 #include <vector>
 #include <memory>
 
 /**
  * Contains all the elements of a restaurant emulation.
- * 
- * author: ajm
- * created: 2/6/20
- * last modified: 6/7/20
+ * @author ajm
  **/
 class Restaurant
 {
@@ -24,13 +23,26 @@ public:
      * @param tCount table count.
      * @param wCount waiter count.
      * @param pCount party count.
+     * @param menu the restaurant menu.
      */
-    Restaurant(unsigned = 0, unsigned = 0, unsigned = 0);
+    Restaurant(std::shared_ptr<Menu>, unsigned = 0, unsigned = 0, unsigned = 0);
+
+    /**
+     * @description: copy constructor.
+     * @param r restaurant we're copying from.
+     */
+    Restaurant(const Restaurant &);
+
+    /**
+     * @description: copy assignment operator.
+     * @param r restaurant we're copying from.
+     */
+    Restaurant &operator=(const Restaurant &);
 
     /**
      * @description: destructor.
      */
-    ~Restaurant() = default;
+    ~Restaurant();
 
     /**
      * @description: initializes sim parameters.
@@ -66,15 +78,21 @@ public:
 
     /**
      * @description: door accessor for non-const access.
-     * @returns a pointer to the door.
+     * @returns the door.
      */
     inline Door &getDoor() { return door_; }
 
     /**
      * @description: foyer accessor.
-     * @returns a pointer to the foyer.
+     * @returns the foyer.
      */
     inline Foyer &getFoyer() { return foyer_; }
+
+    /**
+     * @description: menu accessor.
+     * @returns a pointer to the menu.
+     */
+    inline std::shared_ptr<Menu> getMenu() { return menu_; }
 
 private:
     unsigned tableCount_;                          ///< # of tables in restaurant.
@@ -85,18 +103,8 @@ private:
     Door door_;                                    ///< the door.
     std::vector<std::shared_ptr<Table>> tables_;   ///< the restaurant's tables.
     std::vector<std::shared_ptr<Waiter>> waiters_; ///< waiter staff.
-
-    /**
-     * @description: copy constructor.
-     * @param r restaurant we're copying from.
-     */
-    Restaurant(const Restaurant &) = default;
-
-    /**
-     * @description: copy assignment operator.
-     * @param r restaurant we're copying from.
-     */
-    Restaurant &operator=(const Restaurant &) = default;
+    Doorman doorman_;                              ///< the restaurant's doorman.
+    std::shared_ptr<Menu> menu_;                   ///< the restaurant menu.
 };
 
 #endif // RESTAURANT_HPP

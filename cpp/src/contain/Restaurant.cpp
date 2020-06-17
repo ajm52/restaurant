@@ -4,15 +4,17 @@
 #include <string>
 #include <iostream>
 
-Restaurant::Restaurant(unsigned tCount, unsigned wCount, unsigned pCount)
+Restaurant::Restaurant(std::shared_ptr<Menu> menu, unsigned tCount, unsigned wCount, unsigned pCount)
     : tableCount_(tCount),
       waiterCount_(wCount),
       partyCount_(pCount),
       jobTable_(wCount),
       foyer_(tCount),
-      door_()
-{
-}
+      door_(),
+      tables_(),
+      waiters_(),
+      doorman_(door_, foyer_, jobTable_),
+      menu_(menu) {}
 
 Restaurant::Restaurant(const Restaurant &r)
     : tableCount_(r.tableCount_),
@@ -22,7 +24,9 @@ Restaurant::Restaurant(const Restaurant &r)
       foyer_(r.foyer_),
       door_(r.door_),
       tables_(r.tables_),
-      waiters_(r.waiters_) {}
+      waiters_(r.waiters_),
+      doorman_(door_, foyer_, jobTable_),
+      menu_(r.menu_) {}
 
 Restaurant &Restaurant::operator=(const Restaurant &r)
 {
@@ -36,31 +40,39 @@ Restaurant &Restaurant::operator=(const Restaurant &r)
     door_ = r.door_;
     tables_ = r.tables_;
     waiters_ = r.waiters_;
+    menu_ = r.menu_;
     return *this;
+}
+
+Restaurant::~Restaurant()
+{
+    tables_.clear();
+    waiters_.clear();
 }
 
 void Restaurant::init()
 {
+    std::cout << "Building Tables...\n";
     buildTables(); // important that this is done first
+    std::cout << "... done.\nBuilding Waiters...\n";
     buildWaiters();
+    std::cout << "... done.\nInitializing Doorman threads...\n";
+    doorman_.init();
 }
 
 void Restaurant::buildTables()
 {
-    std::cout << "building tables...";
-    for (int i = 1; i <= tableCount_; ++i)
+    for (int i = 0; i < tableCount_; ++i)
     {
         tables_.push_back(std::make_shared<Table>(i));
     }
-    std::cout << " done.\n";
 }
 
 void Restaurant::buildWaiters()
 {
-    std::cout << "building waiters...";
-    for (int i = 1; i <= waiterCount_; ++i)
+    for (int i = 0; i < waiterCount_; ++i)
     {
-        waiters_.push_back(std::make_shared<Waiter>("W-" + std::to_string(i), tables_, foyer_, jobTable_));
+        auto wPtr = std::make_shared<Waiter>("W-" + std::to_string(i), tables_, foyer_, jobTable_, menu_);
+        waiters_.push_back(wPtr);
     }
-    std::cout << " done.\n";
 }
