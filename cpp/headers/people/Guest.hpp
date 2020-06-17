@@ -4,6 +4,7 @@
 #include "Person.hpp"
 
 /**
+ * @class Guest
  * @description: Represents a restaurant guest (inherits from Person)
  * @author ajm
  **/

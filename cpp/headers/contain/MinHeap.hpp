@@ -7,24 +7,22 @@
 #include <map>
 
 /**
- * @struct <code>MinHeap</code>
+ * @struct MinHeap
  * @description: A generic min heap.
  * @author ajm
- * @created: 2/21/20
- * @modified: 3/2/20
  */
 template <typename T>
 struct MinHeap
 {
     /**
-     * @description: default constructor.
+     * @description: constructor.
      */
     MinHeap() : heap_() {}
 
     /**
      * @description: destructor.
      */
-    ~MinHeap() {}
+    ~MinHeap() = default;
 
     /**
      * @description: finds parent index of a given index in the heap.

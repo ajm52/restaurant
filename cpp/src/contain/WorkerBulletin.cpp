@@ -18,12 +18,12 @@ void WorkerBulletin::correctHeapIndices(std::map<WorkerNode, int> changes)
         heapIndices_[pair.first.workerID_] = pair.second;
 }
 
-void WorkerBulletin::registerWorker(Worker w)
-{
-    //workerFDs_[w.getId()] = w.getFD();
-    std::map<WorkerNode, int> changes = minHeap_.insert(*(new WorkerNode(w.getId())));
-    correctHeapIndices(changes);
-}
+// void WorkerBulletin::registerWorker(Worker w)
+// {
+//     //workerFDs_[w.getId()] = w.getFD();
+//     std::map<WorkerNode, int> changes = minHeap_.insert(*(new WorkerNode(w.getId())));
+//     correctHeapIndices(changes);
+// }
 
 void WorkerBulletin::modifyJobCount(std::string workerID, int amt)
 {

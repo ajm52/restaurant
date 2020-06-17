@@ -12,7 +12,8 @@
 #include <memory>
 
 /**
- * Contains all the elements of a restaurant emulation.
+ * @class Restaurant
+ * @description: Contains all the elements of a restaurant simulation.
  * @author ajm
  **/
 class Restaurant
@@ -95,16 +96,27 @@ public:
     inline std::shared_ptr<Menu> getMenu() { return menu_; }
 
 private:
-    unsigned tableCount_;                          ///< # of tables in restaurant.
-    unsigned waiterCount_;                         ///< # of waiters in restaurant.
-    unsigned partyCount_;                          ///< # of parties in the simulation.
-    JobTable jobTable_;                            ///< communication interface for waiters.
-    Foyer foyer_;                                  ///< the foyer.
-    Door door_;                                    ///< the door.
-    std::vector<std::shared_ptr<Table>> tables_;   ///< the restaurant's tables.
+    /**
+     * primitives.
+     */
+    unsigned tableCount_;  ///< # of tables in restaurant.
+    unsigned waiterCount_; ///< # of waiters in restaurant.
+    unsigned partyCount_;  ///< # of parties in the simulation.
+
+    /**
+     * user-defined containers.
+     */
+    JobTable jobTable_;                          ///< communication interface for waiters.
+    Foyer foyer_;                                ///< the foyer.
+    Door door_;                                  ///< the door.
+    std::shared_ptr<Menu> menu_;                 ///< the restaurant menu.
+    std::vector<std::shared_ptr<Table>> tables_; ///< the restaurant's tables.
+
+    /**
+     * threaded actor(s).
+     */
     std::vector<std::shared_ptr<Waiter>> waiters_; ///< waiter staff.
     Doorman doorman_;                              ///< the restaurant's doorman.
-    std::shared_ptr<Menu> menu_;                   ///< the restaurant menu.
 };
 
 #endif // RESTAURANT_HPP

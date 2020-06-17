@@ -6,8 +6,6 @@
  * @description: Succinctly describes 
  * a party's current state in the simulation.
  * @author ajm
- * @created: 3/4/20
- * @modified: 3/4/20
  */
 enum class PartyStatus
 {

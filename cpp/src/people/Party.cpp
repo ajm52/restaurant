@@ -99,7 +99,6 @@ void Party::enterRestaurant()
                 std::this_thread::sleep_for(std::chrono::seconds(3));
             }
         }
-
     } // End critical section
 
     std::cout << this->getPID() << " entered the restaurant queue.\n";

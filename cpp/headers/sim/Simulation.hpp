@@ -2,19 +2,18 @@
 #define SIMULATION_HPP
 
 #include "Restaurant.hpp"
-#include "SimLoader.hpp"
 #include "Party.hpp"
+#include "Menu.hpp"
 #include <iostream>
 #include <vector>
 #include <unordered_set>
 #include <memory>
+#include <map>
 
 /**
- * @class <code>Simulation</code>
+ * @class Simulation
  * @description: Contains the restaurant simulation.
  * @author ajm
- * @created: 2/6/20
- * @modified: 6/3/20
  **/
 class Simulation
 {
@@ -26,13 +25,12 @@ public:
 
     /**
      * @description: copy constructor.
-     * @note deleted; simulations should not be copied.
      **/
     Simulation(const Simulation &) = default;
 
     /**
      * @description: copy assignment operator.
-     * @note deleted; simulations should not be copied.
+     * @returns this simulation.
      **/
     Simulation &operator=(const Simulation &) = default;
 
@@ -42,10 +40,17 @@ public:
     ~Simulation() = default;
 
     /**
-     * @description: Initializes and prepares data.
+     * @description: Initializes and prepares basic simulation data.
      * @param filepath sim config filepath.
      **/
     void init(std::string);
+
+    /**
+     * @description: factory method for generating the restaurant menu.
+     * @param filepath the menu config filepath.
+     * @returns a shared pointer that holds the menu.
+     */
+    std::shared_ptr<Menu> createMenu(std::string);
 
     /**
      * @description: Runs the simulation.

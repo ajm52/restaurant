@@ -13,8 +13,18 @@
  */
 struct OrderJob : public Job
 {
+    /**
+     * @description: constructor
+     * @param o the associated order.
+     */
     OrderJob(Order o) : order_(o) {}
+
+    /**
+     * @description: takes advantage of runtime type information to call the correct handler method.
+     * @param w the worker handling this job.
+     */
     void accept(Worker &w) { w.handleJob(*this); }
-    Order order_;
+
+    Order order_; ///< the associated order.
 };
 #endif // ORDERJOB_HPP

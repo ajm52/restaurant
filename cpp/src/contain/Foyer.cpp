@@ -25,7 +25,7 @@ Foyer::Foyer(const Foyer &f)
     : tableCount_(f.tableCount_),
       nextTableIDs_(f.nextTableIDs_),
       toBeSeated_(f.toBeSeated_),
-      m() {}
+      m_() {}
 
 Foyer &Foyer::operator=(const Foyer &f)
 {
@@ -46,7 +46,7 @@ Foyer::~Foyer()
 
 void Foyer::prepSeatingQueue()
 {
-    for (unsigned i = 1; i <= tableCount_; ++i)
+    for (unsigned i = 0; i < tableCount_; ++i)
         nextTableIDs_.push(i);
 }
 
@@ -57,18 +57,18 @@ unsigned Foyer::getNextTableID()
     return id;
 }
 
-void Foyer::putParty(unsigned id, Party *pPtr)
+void Foyer::putParty(unsigned id, std::shared_ptr<Party> pPtr)
 {
 
     { // begin critical section
         std::lock_guard<std::mutex> lg(m_);
-        toBeSeated_.insert(std::pair<unsigned, Party *>(id, pPtr));
+        toBeSeated_.insert(std::pair<unsigned, std::shared_ptr<Party>>(id, pPtr));
     } // end critical section
 }
 
-Party *Foyer::removeParty(unsigned id)
+std::shared_ptr<Party> Foyer::removeParty(unsigned id)
 {
-    Party *ret = nullptr;
+    std::shared_ptr<Party> ret;
     { // begin critical section
         std::lock_guard<std::mutex> lg(m_);
         auto itr = toBeSeated_.find(id);

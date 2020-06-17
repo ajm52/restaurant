@@ -8,25 +8,15 @@
 #include <condition_variable>
 
 class Party;
-class Doorman;
 
 /**
- * @class <code>Door</code>
+ * @class Door
  * @description: Enables concurrent entry and exit to the restaurant.
  * @author ajm
- * @created: 2/6/20
- * @modified: 6/5/20
  **/
 class Door
 {
 public:
-    class DoormanAccess
-    {
-        static void waitForInbound(Door *);
-        static void waitForOutbound(Door *);
-        friend class Doorman;
-    };
-
     /**
      * @description: default constructor.
      */
@@ -70,28 +60,36 @@ public:
 
     /**
      * @description: accessor to entry mutex.
+     * @returns the entry mutex.
      * @note blocks until mutex is free.
      **/
     inline std::mutex &getEntryMutex() { return mIn_; }
 
     /**
      * @description: accessor to exit mutex.
+     * @returns the exit mutex.
      * @note blocks until mutex is free.
      **/
     inline std::mutex &getExitMutex() const { return mOut_; }
 
     /**
      * @description: accessor to entry queue.
+     * @returns the entry queue.
      * @note blocks until entry mutex is free.
      **/
     inline std::queue<std::shared_ptr<Party>> &getEntryQueue() { return comingIn_; }
 
     /**
      * @description: accessor to exit queue.
+     * @returns the exit queue.
      * @note blocks until exit mutex is free.
      **/
     inline std::queue<std::shared_ptr<Party>> &getExitQueue() { return goingOut_; }
 
+    /**
+     * @description: CV accessor.
+     * @returns the condition variable.
+     */
     inline std::condition_variable &getCV() { return cv_; }
 
 private:

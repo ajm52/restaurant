@@ -10,11 +10,9 @@
 class Party;
 
 /**
- * @struct <code>Foyer</code>
+ * @struct Foyer
  * @description: Where parties wait to be seated.
  * @author ajm
- * @created: 2/6/20
- * @modified: 6/7/20
  **/
 struct Foyer
 {
@@ -26,7 +24,6 @@ struct Foyer
     /**
      * @description: constructor.
      * @param tableCount # of tables in the restaurant.
-     * @param jobTable restaurant's job table.
      */
     explicit Foyer(unsigned);
 
@@ -39,6 +36,7 @@ struct Foyer
     /**
      * @description: copy assignment operator.
      * @param f foyer we're copying from.
+     * @returns this foyer.
      */
     Foyer &operator=(const Foyer &);
 
@@ -60,7 +58,7 @@ struct Foyer
      * @param pPtr a pointer to the party to be seated.
      * @returns true if the Party was placed successfully, false otherwise.
      */
-    void putParty(unsigned, Party *);
+    void putParty(unsigned, std::shared_ptr<Party>);
 
     /**
      * @description: remove and return a party from the foyer.
@@ -68,7 +66,7 @@ struct Foyer
      * @returns a pointer to the corresponding party, or nullptr if 
      * no such mapping exists.
      */
-    Party *removeParty(unsigned);
+    std::shared_ptr<Party> removeParty(unsigned);
 
     unsigned tableCount_;                                   ///< # of restaurant tables.
     std::queue<unsigned> nextTableIDs_;                     ///< table indices that are ready to be used.

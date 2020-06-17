@@ -12,8 +12,6 @@
 
 int main(int argc, char **argv)
 {
-    std::string s("P-" + std::to_string(1));
-    std::cout << s << std::endl;
     Simulation sim;
     sim.init("cpp/meta/sim.md");
     sim.run();

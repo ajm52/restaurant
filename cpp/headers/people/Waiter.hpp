@@ -4,9 +4,11 @@
 #include "Worker.hpp"
 #include "Table.hpp"
 #include "JobTable.hpp"
+#include "Menu.hpp"
 #include <string>
 #include <vector>
 #include <memory>
+#include <thread>
 
 struct Job;
 struct OrderJob;
@@ -14,11 +16,9 @@ struct SeatingJob;
 struct Foyer;
 
 /**
- * @class <code>Waiter</code>
- * @description: A restaurant waiter. Inherits from <code>Worker</code>.
+ * @class Waiter
+ * @description: A restaurant waiter. Inherits from Worker.
  * @author ajm
- * @created: 2/19/20
- * @modified: 6/3/20
  */
 class Waiter : public Worker
 {
@@ -29,27 +29,45 @@ public:
      * @param tables the tablespace.
      * @param foyer the foyer.
      * @param jt the job table.
+     * @param menu the restaurant menu.
      */
-    Waiter(std::string, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &);
+    Waiter(std::string, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &, std::shared_ptr<Menu>);
 
+    /**
+     * @description: copy constructor.
+     * @param w waiter we're copying from.
+     */
+    Waiter(const Waiter &);
+
+    /**
+     * @description: copy assignment operator.
+     * @param w waiter we're copying from.
+     * @returns this as a copy of w.
+     */
+    Waiter &operator=(const Waiter &);
+
+    /**
+     * @description: move constructor.
+     * @param w waiter we're moving.
+     */
     Waiter(Waiter &&);
 
+    /**
+     * @description: move assignment operator.
+     * @param w waiter we're moving.
+     * @returns this with w's member data.
+     */
     Waiter &operator=(Waiter &&);
 
     /**
-     * @description: Used to seat Parties.
-     * @param tID id of the Table where the Party shall be seated.
-     * @param p Party to be seated.
-     */
-    void seatParty(unsigned, Party *);
-
-    /**
      * @description: Accessor for foyer.
+     * @returns a pointer to the foyer.
      */
     inline Foyer *getFoyer() { return foyer_; }
 
     /**
      * @description: Accessor for tablespace.
+     * @returns the restaurant's tables.
      */
     inline std::vector<std::shared_ptr<Table>> &getTablespace() { return tablespace_; }
 
@@ -76,58 +94,40 @@ public:
      */
     void run();
 
-    void allocateService(Party *, unsigned);
-
     /**
      * @description: handler method used to 
      * complete this job.
      * @param sj seating job to be completed by this Waiter.
      */
-    void handleJob(SeatingJob *);
+    void handleJob(SeatingJob &);
 
     /**
      * @description: handler method used to 
      * complete this job.
      * @param oj order job to be completed by this Waiter.
      */
-    void handleJob(OrderJob *);
+    void handleJob(OrderJob &);
 
 private:
-    std::string wID_;                                 ///< this waiter's unique id.
+    std::string wID_; ///< this waiter's unique id.
+
+    /**
+     * user-defined containers.
+     */
     std::vector<std::shared_ptr<Table>> &tablespace_; ///< where parties are seated.
-    std::vector<Job *> jobs_;                         ///< the waiter's current jobs.
+    std::vector<std::shared_ptr<Job>> jobs_;          ///< the waiter's current jobs.
     Foyer *foyer_;                                    ///< where Parties wait to be seated.
     JobTable &jobTable_;                              ///< used to acquire jobs.
-    std::condition_variable &cv_;                     ///< this waiter's cv, pulled from the job table.
-    std::mutex &m_;                                   ///< this waiter's mutex, pulled from the job table.
+    std::shared_ptr<Menu> menu_;                      ///< the restaurant menu.
 
-    Waiter(const Waiter &) = delete;
-    Waiter &operator=(const Waiter &) = delete;
+    std::thread mthread_; ///< the waiter thread.
 };
 
 //TODO change ordering of variables (cv and m at top)
-//TODO swap raw ptrs with smart ptrs
 
 /**
- * waiter read FDs:
- * [0] -> main FD (will be written to by the entry Door hook)
  * 
- * [1] -> kitchen FD (will be written to by Cooks)
- * 
- * [2] -> bar FD (will be written to by Bartenders)
- * 
- * [3...] -> written to and from by Parties that come and go.
- * when a Party leaves, its FD must be removed.
- * 
- * When a waiter is assigned a new Party, it takes the FD from
- * Foyer, registers it as a read socket in its Multiplexer, and
- * writes a Greeting.
- * 
- * TODO: 
- * - add private member pointer to Foyer.
- * - add access to Tables.
- * 
- * LATER:
+ * TODO
  * - add access to Kitchen.
  * - add access to Bar.
  */

@@ -13,15 +13,37 @@
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
-Waiter::Waiter(std::string id, std::vector<std::shared_ptr<Table>> &tables, Foyer &foyer, JobTable &jt)
+Waiter::Waiter(std::string id, std::vector<std::shared_ptr<Table>> &tables, Foyer &foyer, JobTable &jt, std::shared_ptr<Menu> menu)
     : Worker(id),
       tablespace_(tables),
       foyer_(&foyer),
       jobTable_(jt),
-      cv_(*getJobTable().getCV(getIDNumber())),
-      m_(*getJobTable().getMutex(getIDNumber()))
+      mthread_(),
+      menu_(menu)
 {
     init();
+}
+
+Waiter::Waiter(const Waiter &w)
+    : Worker(w.id_),
+      tablespace_(w.tablespace_),
+      jobs_(w.jobs_),
+      foyer_(w.foyer_),
+      jobTable_(w.jobTable_),
+      mthread_(),
+      menu_(w.menu_) {}
+
+Waiter &Waiter::operator=(const Waiter &w)
+{
+    if (this == &w)
+        return *this;
+    id_ = w.id_;
+    tablespace_ = w.tablespace_;
+    jobs_ = w.jobs_;
+    foyer_ = w.foyer_;
+    jobTable_ = w.jobTable_;
+    menu_ = w.menu_;
+    return *this;
 }
 
 Waiter::Waiter(Waiter &&w)
@@ -30,18 +52,10 @@ Waiter::Waiter(Waiter &&w)
       jobs_(std::move(w.jobs_)),
       foyer_(w.foyer_),
       jobTable_(w.jobTable_),
-      cv_(*jobTable_.getCV(getIDNumber())),
-      m_(*jobTable_.getMutex(getIDNumber()))
+      mthread_(std::move(w.mthread_)),
+      menu_(std::move(w.menu_))
 {
     w.foyer_ = nullptr;
-}
-
-void Waiter::seatParty(unsigned tID, Party *p)
-{
-    if (tID < tablespace_.size())
-    {
-        //Table::WaiterAccess::setParty(tablespace_[tID], p);
-    }
 }
 
 const unsigned Waiter::getIDNumber() const
@@ -60,58 +74,66 @@ const unsigned Waiter::getIDNumber() const
 
 void Waiter::init()
 {
-    // std::thread t(&Waiter::run, this);
-    // t.detach();
+    std::thread t(&Waiter::run, this);
+    mthread_ = std::move(t);
 }
 
 void Waiter::run()
 {
     while (true)
     {
-        if (jobTable_.workToBeDone(this->getIDNumber()))
-        {
-            std::unique_lock<std::mutex> ul(this->m_); //begin critical section
-            cv_.wait(ul, [this] {
-                return this->getJobTable().workToBeDone(this->getIDNumber());
-            });
-            std::shared_ptr<std::vector<Job *>> jobs = this->getJobTable().acquireAllJobs(this->getIDNumber());
-            for (int i = 0; i < jobs.get()->size(); ++i)
-            { // push all new jobs into current job vector.
-                jobs_.push_back(jobs.get()->at(i));
-            }
-            ul.unlock(); // end critical section
 
-            for (int i = 0; i < jobs_.size(); ++i)
-            {
-                jobs_[i]->accept(*this);
-                std::this_thread::sleep_for(std::chrono::seconds(2));
-            }
-        }
-        else
+        std::unique_lock<std::mutex> ul(*getJobTable().getMutex(getIDNumber())); //begin critical section
+
+        while (!getJobTable().workToBeDone(getIDNumber()))
         {
-            std::cout << this->getId() << " has no work, sleeping..\n";
-            std::this_thread::sleep_for(std::chrono::seconds(3));
+            getJobTable().getCV(getIDNumber())->wait(ul);
         }
+        std::cout << getId() << ": Work to be done. Acquiring jobs...\n";
+        std::shared_ptr<std::vector<std::shared_ptr<Job>>> jobs = this->getJobTable().acquireAllJobs(this->getIDNumber(), true);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        std::cout << getId() << ": Jobs acquired. Pushing to local job list... ";
+        for (int i = 0; i < jobs.get()->size(); ++i)
+            jobs_.push_back(jobs.get()->at(i));
+
+        std::cout << " done.\n";
+        ul.unlock(); // end critical section
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(750));
+        for (int i = 0; i < jobs_.size(); ++i)
+        {
+            //TODO add an ID string to Job.
+            std::cout << getId() << ": Beginning Job#" << std::to_string(i) << ".\n";
+            jobs_[i]->accept(*this);
+            std::cout << getId() << ": Job#" << std::to_string(i) << " done.\n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+
+        //TODO find a clean way to junk completed Jobs from the local job list.
+
+        std::cout << getId() << ": Local job wave completed.\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+
     } // end main while loop
 }
 
-void Waiter::allocateService(Party *p, unsigned tID)
+void Waiter::handleJob(SeatingJob &sj)
 {
-    if (tID >= getTablespace().size()) //TODO throw exception here.
-        return;
+    std::cout << getId() << ": Handling SJ for Table " << sj.tableID_ << std::endl;
+    std::shared_ptr<Party> pPtr = foyer_->removeParty(sj.tableID_);
 
-    // Party::WaiterAccess::setTable(p, &(getTablespace()[tID]));
-    // Party::WaiterAccess::setWaiter(p, this);
-    //Party::WaiterAccess::setMenu
-    //Party::WaiterAccess::signalServiceStarted(p);
+    Table::WaiterAccess::seatParty(tablespace_[sj.tableID_], pPtr);
+    Party::WaiterAccess::setTable(pPtr, tablespace_[sj.tableID_]);
+    Party::WaiterAccess::setWaiter(pPtr, std::make_shared<Waiter>(*this));
+    Party::WaiterAccess::setMenu(pPtr, menu_);
+    Party::WaiterAccess::signalServiceStarted(pPtr);
+
+    std::cout << getId() << ": Notified " << pPtr->getPID() << " that service has started.\n";
 }
 
-void Waiter::handleJob(SeatingJob *sj)
+void Waiter::handleJob(OrderJob &oj)
 {
-    std::cout << "handling SJ for table " << sj->tableID_ << std::endl;
-}
-
-void Waiter::handleJob(OrderJob *oj)
-{
-    std::cout << "handling OJ for order " << oj->order_.getOrderId() << std::endl;
+    std::cout << getId() << ": handling OJ for order " << oj.order_.getOrderId() << std::endl;
 }

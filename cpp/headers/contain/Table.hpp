@@ -1,7 +1,6 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
-#include "Status.hpp"
 #include <iostream>
 #include <vector>
 #include <memory>

@@ -5,6 +5,7 @@
 
 /**
  * @struct Job
+ * @author ajm
  * @description: represents a Job, which can 
  * take one of three forms: OrderJob, SeatingJob, or
  * CleaningJob.
@@ -12,8 +13,6 @@
  * An OrderJob will have an attached Order, 
  * and both SeatingJobs and CleaningJobs will 
  * have an attached Table ID.
- * 
- * @author ajm
  */
 struct Job
 {

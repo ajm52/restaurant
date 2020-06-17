@@ -52,12 +52,13 @@ Restaurant::~Restaurant()
 
 void Restaurant::init()
 {
-    std::cout << "Building Tables...\n";
-    buildTables(); // important that this is done first
-    std::cout << "... done.\nBuilding Waiters...\n";
+    std::cout << "Restaurant: Building Tables...";
+    buildTables();
+    std::cout << " done.\nRestaurant: Building Waiters...";
     buildWaiters();
-    std::cout << "... done.\nInitializing Doorman threads...\n";
+    std::cout << " done.\nRestaurant: Initializing Doorman threads...";
     doorman_.init();
+    std::cout << " done.\n";
 }
 
 void Restaurant::buildTables()

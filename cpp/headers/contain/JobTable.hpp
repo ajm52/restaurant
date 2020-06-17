@@ -18,10 +18,7 @@
  * indexed by their own unique ID number.
  * - A notified Worker will check their queue for jobs,
  * indexed again by their own unique ID number.
- * 
  * @author ajm
- * @created: 5/29/20
- * @modified: 6/7/20
  */
 class JobTable
 {
@@ -51,39 +48,29 @@ public:
     ~JobTable();
 
     /**
-     * @description: move constructor.
-     * @param jt job table we're moving.
-     */
-    //JobTable(JobTable &&);
-
-    /**
-     * @description: move assignment operator.
-     * @param jt job table we're moving.
-     */
-    //JobTable &operator=(JobTable &&);
-
-    /**
      * @description: queues a job into the appropriate job list.
      * @param index used to identify the correct job queue.
      * @param job the job to be queued.
      */
-    void queueJob(unsigned, Job);
+    void queueJob(unsigned, std::shared_ptr<Job>);
 
     /**
      * @description: acquires a job from a given job queue.
      * @param index the job list from which a job should be pulled.
+     * @param isLocked whether or not the mutex has already been locked.
      * @returns a pointer to the next job from a given job list. Returns
      * null if the job list is empty.
      */
-    Job acquireJob(unsigned);
+    std::shared_ptr<Job> acquireJob(unsigned, bool);
 
     /**
      * @description: acquires all jobs from a given job queue.
      * @param the job list from which we shall pull from.
+     * @param isLocked whether or not the mutex has already been locked.
      * @returns a safe pointer to a list of pulled jobs. Returns
      * an empty list of there are no jobs to pull.
      */
-    std::shared_ptr<std::vector<Job>> acquireAllJobs(unsigned);
+    std::shared_ptr<std::vector<std::shared_ptr<Job>>> acquireAllJobs(unsigned, bool);
 
     /**
      * @description: checks a given job flag to see if there is 
@@ -112,9 +99,15 @@ public:
 private:
     unsigned numWaiters_;                                                ///< # of restaurant waiters
     std::map<unsigned, std::shared_ptr<std::condition_variable>> cvMap_; ///< worker CVs
-    std::vector<std::queue<Job>> jobQueues_;                             ///< worker job queues
+    std::vector<std::queue<std::shared_ptr<Job>>> jobQueues_;            ///< worker job queues
     std::map<unsigned, std::shared_ptr<std::mutex>> mMap_;               ///< job queue mutexes
     std::vector<bool> jobFlags_;                                         ///< job flags
+
+    /**
+     * @description: map initializer function.
+     * Call once at the beginning of simulation.
+     */
+    void buildMaps();
 };
 #endif // JOBTABLE_HPP
 

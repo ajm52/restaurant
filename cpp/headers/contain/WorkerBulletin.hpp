@@ -9,14 +9,12 @@
 #include <mutex>
 
 /**
- * @struct <code>WorkerBulletin</code>
+ * @struct WorkerBulletin
  * @description: Contains worker-related information.
  * Will be of use mostly for door callback function(s).
  * @note we implement the MinHeap so that determining the 
  * Least Busy Worker (LBW) can be done in O(1).
  * @author ajm
- * @created: 2/20/20
- * @modified: 3/3/20
  */
 struct WorkerBulletin
 {
@@ -32,7 +30,7 @@ struct WorkerBulletin
     WorkerBulletin() : size_(0), workerFDs_(), heapIndices_(), m_(), minHeap_() {}
 
     /**
-     * @description: Destructor.
+     * @description: destructor.
      */
     ~WorkerBulletin();
 
@@ -49,7 +47,7 @@ struct WorkerBulletin
      * recording its file descriptor and adding it to the heap.
      * @param w worker to be added.
      */
-    void registerWorker(Worker);
+    //void registerWorker(Worker);
 
     /**
      * @description: Adjusts job count of a worker by a given amount.

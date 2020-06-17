@@ -2,11 +2,9 @@
 #define QUEUE_HPP
 
 /**
- * @struct <code>Node</code>
+ * @struct Node
  * @description: Element of the doubly linked list.
  * @author ajm
- * @created: 2/21/20
- * @modified: 2/21/20
  */
 struct Node
 {
@@ -15,7 +13,7 @@ struct Node
     Node *prev_; ///< previous node in the list.
 
     /**
-     * @description: default constructor.
+     * @description: constructor.
      * @param val data to be held.
      */
     Node(int val = -1) : value_(val), next_(nullptr), prev_(nullptr) {}
@@ -26,11 +24,9 @@ struct Node
  */
 
 /**
- * @struct <code>Queue</code>
+ * @struct Queue
  * @description: Doubly Linked List style.
  * @author ajm
- * @created: 2/21/20
- * @modified: 2/21/20
  */
 struct Queue
 {
@@ -45,7 +41,7 @@ struct Queue
     ~Queue();
 
     /**
-     * @description: adds <code>Node</code> with supplied data to end of the list.
+     * @description: adds a Node with supplied data to end of the list.
      * @param value data to be held.
      */
     void enqueue(int);

@@ -7,11 +7,13 @@ struct SeatingJob;
 struct OrderJob;
 
 /**
- * @class <code>Worker</code>
- * @description: A restaurant employee. Inherits from <code>Person</code>.
+ * @class Worker
+ * @description: A restaurant employee. Inherits from Person.
  * @author ajm
- * @created: 2/19/20
- * @modified: 6/3/20
+ * @note In order to take full advantage of runtime polymorphism 
+ * with the Visitor pattern, all handleJob(Job) methods must be 
+ * pure virtual. That said, Worker subclasses must provide
+ * definitions for all handleJob methods to make the compiler happy.
  */
 class Worker : public Person
 {
@@ -27,7 +29,16 @@ public:
      */
     virtual ~Worker() = default;
 
+    /**
+     * @description: pure virtual seating job handler. 
+     * @param sj a seating job.
+     */
     virtual void handleJob(SeatingJob &) = 0;
+
+    /**
+     * @description: pure virtual order job handler.
+     * @param oj an order job.
+     */
     virtual void handleJob(OrderJob &) = 0;
 };
 
