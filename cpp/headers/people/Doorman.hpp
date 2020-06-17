@@ -5,12 +5,11 @@
 #include "Foyer.hpp"
 #include "JobTable.hpp"
 #include <vector>
+#include <thread>
 
 /**
  * @class Doorman 
  * @author ajm
- * @created: 6/4/20
- * @modified: 6/7/20
  * @description: Thread-based class that lets people in and out of the restaurant. 
  * Also acts as an adapter between the door queue and the foyer, notifying waiters
  * of parties that need service.
@@ -33,15 +32,20 @@ public:
     void init();
 
     /**
-     * the Doorman thread's callable.
+     * @description: the Doorman thread's callable for handling inbound Parties.
      **/
     void controlInbound();
 
+    /**
+     * @description: the Doorman thread's callable for handling outbound Parties.
+     **/
     void controlOutbound();
 
 private:
-    Door &d_;      ///< how people come and go.
-    Foyer &f_;     ///< where parties are placed for seating.
-    JobTable &jt_; ///< for notifying waiters of incoming parties.
+    Door &d_;                     ///< how people come and go.
+    Foyer &f_;                    ///< where parties are placed for seating.
+    JobTable &jt_;                ///< for notifying waiters of incoming parties.
+    std::thread incomingHandler_; ///< prepares incoming parties to be seated.
+    std::thread outgoingHandler_; ///< sends parties on their way.
 };
 #endif // DOORMAN_HPP
