@@ -10,7 +10,7 @@ ODIR := bin
 SDIR := src
 HPP_DIR := headers
 MAIN_OBJ := main.o
-MAIN := $(SDIR)/main/main.cpp
+MAIN := $(SDIR)/sim/main.cpp
 PKG_DIRS := $(shell ls $(SDIR))
 CXXFLAGS = -g -std=c++17 -Wall $(addprefix -I$(HPP_DIR)/,$(PKG_DIRS)) -I$(BOOST_ROOT)
 FIND_SRC_FILES = $(wildcard $(SDIR)/$(pkg)/*.cpp) 

@@ -1,6 +1,9 @@
 #include "GlobalClock.hpp"
 #include <string>
 #include <chrono>
+#include <ostream>
+#include <iomanip>
+#include <ios>
 
 GlobalClock::GlobalClock() : start_(std::chrono::high_resolution_clock::now()) {}
 
@@ -19,7 +22,9 @@ void GlobalClock::setStartTime()
     start_ = std::chrono::high_resolution_clock::now();
 }
 
-std::string GlobalClock::elapsed()
+std::ostream &operator<<(std::ostream &out, const GlobalClock &gc)
 {
-    return "[" + std::to_string(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start_).count()) + "]";
+    double del = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - gc.getStartTime()).count();
+    out << "[" << std::fixed << std::setprecision(6) << del << "]";
+    return out;
 }

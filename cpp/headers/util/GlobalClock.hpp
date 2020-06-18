@@ -3,11 +3,12 @@
 
 #include <chrono>
 #include <string>
+#include <ostream>
 
 /**
  * @class GlobalClock
  * @author ajm
- * @description: A class dedicated toward precisely timing the occurrence of various events.
+ * @description: A class dedicated to the precise timing of program events.
  */
 class GlobalClock
 {
@@ -41,12 +42,22 @@ public:
     void setStartTime();
 
     /**
-     * @description: prints out elapsed simulation time in seconds.
-     * @returns a string representing elapsed simulation time.
+     * @description: start time accessor.
+     * @returns time point representing the clock's start time.
      */
-    std::string elapsed();
+    inline const std::chrono::high_resolution_clock::time_point &getStartTime() const { return start_; }
+
+    /**
+     * @description: print function that makes outputting clock time easy.
+     * Displays time in seconds to 6 decimal places.
+     * @param out an output stream
+     * @param gc the clock
+     * @returns output stream
+     */
+    friend std::ostream &operator<<(std::ostream &, const GlobalClock &);
 
 private:
     std::chrono::high_resolution_clock::time_point start_; ///< marks the simulation start time.
 };
+
 #endif // GLOBALCLOCK_HPP
