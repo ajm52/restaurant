@@ -1,4 +1,5 @@
 #include "Simulation.hpp"
+#include "GlobalClock.hpp"
 #include "Restaurant.hpp"
 #include "Door.hpp"
 #include "Waiter.hpp"
@@ -22,7 +23,8 @@
 Simulation::Simulation()
     : simParties_(),
       partiesInside_(),
-      partiesOutside_() {}
+      partiesOutside_(),
+      clock_() {}
 
 void Simulation::init(std::string filepath)
 {
@@ -125,21 +127,25 @@ std::shared_ptr<Menu> Simulation::createMenu(std::string filepath)
 
 void Simulation::run()
 {
-    std::cout << "Simulation: Building Restaurant Menu...";
+    clock_.setStartTime();
+
+    std::cout << clock_ << " Simulation: Building Restaurant Menu...";
     std::shared_ptr<Menu> menu = createMenu("meta/menu.md");
-    std::cout << " done.\nSimulation: Building Restaurant...";
-    std::shared_ptr<Restaurant> r = std::make_shared<Restaurant>(menu, tableCount_, waiterCount_, partyCount_);
-    std::cout << " done.\nSimulation: Building Parties...";
+    std::cout << " done.\n"
+              << clock_ << " Simulation: Building Restaurant...";
+    std::shared_ptr<Restaurant> r = std::make_shared<Restaurant>(clock_, menu, tableCount_, waiterCount_, partyCount_);
+    std::cout << " done.\n"
+              << clock_ << " Simulation: Building Parties...";
     buildSimParties(*r);
     std::cout << " done.\n";
 
-    std::cout << "Simulation: Initializing Restaurant...";
+    std::cout << clock_ << " Simulation: Initializing Restaurant...";
     r->init(); // sets up the restaurant (constructing tables, waiters, etc.)
     std::cout << " done.\n";
 
     int sleepCount = 0; // temporary fix to stop infinite while
 
-    std::cout << "Simulation: BEGINNING MAIN LOOP\n";
+    std::cout << clock_ << " Simulation: BEGINNING MAIN LOOP\n";
     while (true) // begin Simulation loop.
     {
         if (partiesOutside_.size() > 0) // if there is a party outside.. Bring one in.
@@ -150,13 +156,13 @@ void Simulation::run()
             auto pPtr = (simParties_)[pID];
             partiesInside_.push_back(pID);
 
-            std::cout << "Simulation: Spawning " << pPtr->getPID() << ".\n";
+            std::cout << clock_ << " Simulation: Spawning " << pPtr->getPID() << ".\n";
             pPtr->init(); // starts this Party's thread.
         }
         else
         {
             sleepCount++;
-            std::cout << "Simulation: No activity; Sleeping...\n";
+            std::cout << clock_ << " Simulation: No activity; Sleeping...\n";
             std::this_thread::sleep_for(std::chrono::seconds(3));
         }
 

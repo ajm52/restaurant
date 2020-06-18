@@ -1,4 +1,5 @@
 #include "Waiter.hpp"
+#include "GlobalClock.hpp"
 #include "Table.hpp"
 #include "Job.hpp"
 #include "SeatingJob.hpp"
@@ -13,8 +14,9 @@
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
-Waiter::Waiter(std::string id, std::vector<std::shared_ptr<Table>> &tables, Foyer &foyer, JobTable &jt, std::shared_ptr<Menu> menu)
+Waiter::Waiter(std::string id, GlobalClock &gc, std::vector<std::shared_ptr<Table>> &tables, Foyer &foyer, JobTable &jt, std::shared_ptr<Menu> menu)
     : Worker(id),
+      clock_(gc),
       tablespace_(tables),
       foyer_(&foyer),
       jobTable_(jt),
@@ -26,6 +28,7 @@ Waiter::Waiter(std::string id, std::vector<std::shared_ptr<Table>> &tables, Foye
 
 Waiter::Waiter(const Waiter &w)
     : Worker(w.id_),
+      clock_(w.clock_),
       tablespace_(w.tablespace_),
       jobs_(w.jobs_),
       foyer_(w.foyer_),
@@ -38,6 +41,7 @@ Waiter &Waiter::operator=(const Waiter &w)
     if (this == &w)
         return *this;
     id_ = w.id_;
+    clock_ = w.clock_;
     tablespace_ = w.tablespace_;
     jobs_ = w.jobs_;
     foyer_ = w.foyer_;
@@ -48,6 +52,7 @@ Waiter &Waiter::operator=(const Waiter &w)
 
 Waiter::Waiter(Waiter &&w)
     : wID_(w.wID_),
+      clock_(w.clock_),
       tablespace_(w.tablespace_),
       jobs_(std::move(w.jobs_)),
       foyer_(w.foyer_),
@@ -80,6 +85,7 @@ void Waiter::init()
 
 void Waiter::run()
 {
+    std::cout << getClock() << " " << getId() << " is awake.\n";
     while (true)
     {
 
@@ -89,12 +95,12 @@ void Waiter::run()
         {
             getJobTable().getCV(getIDNumber())->wait(ul);
         }
-        std::cout << getId() << ": Work to be done. Acquiring jobs...\n";
+        std::cout << getClock() << " " << getId() << ": Work to be done. Acquiring jobs...\n";
         std::shared_ptr<std::vector<std::shared_ptr<Job>>> jobs = this->getJobTable().acquireAllJobs(this->getIDNumber(), true);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        std::cout << getId() << ": Jobs acquired. Pushing to local job list... ";
+        std::cout << getClock() << " " << getId() << ": Jobs acquired. Pushing to local job list... ";
         for (int i = 0; i < jobs.get()->size(); ++i)
             jobs_.push_back(jobs.get()->at(i));
 
@@ -105,15 +111,15 @@ void Waiter::run()
         for (int i = 0; i < jobs_.size(); ++i)
         {
             //TODO add an ID string to Job.
-            std::cout << getId() << ": Beginning Job#" << std::to_string(i) << ".\n";
+            std::cout << getClock() << " " << getId() << ": Beginning Job#" << std::to_string(i) << ".\n";
             jobs_[i]->accept(*this);
-            std::cout << getId() << ": Job#" << std::to_string(i) << " done.\n";
+            std::cout << getClock() << " " << getId() << ": Job#" << std::to_string(i) << " done.\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
         }
 
         //TODO find a clean way to junk completed Jobs from the local job list.
 
-        std::cout << getId() << ": Local job wave completed.\n";
+        std::cout << getClock() << " " << getId() << ": Local job wave completed.\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 
     } // end main while loop
@@ -121,7 +127,7 @@ void Waiter::run()
 
 void Waiter::handleJob(SeatingJob &sj)
 {
-    std::cout << getId() << ": Handling SJ for Table " << sj.tableID_ << std::endl;
+    std::cout << getClock() << " " << getId() << ": Handling SJ for Table " << sj.tableID_ << std::endl;
     std::shared_ptr<Party> pPtr = foyer_->removeParty(sj.tableID_);
 
     Table::WaiterAccess::seatParty(tablespace_[sj.tableID_], pPtr);
@@ -130,10 +136,10 @@ void Waiter::handleJob(SeatingJob &sj)
     Party::WaiterAccess::setMenu(pPtr, menu_);
     Party::WaiterAccess::signalServiceStarted(pPtr);
 
-    std::cout << getId() << ": Notified " << pPtr->getPID() << " that service has started.\n";
+    std::cout << getClock() << " " << getId() << ": Notified " << pPtr->getPID() << " that service has started.\n";
 }
 
 void Waiter::handleJob(OrderJob &oj)
 {
-    std::cout << getId() << ": handling OJ for order " << oj.order_.getOrderId() << std::endl;
+    std::cout << getClock() << " " << getId() << ": handling OJ for order " << oj.order_.getOrderId() << std::endl;
 }

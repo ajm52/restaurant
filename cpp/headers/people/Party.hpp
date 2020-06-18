@@ -2,6 +2,7 @@
 #define PARTY_HPP
 
 #include "Restaurant.hpp"
+#include "GlobalClock.hpp"
 #include <vector>
 #include <thread>
 #include <string>
@@ -72,11 +73,12 @@ public:
 
     /**
      * @description: constructor.
+     * @param gc simulation clock.
      * @param r the restaurant.
      * @param gCount number of guests assigned to the party.
      * @param pid the party's unique ID.
      */
-    Party(Restaurant &, unsigned, std::string);
+    Party(GlobalClock &, Restaurant &, unsigned, std::string);
 
     /**
      * @description: move constructor.
@@ -129,6 +131,12 @@ public:
     inline std::string &getPID() { return pid_; }
 
     /**
+     * @description: clock accessor.
+     * @returns the simulation clock.
+     */
+    inline GlobalClock &getClock() { return clock_; }
+
+    /**
      * @description: factory method for creating Parties.
      * @param r the restaurant.
      * @param gCount # of guests.
@@ -138,14 +146,8 @@ public:
     static std::shared_ptr<Party> makeParty(Restaurant &, unsigned, std::string);
 
 private:
+    GlobalClock &clock_;        ///< simulation clock.
     Restaurant &theRestaurant_; ///< a reference to the restaurant.
-
-    /**
-     * Synchronization/Threading variables
-     */
-    std::mutex m_;               ///< party's mutex.
-    std::condition_variable cv_; ///< party's condition variable.
-    std::thread mthread_;        ///< party's thread.
 
     /**
      * Party-specific data variables
@@ -155,7 +157,14 @@ private:
     std::shared_ptr<Waiter> theWaiter_;          ///< the waiter.
     std::shared_ptr<Table> theTable_;            ///< the table.
     std::shared_ptr<Menu> theMenu_;              ///< the menu.
-    bool hasBeenServiced_;                       ///< service flag.
+
+    /**
+     * Synchronization/Threading variables
+     */
+    bool hasBeenServiced_;       ///< service flag.
+    std::mutex m_;               ///< party's mutex.
+    std::condition_variable cv_; ///< party's condition variable.
+    std::thread mthread_;        ///< party's thread.
 
     /**
      * @description: inaccessible copy constructor; Parties shouldn't be copyable, as they are threaded.

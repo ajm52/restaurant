@@ -1,6 +1,7 @@
 #ifndef SIMULATION_HPP
 #define SIMULATION_HPP
 
+#include "GlobalClock.hpp"
 #include "Restaurant.hpp"
 #include "Party.hpp"
 #include "Menu.hpp"
@@ -69,6 +70,7 @@ private:
     std::vector<std::shared_ptr<Party>> simParties_; ///< sim parties.
     std::vector<unsigned> partiesInside_;            ///< IDs of parties inside restaurant.
     std::vector<unsigned> partiesOutside_;           ///< IDs of parties outside restaurant.
+    GlobalClock clock_;                              ///< simulation clock.
 };
 
 #endif // SIMULATION_HPP

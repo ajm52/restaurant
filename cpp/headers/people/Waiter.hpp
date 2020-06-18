@@ -3,6 +3,7 @@
 
 #include "Worker.hpp"
 #include "Table.hpp"
+#include "GlobalClock.hpp"
 #include "JobTable.hpp"
 #include "Menu.hpp"
 #include <string>
@@ -26,12 +27,13 @@ public:
     /**
      * @description: constructor.
      * @param id waiter id string.
+     * @param gc simulation clock.
      * @param tables the tablespace.
      * @param foyer the foyer.
      * @param jt the job table.
      * @param menu the restaurant menu.
      */
-    Waiter(std::string, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &, std::shared_ptr<Menu>);
+    Waiter(std::string, GlobalClock &, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &, std::shared_ptr<Menu>);
 
     /**
      * @description: copy constructor.
@@ -108,8 +110,15 @@ public:
      */
     void handleJob(OrderJob &);
 
+    /**
+     * @description: clock accessor.
+     * @returns simulation clock reference.
+     */
+    inline GlobalClock &getClock() { return clock_; }
+
 private:
-    std::string wID_; ///< this waiter's unique id.
+    std::string wID_;    ///< this waiter's unique id.
+    GlobalClock &clock_; ///< simulation clock.
 
     /**
      * user-defined containers.

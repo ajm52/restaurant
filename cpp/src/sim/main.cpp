@@ -6,8 +6,6 @@
 /**
  * @description: Main program of sim.
  * @author ajm
- * @created: 1/27/20
- * @modified: 6/3/20
  **/
 
 int main(int argc, char **argv)

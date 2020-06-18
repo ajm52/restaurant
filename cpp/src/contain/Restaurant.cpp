@@ -1,11 +1,13 @@
 #include "Restaurant.hpp"
+#include "GlobalClock.hpp"
 #include "Waiter.hpp"
 #include <vector>
 #include <string>
 #include <iostream>
 
-Restaurant::Restaurant(std::shared_ptr<Menu> menu, unsigned tCount, unsigned wCount, unsigned pCount)
-    : tableCount_(tCount),
+Restaurant::Restaurant(GlobalClock &clock, std::shared_ptr<Menu> menu, unsigned tCount, unsigned wCount, unsigned pCount)
+    : clock_(clock),
+      tableCount_(tCount),
       waiterCount_(wCount),
       partyCount_(pCount),
       jobTable_(wCount),
@@ -13,11 +15,12 @@ Restaurant::Restaurant(std::shared_ptr<Menu> menu, unsigned tCount, unsigned wCo
       door_(),
       tables_(),
       waiters_(),
-      doorman_(door_, foyer_, jobTable_),
+      doorman_(door_, foyer_, jobTable_, clock_),
       menu_(menu) {}
 
 Restaurant::Restaurant(const Restaurant &r)
-    : tableCount_(r.tableCount_),
+    : clock_(r.clock_),
+      tableCount_(r.tableCount_),
       waiterCount_(r.waiterCount_),
       partyCount_(r.partyCount_),
       jobTable_(r.jobTable_),
@@ -25,13 +28,14 @@ Restaurant::Restaurant(const Restaurant &r)
       door_(r.door_),
       tables_(r.tables_),
       waiters_(r.waiters_),
-      doorman_(door_, foyer_, jobTable_),
+      doorman_(door_, foyer_, jobTable_, clock_),
       menu_(r.menu_) {}
 
 Restaurant &Restaurant::operator=(const Restaurant &r)
 {
     if (this == &r)
         return *this;
+    clock_ = r.clock_;
     tableCount_ = r.tableCount_;
     waiterCount_ = r.waiterCount_;
     partyCount_ = r.partyCount_;
@@ -52,11 +56,13 @@ Restaurant::~Restaurant()
 
 void Restaurant::init()
 {
-    std::cout << "Restaurant: Building Tables...";
+    std::cout << getClock() << " Restaurant: Building Tables...";
     buildTables();
-    std::cout << " done.\nRestaurant: Building Waiters...";
+    std::cout << " done.\n"
+              << getClock() << " Restaurant: Building Waiters...";
     buildWaiters();
-    std::cout << " done.\nRestaurant: Initializing Doorman threads...";
+    std::cout << " done.\n"
+              << getClock() << " Restaurant: Initializing Doorman threads...";
     doorman_.init();
     std::cout << " done.\n";
 }

@@ -1,6 +1,7 @@
 #ifndef RESTAURANT_HPP
 #define RESTAURANT_HPP
 
+#include "GlobalClock.hpp"
 #include "Door.hpp"
 #include "Foyer.hpp"
 #include "Waiter.hpp"
@@ -21,12 +22,13 @@ class Restaurant
 public:
     /**
      * @description: constructor.
+     * @param clock the simulation clock.
+     * @param menu the restaurant menu.
      * @param tCount table count.
      * @param wCount waiter count.
      * @param pCount party count.
-     * @param menu the restaurant menu.
      */
-    Restaurant(std::shared_ptr<Menu>, unsigned = 0, unsigned = 0, unsigned = 0);
+    Restaurant(GlobalClock &, std::shared_ptr<Menu>, unsigned = 0, unsigned = 0, unsigned = 0);
 
     /**
      * @description: copy constructor.
@@ -95,7 +97,14 @@ public:
      */
     inline std::shared_ptr<Menu> getMenu() { return menu_; }
 
+    /**
+     * @description: clock accessor.
+     * @returns a clock reference.
+     */
+    inline GlobalClock &getClock() { return clock_; }
+
 private:
+    GlobalClock &clock_; ///< simulation clock.
     /**
      * primitives.
      */

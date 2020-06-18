@@ -1,5 +1,6 @@
 #include "Doorman.hpp"
 #include "SeatingJob.hpp"
+#include "GlobalClock.hpp"
 #include "Party.hpp"
 #include <thread>
 #include <iostream>
@@ -15,7 +16,7 @@ void Doorman::init()
 
 void Doorman::controlInbound()
 {
-    std::cout << "Doorman[I] awake.\n";
+    std::cout << getClock() << " Doorman[I] awake.\n";
 
     while (true)
     {
@@ -24,7 +25,7 @@ void Doorman::controlInbound()
         while (d_.getEntryQueue().empty()) // Doorman waits until it is notified by an inbound Party.
             d_.getCV().wait(ul);
 
-        std::cout << "Doorman[I]: Dealing with queued Parties..\n";
+        std::cout << getClock() << " Doorman[I]: Dealing with queued Parties..\n";
 
         // begin critical section; wait(ul) automatically locks on return.
 
@@ -45,7 +46,7 @@ void Doorman::controlInbound()
 
             jt_.getCV(wID)->notify_one(); // Notify Waiter that a Party is in the Foyer.
 
-            std::cout << "Doorman[I]: Notified W-" << std::to_string(wID) << "; " << p->getPID() << " is in the Foyer.\n";
+            std::cout << getClock() << " Doorman[I]: Notified W-" << std::to_string(wID) << "; " << p->getPID() << " is in the Foyer.\n";
         }
 
         ul.unlock(); // end critical section

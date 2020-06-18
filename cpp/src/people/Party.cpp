@@ -1,5 +1,6 @@
 #include "Party.hpp"
 #include "Menu.hpp"
+#include "GlobalClock.hpp"
 #include "Guest.hpp"
 #include "Door.hpp"
 #include "Waiter.hpp"
@@ -19,8 +20,9 @@ void Party::WaiterAccess::signalServiceStarted(std::shared_ptr<Party> p)
     p->cv_.notify_one();
 }
 
-Party::Party(Restaurant &r, unsigned gCount, std::string pid)
-    : theRestaurant_(r),
+Party::Party(GlobalClock &gc, Restaurant &r, unsigned gCount, std::string pid)
+    : clock_(gc),
+      theRestaurant_(r),
       m_(),
       cv_(),
       pid_(pid),
@@ -31,7 +33,8 @@ Party::Party(Restaurant &r, unsigned gCount, std::string pid)
       hasBeenServiced_(false) {}
 
 Party::Party(Party &&p)
-    : theRestaurant_(p.theRestaurant_),
+    : clock_(p.clock_),
+      theRestaurant_(p.theRestaurant_),
       m_(),
       cv_(),
       mthread_(std::move(p.mthread_)),
@@ -52,6 +55,7 @@ Party &Party::operator=(Party &&p)
     if (this == &p)
         return *this;
     // restaurant, m, and cv are not reseatable
+    clock_ = p.clock_;
     mthread_ = std::move(p.mthread_);
     pid_ = p.pid_;
     guests_ = std::move(p.guests_);
@@ -70,7 +74,7 @@ void Party::init()
 
 void Party::run()
 {
-    std::cout << this->getPID() << " is awake.\n";
+    std::cout << getClock() << " " << getPID() << " is awake.\n";
     enterRestaurant();
     awaitService();
     /**
@@ -101,19 +105,19 @@ void Party::enterRestaurant()
         }
     } // End critical section
 
-    std::cout << this->getPID() << " entered the restaurant queue.\n";
+    std::cout << getPID() << " entered the restaurant queue.\n";
 }
 
 void Party::awaitService()
 {
-    std::cout << this->getPID() << ": Pinging for service...\n";
+    std::cout << getClock() << " " << getPID() << ": Pinging for service...\n";
     theRestaurant_.getDoor().getCV().notify_one(); // notifies a thread to place this in the Foyer, which notifies a Waiter to place this at a Table.
     std::unique_lock<std::mutex> ul(m_);
 
     while (checkServiceFlag()) // waits here until notified by their Waiter.
         cv_.wait(ul);
 
-    std::cout << this->getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
+    std::cout << getClock() << " " << getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
 }
 
 std::shared_ptr<Party> Party::makeParty(Restaurant &r, unsigned gCount, std::string pid)
