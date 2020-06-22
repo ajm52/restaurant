@@ -29,7 +29,7 @@ public:
          * @param t target table.
          * @param p to be seated.
          */
-        static bool seatParty(std::shared_ptr<Table>, std::shared_ptr<Party>);
+        static bool seatParty(std::shared_ptr<Table>, Party *);
         friend class Waiter;
     };
 
@@ -52,9 +52,9 @@ public:
     inline constexpr const unsigned tableId() { return id_; }
 
 private:
-    mutable bool isOccupied_;                     ///< occupation flag.
-    const unsigned id_;                           ///< a unique table identifier.
-    std::optional<std::shared_ptr<Party>> party_; ///< pointer to the Party at this Table (null if unoccupied).
+    mutable bool isOccupied_; ///< occupation flag.
+    const unsigned id_;       ///< a unique table identifier.
+    Party *party_;            ///< pointer to the Party at this Table (null if unoccupied).
 };
 
 #endif // TABLE_HPP

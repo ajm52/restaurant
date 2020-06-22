@@ -79,7 +79,7 @@ void Restaurant::buildWaiters()
 {
     for (int i = 0; i < waiterCount_; ++i)
     {
-        auto wPtr = std::make_shared<Waiter>("W-" + std::to_string(i), tables_, foyer_, jobTable_, menu_);
+        auto wPtr = std::make_shared<Waiter>("W-" + std::to_string(i), clock_, tables_, foyer_, jobTable_, menu_);
         waiters_.push_back(wPtr);
     }
 }

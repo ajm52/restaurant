@@ -3,7 +3,6 @@
 
 #include <queue>
 #include <vector>
-#include <memory>
 #include <mutex>
 #include <condition_variable>
 
@@ -77,14 +76,14 @@ public:
      * @returns the entry queue.
      * @note blocks until entry mutex is free.
      **/
-    inline std::queue<std::shared_ptr<Party>> &getEntryQueue() { return comingIn_; }
+    inline std::queue<Party *> &getEntryQueue() { return comingIn_; }
 
     /**
      * @description: accessor to exit queue.
      * @returns the exit queue.
      * @note blocks until exit mutex is free.
      **/
-    inline std::queue<std::shared_ptr<Party>> &getExitQueue() { return goingOut_; }
+    inline std::queue<Party *> &getExitQueue() { return goingOut_; }
 
     /**
      * @description: CV accessor.
@@ -93,12 +92,11 @@ public:
     inline std::condition_variable &getCV() { return cv_; }
 
 private:
-    mutable std::mutex mIn_;                      ///< synchronizes access to incoming queue.
-    mutable std::mutex mOut_;                     ///< synchronizes access to outgoing queue.
-    std::queue<std::shared_ptr<Party>> comingIn_; ///< queue of incoming parties.
-    std::queue<std::shared_ptr<Party>> goingOut_; ///< queue of outgoing parties.
-    std::condition_variable cv_;                  ///< for parties going in and out (waited on by doorman)
-    std::vector<std::shared_ptr<Party>> outside_; ///< parties that are not in the restaurant.
+    mutable std::mutex mIn_;       ///< synchronizes access to incoming queue.
+    mutable std::mutex mOut_;      ///< synchronizes access to outgoing queue.
+    std::queue<Party *> comingIn_; ///< queue of incoming parties.
+    std::queue<Party *> goingOut_; ///< queue of outgoing parties.
+    std::condition_variable cv_;   ///< for parties going in and out (waited on by doorman)
 };
 
 #endif // DOOR_HPP

@@ -57,18 +57,18 @@ unsigned Foyer::getNextTableID()
     return id;
 }
 
-void Foyer::putParty(unsigned id, std::shared_ptr<Party> pPtr)
+void Foyer::putParty(unsigned id, Party *pPtr)
 {
 
     { // begin critical section
         std::lock_guard<std::mutex> lg(m_);
-        toBeSeated_.insert(std::pair<unsigned, std::shared_ptr<Party>>(id, pPtr));
+        toBeSeated_.insert(std::pair<unsigned, Party *>(id, pPtr));
     } // end critical section
 }
 
-std::shared_ptr<Party> Foyer::removeParty(unsigned id)
+Party *Foyer::removeParty(unsigned id)
 {
-    std::shared_ptr<Party> ret;
+    Party *ret = nullptr;
     { // begin critical section
         std::lock_guard<std::mutex> lg(m_);
         auto itr = toBeSeated_.find(id);

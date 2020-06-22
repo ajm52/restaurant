@@ -180,7 +180,7 @@ void Simulation::buildSimParties(Restaurant &r)
     for (int i = 0; i < partyCount_; ++i)
     {
         std::string str = "P-" + std::to_string(i);
-        auto pPtr = std::make_shared<Party>(r, 0, str);
+        auto pPtr = std::make_shared<Party>(clock_, r, 0, str);
         simParties_.push_back(pPtr);
         partiesOutside_.push_back(i);
     }

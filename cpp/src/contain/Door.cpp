@@ -13,18 +13,16 @@ Door::Door(const Door &d)
       mOut_(),
       comingIn_(d.comingIn_),
       goingOut_(d.goingOut_),
-      cv_(),
-      outside_(d.outside_) {}
+      cv_() {}
 
 Door &Door::operator=(const Door &d)
 {
     if (this == &d)
         return *this;
-    std::queue<std::shared_ptr<Party>> swapper(d.comingIn_);
+    std::queue<Party *> swapper(d.comingIn_);
     comingIn_.swap(swapper);
     swapper = d.goingOut_;
     goingOut_.swap(swapper);
-    outside_.assign(d.outside_.begin(), d.outside_.end());
     return *this;
 }
 

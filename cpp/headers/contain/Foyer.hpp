@@ -1,7 +1,6 @@
 #ifndef FOYER_HPP
 #define FOYER_HPP
 
-#include <memory>
 #include <vector>
 #include <queue>
 #include <map>
@@ -58,7 +57,7 @@ struct Foyer
      * @param pPtr a pointer to the party to be seated.
      * @returns true if the Party was placed successfully, false otherwise.
      */
-    void putParty(unsigned, std::shared_ptr<Party>);
+    void putParty(unsigned, Party *);
 
     /**
      * @description: remove and return a party from the foyer.
@@ -66,12 +65,12 @@ struct Foyer
      * @returns a pointer to the corresponding party, or nullptr if 
      * no such mapping exists.
      */
-    std::shared_ptr<Party> removeParty(unsigned);
+    Party *removeParty(unsigned);
 
-    unsigned tableCount_;                                   ///< # of restaurant tables.
-    std::queue<unsigned> nextTableIDs_;                     ///< table indices that are ready to be used.
-    std::map<unsigned, std::shared_ptr<Party>> toBeSeated_; ///< map of <Table #, Party*> pairs
-    mutable std::mutex m_;                                  ///< foyer mutex.
+    unsigned tableCount_;                    ///< # of restaurant tables.
+    std::queue<unsigned> nextTableIDs_;      ///< table indices that are ready to be used.
+    std::map<unsigned, Party *> toBeSeated_; ///< map of <Table #, Party*> pairs
+    mutable std::mutex m_;                   ///< foyer mutex.
 
 private:
     /**

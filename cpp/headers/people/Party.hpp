@@ -37,7 +37,7 @@ public:
          * @param p party.
          * @param w waiter.
          */
-        inline static void setWaiter(std::shared_ptr<Party> p, std::shared_ptr<Waiter> w)
+        inline static void setWaiter(Party *p, std::shared_ptr<Waiter> w)
         {
             p->theWaiter_ = w;
         }
@@ -47,7 +47,7 @@ public:
          * @param p table receiver.
          * @param t restaurant table.
          */
-        inline static void setTable(std::shared_ptr<Party> p, std::shared_ptr<Table> t)
+        inline static void setTable(Party *p, std::shared_ptr<Table> t)
         {
             p->theTable_ = t;
         }
@@ -57,7 +57,7 @@ public:
          * @param p menu receiver.
          * @param m restaurant menu.
          */
-        inline static void setMenu(std::shared_ptr<Party> p, std::shared_ptr<Menu> m)
+        inline static void setMenu(Party *p, std::shared_ptr<Menu> m)
         {
             p->theMenu_ = m;
         }
@@ -66,7 +66,7 @@ public:
          * @description: used by Waiters to signal Parties.
          * @param p signal receiver.
          */
-        static void signalServiceStarted(std::shared_ptr<Party>);
+        static void signalServiceStarted(Party *);
 
         friend class Waiter;
     };
@@ -138,12 +138,13 @@ public:
 
     /**
      * @description: factory method for creating Parties.
+     * @param gc simulation clock.
      * @param r the restaurant.
      * @param gCount # of guests.
      * @param pid unique party id.
      * @returns a smart pointer to this party.
      */
-    static std::shared_ptr<Party> makeParty(Restaurant &, unsigned, std::string);
+    static std::shared_ptr<Party> makeParty(GlobalClock &, Restaurant &, unsigned, std::string);
 
 private:
     GlobalClock &clock_;        ///< simulation clock.

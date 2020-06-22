@@ -14,10 +14,11 @@
 #include <memory>
 #include <chrono>
 
-void Party::WaiterAccess::signalServiceStarted(std::shared_ptr<Party> p)
+void Party::WaiterAccess::signalServiceStarted(Party *p)
 {
     p->hasBeenServiced_ = true;
     p->cv_.notify_one();
+    std::cout << p->getClock() << " " << p->getPID() << ": Waiter notify done.\n";
 }
 
 Party::Party(GlobalClock &gc, Restaurant &r, unsigned gCount, std::string pid)
@@ -68,7 +69,7 @@ Party &Party::operator=(Party &&p)
 
 void Party::init()
 {
-    std::thread t(&Party::run, this);
+    std::thread t(&Party::run, std::ref(*this));
     mthread_ = std::move(t);
 }
 
@@ -94,7 +95,7 @@ void Party::enterRestaurant()
             try
             {
                 std::lock_guard<std::mutex> lg(theRestaurant_.getDoor().getEntryMutex());
-                theRestaurant_.getDoor().getEntryQueue().push(std::make_shared<Party>(std::move(*this)));
+                theRestaurant_.getDoor().getEntryQueue().push(this);
                 break;
             }
             catch (const std::exception &e) //TODO clean up this error handling (eventually)
@@ -114,13 +115,17 @@ void Party::awaitService()
     theRestaurant_.getDoor().getCV().notify_one(); // notifies a thread to place this in the Foyer, which notifies a Waiter to place this at a Table.
     std::unique_lock<std::mutex> ul(m_);
 
-    while (checkServiceFlag()) // waits here until notified by their Waiter.
+    while (!checkServiceFlag())
+    {
+        std::cout << getClock() << " " << getPID() << ": Waiting for notification from a Waiter..\n";
         cv_.wait(ul);
+    }
+    // waits here until notified by their Waiter.
 
     std::cout << getClock() << " " << getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
 }
 
-std::shared_ptr<Party> Party::makeParty(Restaurant &r, unsigned gCount, std::string pid)
+std::shared_ptr<Party> Party::makeParty(GlobalClock &gc, Restaurant &r, unsigned gCount, std::string pid)
 {
-    return std::make_shared<Party>(r, gCount, pid);
+    return std::make_shared<Party>(gc, r, gCount, pid);
 }

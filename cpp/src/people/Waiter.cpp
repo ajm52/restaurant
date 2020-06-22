@@ -79,7 +79,7 @@ const unsigned Waiter::getIDNumber() const
 
 void Waiter::init()
 {
-    std::thread t(&Waiter::run, this);
+    std::thread t(&Waiter::run, std::ref(*this));
     mthread_ = std::move(t);
 }
 
@@ -128,7 +128,7 @@ void Waiter::run()
 void Waiter::handleJob(SeatingJob &sj)
 {
     std::cout << getClock() << " " << getId() << ": Handling SJ for Table " << sj.tableID_ << std::endl;
-    std::shared_ptr<Party> pPtr = foyer_->removeParty(sj.tableID_);
+    Party *pPtr = foyer_->removeParty(sj.tableID_);
 
     Table::WaiterAccess::seatParty(tablespace_[sj.tableID_], pPtr);
     Party::WaiterAccess::setTable(pPtr, tablespace_[sj.tableID_]);

@@ -7,7 +7,7 @@ Table::Table(int id)
       id_(id),
       party_(nullptr) {}
 
-bool Table::WaiterAccess::seatParty(std::shared_ptr<Table> t, std::shared_ptr<Party> p)
+bool Table::WaiterAccess::seatParty(std::shared_ptr<Table> t, Party *p)
 {
     if (!t->isOccupied_)
     {

@@ -9,7 +9,7 @@
 
 void Doorman::init()
 {
-    std::thread t1(&Doorman::controlInbound, this);
+    std::thread t1(&Doorman::controlInbound, std::ref(*this));
     // std::thread t2(&Doorman::controlOutbound, this);
     incomingHandler_ = std::move(t1);
 }
@@ -31,7 +31,7 @@ void Doorman::controlInbound()
 
         while (!d_.getEntryQueue().empty()) // transfer all queued Parties into the Foyer (or as many as possible until Restaurant hits cap)
         {
-            std::shared_ptr<Party> p = d_.getEntryQueue().front();
+            Party *p = d_.getEntryQueue().front();
             d_.getEntryQueue().pop();
             unsigned tID = f_.getNextTableID(); // place party in the foyer
             f_.putParty(tID, p);
