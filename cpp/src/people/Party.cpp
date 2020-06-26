@@ -6,6 +6,9 @@
 #include "Waiter.hpp"
 #include "Table.hpp"
 #include "Restaurant.hpp"
+#include "SimMonitor.hpp"
+#include "OrderService.hpp"
+#include "Order.hpp"
 #include <iostream>
 #include <queue>
 #include <mutex>
@@ -21,9 +24,10 @@ void Party::WaiterAccess::signalServiceStarted(Party *p)
     std::cout << p->getClock() << " " << p->getPID() << ": Waiter notify done.\n";
 }
 
-Party::Party(GlobalClock &gc, Restaurant &r, unsigned gCount, std::string pid)
+Party::Party(GlobalClock &gc, Restaurant &r, SimMonitor &sm, unsigned gCount, std::string pid)
     : clock_(gc),
       theRestaurant_(r),
+      sm_(sm),
       m_(),
       cv_(),
       pid_(pid),
@@ -36,6 +40,7 @@ Party::Party(GlobalClock &gc, Restaurant &r, unsigned gCount, std::string pid)
 Party::Party(Party &&p)
     : clock_(p.clock_),
       theRestaurant_(p.theRestaurant_),
+      sm_(p.sm_),
       m_(),
       cv_(),
       mthread_(std::move(p.mthread_)),
@@ -55,8 +60,7 @@ Party &Party::operator=(Party &&p)
 {
     if (this == &p)
         return *this;
-    // restaurant, m, and cv are not reseatable
-    clock_ = p.clock_;
+    // restaurant, clock, sm, m, and cv are not reseatable
     mthread_ = std::move(p.mthread_);
     pid_ = p.pid_;
     guests_ = std::move(p.guests_);
@@ -76,10 +80,21 @@ void Party::init()
 void Party::run()
 {
     std::cout << getClock() << " " << getPID() << " is awake.\n";
+
     enterRestaurant();
+
     awaitService();
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    // ... Wait some time, make an order, and submit.
+    Order o = createOrder(1, 'F'); //NOTE 1 and 'F' are magic constants! Short for "1 food selection"
+    submitOrder(o);
+
+    // wait for a notification from Waiter that it's received the Order.
+
+    // wait again for the Order to arrive.
+
     /**
-     * 1. after a pause, place an Order on the Table and submit an OrderJob to the JobTable.
      * 2. wait until Waiter notifies that it has picked up the Order.
      * 3. wait again until the Waiter notifies that the Order has been placed on the Table.
      * 4. run a Timer. 
@@ -116,16 +131,37 @@ void Party::awaitService()
     std::unique_lock<std::mutex> ul(m_);
 
     while (!checkServiceFlag())
-    {
+    { // waits here until notified by their Waiter.
         std::cout << getClock() << " " << getPID() << ": Waiting for notification from a Waiter..\n";
         cv_.wait(ul);
     }
-    // waits here until notified by their Waiter.
 
     std::cout << getClock() << " " << getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
 }
 
-std::shared_ptr<Party> Party::makeParty(GlobalClock &gc, Restaurant &r, unsigned gCount, std::string pid)
+Order Party::createOrder(unsigned count, char type) //TODO move this method into OrderService.
 {
-    return std::make_shared<Party>(gc, r, gCount, pid);
+    if (!theTable_ || !theMenu_)
+        return Order();
+
+    std::vector<std::string> selections(count);
+    for (auto i = 0; i < count; ++i)
+    {
+        selections.push_back(theMenu_->selectOption(type));
+    }
+    std::string orderID = sm_.getNextOrderID();
+    Order o(orderID, selections, theTable_->tableId());
+    return o;
+}
+
+void Party::submitOrder(Order o)
+{
+    std::cout << getClock() << " " << getPID() << ": Submitting Order " << o.getOrderId() << ".\n";
+    OrderService::forwardOrder(o, theWaiter_);
+    std::cout << getClock() << " " << getPID() << ": " << o.getOrderId() << " submitted.\n";
+}
+
+std::shared_ptr<Party> Party::makeParty(GlobalClock &gc, Restaurant &r, SimMonitor &sm, unsigned gCount, std::string pid)
+{
+    return std::make_shared<Party>(gc, r, sm, gCount, pid);
 }

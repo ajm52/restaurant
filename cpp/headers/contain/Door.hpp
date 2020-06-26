@@ -99,4 +99,9 @@ private:
     std::condition_variable cv_;   ///< for parties going in and out (waited on by doorman)
 };
 
+/**
+ * TODO make Door uncopyable; mutices/CVs are uncopyable/unmoveable.
+ * I can get behind having move semantics, but copy semantics? No way.
+ */
+
 #endif // DOOR_HPP

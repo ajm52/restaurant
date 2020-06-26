@@ -3,6 +3,8 @@
 
 #include "Restaurant.hpp"
 #include "GlobalClock.hpp"
+#include "SimMonitor.hpp"
+#include "Order.hpp"
 #include <vector>
 #include <thread>
 #include <string>
@@ -75,10 +77,11 @@ public:
      * @description: constructor.
      * @param gc simulation clock.
      * @param r the restaurant.
+     * @param sm the simulation monitor.
      * @param gCount number of guests assigned to the party.
      * @param pid the party's unique ID.
      */
-    Party(GlobalClock &, Restaurant &, unsigned, std::string);
+    Party(GlobalClock &, Restaurant &, SimMonitor &, unsigned, std::string);
 
     /**
      * @description: move constructor.
@@ -95,6 +98,9 @@ public:
 
     /**
      * @description: destructor.
+     * NOTE we will eventually need to implement 
+     * a proper destructor, at least for the sake
+     * of thread cleanup. 
      */
     ~Party() = default;
 
@@ -118,6 +124,22 @@ public:
      */
     void awaitService();
 
+    std::vector<std::string> selectOptions(unsigned, char);
+
+    /**
+     * @description: creates an Order with a set of random options off of the menu.
+     * @param count number of options to select.
+     * @param type type of option to select from.
+     * @returns the created order.
+     */
+    Order createOrder(unsigned, char);
+
+    /**
+     * @description: used to submit an order to the Waiter.
+     * @param o order being submitted.
+     */
+    void submitOrder(Order);
+
     /**
      * @description: accessor method for party's service flag.
      * @returns whether or not this party has been serviced.
@@ -140,15 +162,17 @@ public:
      * @description: factory method for creating Parties.
      * @param gc simulation clock.
      * @param r the restaurant.
+     * @param sm simulation monitor.
      * @param gCount # of guests.
      * @param pid unique party id.
      * @returns a smart pointer to this party.
      */
-    static std::shared_ptr<Party> makeParty(GlobalClock &, Restaurant &, unsigned, std::string);
+    static std::shared_ptr<Party> makeParty(GlobalClock &, Restaurant &, SimMonitor &, unsigned, std::string);
 
 private:
     GlobalClock &clock_;        ///< simulation clock.
     Restaurant &theRestaurant_; ///< a reference to the restaurant.
+    SimMonitor &sm_;            ///< simulation monitor.
 
     /**
      * Party-specific data variables
@@ -181,24 +205,20 @@ private:
 #endif // PARTY_HPP
 
 /**
+ * TODO pass off responsibility of "making an Order" to OrderService; 
+ * Parties should only be concerned with making Menu selections. 
+ * 
  * TODO write a method buildGuests(), or should Guests be passed in?
  * 
- * TODO: write a method updateStatus.
+ * TODO write a method updateStatus.
  *      - after changing its Status, Party should get a factory-generated Activity
  *      and send it off to the front-end updating interface.
  * 
- * TODO: write methods for interacting with the Waiter.
+ * TODO write a method for exiting restaurant.
  * 
- * TODO: write methods for entering/exiting restaurant.
- *      - should these be member functions? Why or why not?
- * 
- * TODO: implement thread capabilities
+ * TODO implement thread capabilities.
  *      - define the Party's "lifetime" (what should the "run" function look like?)
  *      - how should this be represented with code?
  * 
- * TODO: implement socket capabilities
- *      - have its own socket
- *      - have a set of message response functions (pertaining to DRY)
- * 
- * TODO: write test cases for member data, threading, and socket I/O.
+ * TODO write test cases for member data, threading, and socket I/O. (eventually?)
  **/

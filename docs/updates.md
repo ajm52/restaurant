@@ -1,6 +1,6 @@
 # this doc states and describes the various updates that will be implemented.
 
-# updates are used to communicate simulation info from BE to FE via the Messenger.
+Updates are used to communicate simulation info from BE to FE via the Messenger. While all of these may not be implemented exactly as stated below, this doc will definitely be of great utility.
 
 **UPDATES**
 

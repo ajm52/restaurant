@@ -76,7 +76,7 @@ private:
 };
 
 /**
- * TODO: Perhaps use typedef/alias to more explicitly format map keys?
+ * TODO: use typedef/alias to reduce verbosity.
  * 
  * NOTE: Random selection of a MenuEntry will definitely have room for optimization.
  **/

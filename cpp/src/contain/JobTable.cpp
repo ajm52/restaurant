@@ -9,8 +9,10 @@
 #include <map>
 #include <iostream>
 
-JobTable::JobTable(unsigned numWaiters)
+JobTable::JobTable(unsigned numWaiters, unsigned numCooks, unsigned numBartenders)
     : numWaiters_(numWaiters),
+      numCooks_(numCooks),
+      numBartenders_(numBartenders),
       cvMap_(),
       jobQueues_(numWaiters_),
       mMap_(),
@@ -21,6 +23,8 @@ JobTable::JobTable(unsigned numWaiters)
 
 JobTable::JobTable(const JobTable &jt)
     : numWaiters_(jt.numWaiters_),
+      numCooks_(jt.numCooks_),
+      numBartenders_(jt.numBartenders_),
       cvMap_(jt.cvMap_),
       jobQueues_(jt.jobQueues_),
       mMap_(jt.mMap_),
@@ -31,6 +35,8 @@ JobTable &JobTable::operator=(const JobTable &jt)
     if (this == &jt)
         return *this;
     numWaiters_ = jt.numWaiters_;
+    numCooks_ = jt.numCooks_;
+    numBartenders_ = jt.numBartenders_;
     cvMap_ = jt.cvMap_;
     jobQueues_ = jt.jobQueues_;
     mMap_ = jt.mMap_;
@@ -39,7 +45,7 @@ JobTable &JobTable::operator=(const JobTable &jt)
 }
 
 JobTable::~JobTable()
-{
+{ //NOTE explicit clearing may not be necessary. Worth investigating.
     mMap_.clear();
     cvMap_.clear();
     jobQueues_.clear();
@@ -51,15 +57,10 @@ void JobTable::queueJob(unsigned index, std::shared_ptr<Job> job)
     if (index >= numWaiters_) //TODO throw an exception here.
         return;
     { //begin critical section
-        std::cout << "lock\n";
         std::lock_guard<std::mutex> lg(*(mMap_[index]));
-        std::cout << "lock\n";
         jobQueues_[index].push(job);
-        std::cout << "lock\n";
         jobFlags_[index] = true;
     } //end critical section
-
-    std::cout << "job queued\n";
 }
 
 std::shared_ptr<Job> JobTable::acquireJob(unsigned index, bool isLocked)

@@ -67,7 +67,9 @@ struct Foyer
      */
     Party *removeParty(unsigned);
 
-    unsigned tableCount_;                    ///< # of restaurant tables.
+    unsigned tableCount_; ///< # of restaurant tables.
+
+    //TODO move nextTableIDs to Doorman.
     std::queue<unsigned> nextTableIDs_;      ///< table indices that are ready to be used.
     std::map<unsigned, Party *> toBeSeated_; ///< map of <Table #, Party*> pairs
     mutable std::mutex m_;                   ///< foyer mutex.
@@ -81,3 +83,8 @@ private:
 };
 
 #endif // FOYER_HPP
+
+/**
+ * TODO research 'explicit' keyword and proper usage.
+ * TODO make Foyer uncopyable, yet moveable.
+ */

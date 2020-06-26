@@ -25,9 +25,11 @@ class JobTable
 public:
     /**
      * @description: constructor.
-     * @param numWaiters # of restaurant waiters.
+     * @param numWaiters # of restaurant waiters
+     * @param numCooks # of restaurant cooks
+     * @param numBartenders # of restaurant bartenders
      */
-    JobTable(unsigned = 0);
+    JobTable(unsigned = 0, unsigned = 0, unsigned = 0);
 
     /**
      * @description: copy constructor.
@@ -96,8 +98,28 @@ public:
      */
     std::shared_ptr<std::mutex> getMutex(unsigned);
 
+    /**
+     * @description: waiter count accessor.
+     * @returns the # of waiters in the restaurant.
+     */
+    inline const unsigned waiterCount() const { return numWaiters_; }
+
+    /**
+     * @description: cook count accessor.
+     * @returns the # of cooks in the restaurant.
+     */
+    inline const unsigned cookCount() const { return numCooks_; }
+
+    /**
+     * @description: bartender count accessor.
+     * @returns the # of bartenders in the restaurant.
+     */
+    inline const unsigned bartenderCount() const { return numBartenders_; }
+
 private:
     unsigned numWaiters_;                                                ///< # of restaurant waiters
+    unsigned numCooks_;                                                  ///< # of restaurant cooks
+    unsigned numBartenders_;                                             ///< # of restaurant bartenders
     std::map<unsigned, std::shared_ptr<std::condition_variable>> cvMap_; ///< worker CVs
     std::vector<std::queue<std::shared_ptr<Job>>> jobQueues_;            ///< worker job queues
     std::map<unsigned, std::shared_ptr<std::mutex>> mMap_;               ///< job queue mutexes
@@ -114,6 +136,6 @@ private:
 /**
  * TODO write methods validateJobQueueSize(unsigned) and validateIndex(unsigned)
  * to eliminate repeated code.
- * 
- * TODO change jobQ to work with smart ptrs of Jobs.
+ * TODO make JobTable uncopyable, yet moveable.
+ * TODO eliminate the need for worker tallies; use strings as map keys instead.
  */

@@ -129,3 +129,8 @@ private:
 };
 
 #endif // RESTAURANT_HPP
+
+/**
+ * TODO investigate the need for having const and non-const getters.
+ * TODO make Restaurant uncopyable, but moveable.
+ */

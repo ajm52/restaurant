@@ -2,6 +2,7 @@
 #define SIMULATION_HPP
 
 #include "GlobalClock.hpp"
+#include "SimMonitor.hpp"
 #include "Restaurant.hpp"
 #include "Party.hpp"
 #include "Menu.hpp"
@@ -71,10 +72,12 @@ private:
     std::vector<unsigned> partiesInside_;            ///< IDs of parties inside restaurant.
     std::vector<unsigned> partiesOutside_;           ///< IDs of parties outside restaurant.
     GlobalClock clock_;                              ///< simulation clock.
+    SimMonitor sm_;                                  ///< simulation monitor.
 };
 
 #endif // SIMULATION_HPP
 
 /**
- * NOTE: May need to modify dtor in the future to clean up used memory.
+ * TODO move worker tallies to SimMonitor (?)
+ * NOTE May need to modify dtor in the future to clean up allocated memory.
  **/

@@ -57,3 +57,7 @@ private:
     std::thread outgoingHandler_; ///< sends parties on their way.
 };
 #endif // DOORMAN_HPP
+
+/**
+ * TODO implement controlOutbound().
+ */

@@ -1,66 +1,50 @@
-This document will be used to describe, in respectable detail, the interaction(s) between entities of the restaurant.
+# This document is intended to describe, in respectable detail, the interaction(s) between restaurant entities.
 
-interactions:
+## Note that these interactions are described in pseudocode, with comments where applicable.
 
-1 - Guest(s) enter restaurant
+### 1 - Party entering the Restaurant.
 
+    /*
+    Parties place themselves in the Restaurant's inbound queue.
+    */
     party.enter()
-    party.findTable()
-    party.sitAtTable()
-    /*
-    when the party sits down at a table,
-    a hidden service adds a "greet table" job to the
-    tablespace job queue and server pool is notified.
-
-    */
-
-2 - Waiter greets table
-
-    waiter.greet(table)
 
     /*
-        during this, waiter provides menus for each
-        guest and takes drink orders.
+    Following self-placement, Parties must gain access (using `std::lock_guard<std::mutex>`) to the Door's condition variable, notifying the Doorman via said CV.
     */
+    party.notifyDoorman()
 
-3 - Waiter completes drink order
+    /*
+    Notifying the Doorman begins a chain reaction: the Doorman grabs the Party from the queue, pairs said Party with a clean Table and suitable Waiter, places the Party in Foyer's map using the Table ID as a key, constructs and queues a SeatingJob for the Waiter and notifies said Waiter that there is work to be done.
 
-    example: one guest is sitting at a table and has just been greeted by their server.
-    server sets the menu down, tallies the drink order onto it's own job queue, and goes
-    to complete its next job.
+    The Waiter receives the notification, check their job queue within JobTable, retrieves the SeatingJob, uses the attached table ID to key into the Foyer and grab the waiting Party. Once the Waiter has assigned the Party's Table, Waiter, and Menu as member data variables, the Waiter notifies the Party that their "service has begun".
+    */
+    party.waitForService()
 
-    let's say next job is the drink order and it's water. Server can complete this job on their
-    own by going to water dispenser, filling a cup, bringing it back to the correct table, and giving it to the correct guest.
+### 2 - Orders, from submission to completion.
 
-4 - Waiter completes food order
+    Suppose a Party has just submitted a vector of Menu selections to OrderService. That Order is used to construct an OrderJob, which is then queued to the appropriate Waiter's job queue. Following this, OrderService notifies the Waiter.
 
-    the single guest just got their water.
-    after some period of time passes, the guest
-    waves their server over. this inserts a "take order" job into server's job queue.
+    Upon receiving the notification, the Waiter checks its queue and sees that there is work to be done. Suppose said Order is for a couple of beers. The Waiter grabs the OrderJob from JobTable and puts the exact same OrderJob into the job queue of a Bartender (with only one Bartender, this is easy, but with more than one, it would make sense to have a static asynchronous function that assigns an OrderJob to the "least busy Bartender"), notifying the Bartender.
 
-    let's say that job is next. To complete the food order,
-    the waiter submits the order to the kitchen by placing
-    the food order in the kitchen's incoming job queue and notifies the kitchen.
+    The Bartender receives this notification, checks their job queue in JobTable, retrieves the OrderJob, and fires an asynchronous callback function to simulate "preparing the drinks", which is nothing more than a timer. Once this timer expires, the Bartender places the completed OrderJob back into the Waiter's job queue and notifies the Waiter.
 
-5 - Kitchen processes a food order
+    The Waiter grabs the OrderJob from its job queue and delivers the associated Order to the correct Table.
 
-    a new food order has been placed in the incoming job queue
-    and the server notified the kitchen, waking up a sleeping cook if there is one. If all cooks are not sleeping, one of them will check the queue and take the order, placing it in their own job queue.
+###### ASIDE
 
-    let's say that cook has just pulled the food order out of their job queue. They start "cooking the food" right away, which sets a timer, and goes to sleep. When the timer expires, the cook is notified and checks their current job status, which should read "Cooked". When that happens, the cook takes the food order, places the order in the outgoing job queue, and notifies the tablespace.
+    At this point, it would make perfect sense to have some kind of "status" variable that the Waiter would use to determine what to do with said OrderJob; if it "requires service", submit it to the Bar/Kitchen, and if it is "ready for consumption", deliver it to the associated Table.
 
-    when tablespace is notified, the correct server must go to the kitchen, take the food order, and deliver it to the correct guest and table. this job is now considered complete and can be discarded by the server.
+### 3 - Party's dining experience.
 
-6 - Guest's dining experience
+    The Waiter has served a Party their food Order (which is done by setting an Order pointer variable within the Table) and has notified the Party that their food has arrived. Seeing that their Order is "on the table", the Party "begins eating", which is nothing more than a timer. Once this timer expires, the Party stands up from the Table and heads for the exit.
 
-    server has just delivered the guest their hamburger. This begins a meal timer.
+###### ASIDE
 
-    every so often, the guest may stop eating and either take a drink or pause momentarily to ponder life.
+    While it makes sense for Parties to pay for their meals, implementing that feature is something to be considered once the program works without it.
 
-    whenever a guest takes a drink, a portion of the drink is reduced. When a guest's drink is empty, they can wave at their server, which places a "wait table" job in the server's job queue.
+### 4 - Party leaving the restaurant.
 
-    when the guest has finished their food, the status of the table changes to "waiting for bill" and the guest flags their server down, which places a "tend to bill" job in the server's job queue.
+    Exiting the Restaurant is identical to entry, except for what happens after the Doorman is notified. After the Party has placed itself in the outgoing queue and notified the Doorman, the Doorman must grab the Party and place it "outside". I have yet to implement this, but I have a feeling it will likely involve static accessor methods in Simulation.
 
-    taking care of the bill takes a few minutes, after which the guest stands up from the now-dirty table and heads for the door. WHen the guest leaves, this notifies the server and places a "clean table" job in the server's job queue, which takes a couple minutes.
-
-    when the server has finished cleaning the table, it is no longer occupied and the server is no longer serving that table.
+    Once the Party has been placed outside, the Doorman assigns a CleaningJob to the Waiter responsible for waiting on the Party that just left. Similar to other simulation tasks, cleaning the Table can be emulated simply using a callback timer.

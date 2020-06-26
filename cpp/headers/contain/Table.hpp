@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <optional>
 
 class Party;
 class Waiter;
@@ -58,3 +57,9 @@ private:
 };
 
 #endif // TABLE_HPP
+
+/**
+ * TODO add a member variable that allows Orders to be placed.
+ * TODO add a mutex and/or boolean flag to ensure thread safety
+ * between Parties/Waiters during Order exchanges.
+ */

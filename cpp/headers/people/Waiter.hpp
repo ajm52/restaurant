@@ -36,19 +36,6 @@ public:
     Waiter(std::string, GlobalClock &, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &, std::shared_ptr<Menu>);
 
     /**
-     * @description: copy constructor.
-     * @param w waiter we're copying from.
-     */
-    Waiter(const Waiter &);
-
-    /**
-     * @description: copy assignment operator.
-     * @param w waiter we're copying from.
-     * @returns this as a copy of w.
-     */
-    Waiter &operator=(const Waiter &);
-
-    /**
      * @description: move constructor.
      * @param w waiter we're moving.
      */
@@ -74,27 +61,11 @@ public:
     inline std::vector<std::shared_ptr<Table>> &getTablespace() { return tablespace_; }
 
     /**
-     * @description: Accessor for the job table.
-     * @returns a reference to the restaurant job table.
-     */
-    inline JobTable &getJobTable() { return jobTable_; }
-
-    /**
      * @description: Splits on '-', returning the second half 
      * of this waiter's id.
      * @returns the numeric half of this waiter's id.
      */
-    const unsigned getIDNumber() const;
-
-    /**
-     * @description: ensures that everything is prepared for run().
-     */
-    void init();
-
-    /**
-     * @description: the waiter thread's main course of action.
-     */
-    void run();
+    const int getIDNumber() const;
 
     /**
      * @description: handler method used to 
@@ -110,34 +81,22 @@ public:
      */
     void handleJob(OrderJob &);
 
-    /**
-     * @description: clock accessor.
-     * @returns simulation clock reference.
-     */
-    inline GlobalClock &getClock() { return clock_; }
-
 private:
-    std::string wID_;    ///< this waiter's unique id.
-    GlobalClock &clock_; ///< simulation clock.
-
     /**
      * user-defined containers.
      */
     std::vector<std::shared_ptr<Table>> &tablespace_; ///< where parties are seated.
-    std::vector<std::shared_ptr<Job>> jobs_;          ///< the waiter's current jobs.
     Foyer *foyer_;                                    ///< where Parties wait to be seated.
-    JobTable &jobTable_;                              ///< used to acquire jobs.
-    std::shared_ptr<Menu> menu_;                      ///< the restaurant menu.
 
-    std::thread mthread_; ///< the waiter thread.
+    Waiter(const Waiter &) = delete;
+    Waiter &operator=(const Waiter &) = delete;
 };
-
-//TODO change ordering of variables (cv and m at top)
 
 /**
  * 
- * TODO
- * - add access to Kitchen.
- * - add access to Bar.
+ * TODO add access to Kitchen/Bar, both of which can by done by
+ * implementing handleJob(OrderJob&).
+ * TODO once JobTable is being keyed on strings, remove getIDNumber().
+ * 
  */
 #endif // WAITER_HPP

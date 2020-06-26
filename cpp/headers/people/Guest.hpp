@@ -35,12 +35,10 @@ public:
      * @description: destructor.
      */
     ~Guest() = default;
-
-    // will eventually have methods for choosing food/drink
 };
 
 #endif // GUEST_HPP
 
 /**
- * TODO: write member functions for selecting food/drink from a given Menu.
+ * TODO: write member functions for selecting food/drink from a given Menu (?)
  **/

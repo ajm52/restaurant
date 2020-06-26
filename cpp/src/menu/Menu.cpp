@@ -23,8 +23,7 @@ std::string Menu::selectOption(char entryType)
 {
     // num calculation can be improved using a generic template approach.
     int num = entryType == 'F' ? rand() % this->getNumFoodOptions() : rand() % this->getNumDrinkOptions();
-    MenuEntryKey k(entryType, num);
-    return this->getOptions().at(k).getName();
+    return entryType + std::to_string(num);
 }
 
 const unsigned Menu::countOptions(char type) const

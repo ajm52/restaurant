@@ -49,7 +49,7 @@ Restaurant &Restaurant::operator=(const Restaurant &r)
 }
 
 Restaurant::~Restaurant()
-{
+{ //NOTE explicit clearing may not be necessary. Worth investigating.
     tables_.clear();
     waiters_.clear();
 }
