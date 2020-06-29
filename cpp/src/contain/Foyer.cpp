@@ -1,10 +1,7 @@
 #include "Foyer.hpp"
-#include "Waiter.hpp"
 #include <iterator>
-#include <vector>
 #include <map>
 #include <mutex>
-#include <memory>
 
 Foyer::Foyer(Foyer &&f)
     : toBeSeated_(std::move(f.toBeSeated_)), m_() {}

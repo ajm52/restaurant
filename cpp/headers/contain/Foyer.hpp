@@ -1,8 +1,6 @@
 #ifndef FOYER_HPP
 #define FOYER_HPP
 
-#include <vector>
-#include <queue>
 #include <map>
 #include <mutex>
 
