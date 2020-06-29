@@ -22,19 +22,6 @@ public:
     Door();
 
     /**
-     * @description: copy constructor.
-     * @param d door we're copying
-     */
-    Door(const Door &);
-
-    /**
-     * @description: copy assignment operator.
-     * @param d door we're copying
-     * @returns a reference to this door.
-     */
-    Door &operator=(const Door &);
-
-    /**
      * @description: move constructor.
      * @param d door object we are moving.
      */
@@ -97,11 +84,9 @@ private:
     std::queue<Party *> comingIn_; ///< queue of incoming parties.
     std::queue<Party *> goingOut_; ///< queue of outgoing parties.
     std::condition_variable cv_;   ///< for parties going in and out (waited on by doorman)
-};
 
-/**
- * TODO make Door uncopyable; mutices/CVs are uncopyable/unmoveable.
- * I can get behind having move semantics, but copy semantics? No way.
- */
+    Door(const Door &) = delete; ///< Door is uncopyable.
+    Door &operator=(const Door &) = delete;
+};
 
 #endif // DOOR_HPP

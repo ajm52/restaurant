@@ -8,24 +8,6 @@ Door::Door()
       goingOut_(),
       cv_() {}
 
-Door::Door(const Door &d)
-    : mIn_(),
-      mOut_(),
-      comingIn_(d.comingIn_),
-      goingOut_(d.goingOut_),
-      cv_() {}
-
-Door &Door::operator=(const Door &d)
-{
-    if (this == &d)
-        return *this;
-    std::queue<Party *> swapper(d.comingIn_);
-    comingIn_.swap(swapper);
-    swapper = d.goingOut_;
-    goingOut_.swap(swapper);
-    return *this;
-}
-
 Door::Door(Door &&d)
     : mIn_(), mOut_(), cv_()
 {
