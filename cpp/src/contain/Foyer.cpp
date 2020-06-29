@@ -6,55 +6,15 @@
 #include <mutex>
 #include <memory>
 
-Foyer::Foyer()
-    : tableCount_(0),
-      nextTableIDs_(),
-      toBeSeated_(),
-      m_() {}
+Foyer::Foyer(Foyer &&f)
+    : toBeSeated_(std::move(f.toBeSeated_)), m_() {}
 
-Foyer::Foyer(unsigned tableCount)
-    : tableCount_(tableCount),
-      nextTableIDs_(),
-      toBeSeated_(),
-      m_()
-{
-    prepSeatingQueue();
-}
-
-Foyer::Foyer(const Foyer &f)
-    : tableCount_(f.tableCount_),
-      nextTableIDs_(f.nextTableIDs_),
-      toBeSeated_(f.toBeSeated_),
-      m_() {}
-
-Foyer &Foyer::operator=(const Foyer &f)
+Foyer &Foyer::operator=(Foyer &&f)
 {
     if (this == &f)
         return *this;
-    tableCount_ = f.tableCount_;
-    nextTableIDs_ = f.nextTableIDs_;
-    toBeSeated_ = f.toBeSeated_;
+    toBeSeated_ = std::move(f.toBeSeated_);
     return *this;
-}
-
-Foyer::~Foyer()
-{
-    std::queue<unsigned> q;
-    nextTableIDs_.swap(q);
-    toBeSeated_.clear();
-}
-
-void Foyer::prepSeatingQueue()
-{
-    for (unsigned i = 0; i < tableCount_; ++i)
-        nextTableIDs_.push(i);
-}
-
-unsigned Foyer::getNextTableID()
-{
-    int id = nextTableIDs_.front();
-    nextTableIDs_.pop();
-    return id;
 }
 
 void Foyer::putParty(unsigned id, Party *pPtr)

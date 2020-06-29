@@ -18,38 +18,25 @@ struct Foyer
     /**
      * @description: default constructor.
      */
-    Foyer();
+    Foyer() : toBeSeated_(), m_() {}
 
     /**
-     * @description: constructor.
-     * @param tableCount # of tables in the restaurant.
+     * @description: move constructor.
+     * @param f foyer we're moving.
      */
-    explicit Foyer(unsigned);
+    Foyer(Foyer &&);
 
     /**
-     * @description: copy constructor.
-     * @param f foyer we're copying from.
+     * @description: move assignment operator.
+     * @param f foyer we're moving.
+     * @returns this foyer after assignment.
      */
-    Foyer(const Foyer &);
-
-    /**
-     * @description: copy assignment operator.
-     * @param f foyer we're copying from.
-     * @returns this foyer.
-     */
-    Foyer &operator=(const Foyer &);
+    Foyer &operator=(Foyer &&);
 
     /**
      * @description: destructor.
      */
-    ~Foyer();
-
-    /**
-     * @description: removes and returns the ID of the next Table
-     * to have a Party.
-     * @returns the ID of the Table.
-     */
-    unsigned getNextTableID();
+    ~Foyer() = default;
 
     /**
      * @description: place a party in the foyer.
@@ -67,24 +54,12 @@ struct Foyer
      */
     Party *removeParty(unsigned);
 
-    unsigned tableCount_; ///< # of restaurant tables.
-
-    //TODO move nextTableIDs to Doorman.
-    std::queue<unsigned> nextTableIDs_;      ///< table indices that are ready to be used.
     std::map<unsigned, Party *> toBeSeated_; ///< map of <Table #, Party*> pairs
     mutable std::mutex m_;                   ///< foyer mutex.
 
 private:
-    /**
-     * @description: builds the table ID queue.
-     * should only be called once when Foyer is first created.
-     */
-    void prepSeatingQueue();
+    Foyer(const Foyer &) = delete; ///< Foyer is uncopyable.
+    Foyer &operator=(const Foyer &) = delete;
 };
 
 #endif // FOYER_HPP
-
-/**
- * TODO research 'explicit' keyword and proper usage.
- * TODO make Foyer uncopyable, yet moveable.
- */
