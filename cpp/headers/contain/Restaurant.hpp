@@ -8,9 +8,10 @@
 #include "JobTable.hpp"
 #include "Table.hpp"
 #include "Doorman.hpp"
-#include "Menu.hpp"
 #include <vector>
 #include <memory>
+
+class Menu;
 
 /**
  * @class Restaurant
@@ -28,24 +29,12 @@ public:
      * @param wCount waiter count.
      * @param pCount party count.
      */
-    Restaurant(GlobalClock &, std::shared_ptr<Menu>, unsigned = 0, unsigned = 0, unsigned = 0);
-
-    /**
-     * @description: copy constructor.
-     * @param r restaurant we're copying from.
-     */
-    Restaurant(const Restaurant &);
-
-    /**
-     * @description: copy assignment operator.
-     * @param r restaurant we're copying from.
-     */
-    Restaurant &operator=(const Restaurant &);
+    Restaurant(GlobalClock &, Menu &, unsigned = 0, unsigned = 0, unsigned = 0);
 
     /**
      * @description: destructor.
      */
-    ~Restaurant();
+    ~Restaurant() = default;
 
     /**
      * @description: initializes sim parameters.
@@ -68,16 +57,7 @@ public:
      * @description: Accessor for # of tables in restaurant.
      * @returns # of restaurant tables.
      */
-    inline unsigned tableCount() { return tableCount_; }
-
-    /**
-     * @description: door accessor for const access.
-     * @returns a const pointer to the door.
-     */
-    inline Door const &getDoor() const
-    {
-        return static_cast<Door const &>(door_);
-    }
+    inline const unsigned tableCount() const { return tableCount_; }
 
     /**
      * @description: door accessor for non-const access.
@@ -93,9 +73,9 @@ public:
 
     /**
      * @description: menu accessor.
-     * @returns a pointer to the menu.
+     * @returns a reference to the menu.
      */
-    inline std::shared_ptr<Menu> getMenu() { return menu_; }
+    inline const Menu &getMenu() const { return menu_; }
 
     /**
      * @description: clock accessor.
@@ -118,19 +98,26 @@ private:
     JobTable jobTable_;                          ///< communication interface for waiters.
     Foyer foyer_;                                ///< the foyer.
     Door door_;                                  ///< the door.
-    std::shared_ptr<Menu> menu_;                 ///< the restaurant menu.
+    Menu &menu_;                                 ///< the restaurant menu.
     std::vector<std::shared_ptr<Table>> tables_; ///< the restaurant's tables.
+
+    //ANCHOR look into typedef for this^^^
 
     /**
      * threaded actor(s).
      */
     std::vector<std::shared_ptr<Waiter>> waiters_; ///< waiter staff.
     Doorman doorman_;                              ///< the restaurant's doorman.
+
+    Restaurant(const Restaurant &) = delete; ///< Restaurant is uncopyable and unmovable.
+    Restaurant &operator=(const Restaurant &) = delete;
+    Restaurant(Restaurant &&) = delete;
+    Restaurant &operator=(Restaurant &&) = delete;
 };
 
 #endif // RESTAURANT_HPP
 
 /**
- * TODO investigate the need for having const and non-const getters.
- * TODO make Restaurant uncopyable, but moveable.
+ * TODO add mem var for Bartenders
+ * TODO write func buildBartenders()
  */

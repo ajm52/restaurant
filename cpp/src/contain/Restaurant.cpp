@@ -5,54 +5,18 @@
 #include <string>
 #include <iostream>
 
-Restaurant::Restaurant(GlobalClock &clock, std::shared_ptr<Menu> menu, unsigned tCount, unsigned wCount, unsigned pCount)
+Restaurant::Restaurant(GlobalClock &clock, Menu &menu, unsigned tCount, unsigned wCount, unsigned pCount)
     : clock_(clock),
       tableCount_(tCount),
       waiterCount_(wCount),
       partyCount_(pCount),
       jobTable_(wCount),
-      foyer_(tCount),
+      foyer_(),
       door_(),
+      menu_(menu),
       tables_(),
       waiters_(),
-      doorman_(door_, foyer_, jobTable_, clock_),
-      menu_(menu) {}
-
-Restaurant::Restaurant(const Restaurant &r)
-    : clock_(r.clock_),
-      tableCount_(r.tableCount_),
-      waiterCount_(r.waiterCount_),
-      partyCount_(r.partyCount_),
-      jobTable_(r.jobTable_),
-      foyer_(r.foyer_),
-      door_(r.door_),
-      tables_(r.tables_),
-      waiters_(r.waiters_),
-      doorman_(door_, foyer_, jobTable_, clock_),
-      menu_(r.menu_) {}
-
-Restaurant &Restaurant::operator=(const Restaurant &r)
-{
-    if (this == &r)
-        return *this;
-    clock_ = r.clock_;
-    tableCount_ = r.tableCount_;
-    waiterCount_ = r.waiterCount_;
-    partyCount_ = r.partyCount_;
-    jobTable_ = r.jobTable_;
-    foyer_ = r.foyer_;
-    door_ = r.door_;
-    tables_ = r.tables_;
-    waiters_ = r.waiters_;
-    menu_ = r.menu_;
-    return *this;
-}
-
-Restaurant::~Restaurant()
-{ //NOTE explicit clearing may not be necessary. Worth investigating.
-    tables_.clear();
-    waiters_.clear();
-}
+      doorman_(door_, foyer_, jobTable_, clock_) {}
 
 void Restaurant::init()
 {
