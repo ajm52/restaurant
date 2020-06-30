@@ -45,7 +45,7 @@ public:
      * @returns true if their types and numbers are equal,
      * false otherwise.
      **/
-    inline bool operator==(const MenuEntryKey &rhs) const
+    inline const bool operator==(const MenuEntryKey &rhs) const
     {
         return (this->type_ == rhs.type_ && this->num_ == rhs.num_);
     }
@@ -54,13 +54,13 @@ public:
      * @description: accessor for keyed MenuEntry's type.
      * @returns the type.
      **/
-    inline char getType() const { return type_; }
+    inline const char getType() const { return type_; }
 
     /**
      * @description: accessor for keyed MenuEntry's menu number.
      * @returns the menu number.
      **/
-    inline unsigned getNum() const { return num_; }
+    inline const unsigned getNum() const { return num_; }
 
     /**
      * @description: increments this MenuEntryKey's id number by num.
@@ -81,14 +81,5 @@ private:
     char type_;    ///< keyed MenuEntry's type. For example, 'F' denotes food.
     unsigned num_; ///< keyed MenuEntry's menu number.
 };
-
-/**
- * @description: nonmember factory function.
- * Creates and returns a MenuEntryKey managed by a smart pointer.
- * @param type type of the MenuEntry.
- * @param num number of the MenuEntry.
- * @returns a shared pointer to a MenuEntryKey.
- **/
-static const std::shared_ptr<MenuEntryKey> makeMenuEntryKey(char, unsigned);
 
 #endif // MENUENTRYKEY_HPP

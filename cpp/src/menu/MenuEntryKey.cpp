@@ -23,8 +23,3 @@ std::ostream &operator<<(std::ostream &out, const MenuEntryKey &mek)
     out << mek.type_ << "-" << mek.num_;
     return out;
 }
-
-static const std::shared_ptr<MenuEntryKey> makeMenuEntryKey(char type, unsigned num)
-{
-    return std::shared_ptr<MenuEntryKey>(new MenuEntryKey(type, num));
-}
