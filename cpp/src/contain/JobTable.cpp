@@ -1,5 +1,6 @@
 #include "JobTable.hpp"
 #include "Job.hpp"
+#include "WorkerJobData.hpp"
 #include <vector>
 #include <mutex>
 #include <memory>
@@ -15,17 +16,6 @@ JobTable::JobTable(unsigned numWaiters, unsigned numCooks, unsigned numBartender
     buildMap(numWaiters, numCooks, numBartenders);
 }
 
-JobTable::JobTable(const JobTable &jt)
-    : dataMap_(jt.dataMap_) {}
-
-JobTable &JobTable::operator=(const JobTable &jt)
-{
-    if (this == &jt)
-        return *this;
-    dataMap_ = jt.dataMap_;
-    return *this;
-}
-
 void JobTable::queueJob(std::string key, std::shared_ptr<Job> job)
 {
     if (!validateKey(key)) //TODO throw an exception here.
@@ -39,48 +29,42 @@ void JobTable::queueJob(std::string key, std::shared_ptr<Job> job)
 
 std::shared_ptr<std::vector<std::shared_ptr<Job>>> JobTable::acquireJobs(std::string key, bool isLocked)
 {
-    if (!validateKey(key)) //TODO throw an exception here.
-        return;
+    assert(validateKey(key)); //TODO throw an exception here.
+
     std::vector<std::shared_ptr<Job>> jobs;
-    if (isLocked)
-    { //NOTE put repeated code into a single private method!!
-        while (!dataMap_[key]->jobs_.empty())
-        {
-            std::shared_ptr<Job> job = dataMap_[key]->jobs_.front();
-            dataMap_[key]->jobs_.pop();
-            jobs.push_back(job);
-        }
-        dataMap_[key]->workToBeDone_ = false;
-    }
-    else
+    //ANCHOR investigate typedef for this ^^^
+
+    std::unique_lock<std::mutex> ul(dataMap_[key]->m_, std::defer_lock);
+    //ANCHOR investigate typedef for this ^^^
+
+    if (!isLocked) // if m isn't locked pre-function call, lock now.
+        ul.lock();
+
+    while (!dataMap_[key]->jobs_.empty())
     {
-        { //begin critical section
-            std::lock_guard<std::mutex> lg(dataMap_[key]->m_);
-            while (!dataMap_[key]->jobs_.empty())
-            {
-                std::shared_ptr<Job> job = dataMap_[key]->jobs_.front();
-                dataMap_[key]->jobs_.pop();
-                jobs.push_back(job);
-            }
-            dataMap_[key]->workToBeDone_ = false;
-        } //end critical section
+        std::shared_ptr<Job> job = dataMap_[key]->jobs_.front();
+        dataMap_[key]->jobs_.pop();
+        jobs.push_back(job);
     }
+    dataMap_[key]->workToBeDone_ = false;
+
     return std::make_shared<std::vector<std::shared_ptr<Job>>>(jobs);
+    //ANCHOR investigate typedef for this ^^^
 }
 
-bool JobTable::workToBeDone(std::string key)
+const bool JobTable::workToBeDone(std::string key) const
 {
 
     return validateKey(key) && dataMap_[key]->workToBeDone_;
 }
 
-std::condition_variable &JobTable::getCV(std::string key)
+std::condition_variable &JobTable::getCV(std::string key) const
 {
     assert(validateKey(key));
     return dataMap_[key]->cv_;
 }
 
-std::mutex &JobTable::getMutex(std::string key)
+std::mutex &JobTable::getMutex(std::string key) const
 {
     assert(validateKey(key));
     return dataMap_[key]->m_;
@@ -105,7 +89,7 @@ void JobTable::buildMap(unsigned numWaiters, unsigned numCooks, unsigned numBart
     }
 }
 
-bool JobTable::validateKey(std::string key)
+const bool JobTable::validateKey(std::string key) const
 {
     return dataMap_.find(key) != dataMap_.end();
 }

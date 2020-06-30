@@ -1,14 +1,15 @@
 #ifndef JOBTABLE_HPP
 #define JOBTABLE_HPP
 
-#include "WorkerJobData.hpp"
+#include <memory>
 #include <vector>
+#include <string>
 #include <mutex>
 #include <condition_variable>
-#include <memory>
 #include <map>
 
 struct Job;
+struct WorkerJobData;
 
 /**
  * @class JobTable
@@ -16,9 +17,9 @@ struct Job;
  * distribute jobs to restaurant workers.
  * How it works: 
  * - Workers wait on their own condition variable,
- * indexed by their own unique ID number.
+ * indexed by their own unique ID string
  * - A notified Worker will check their queue for jobs,
- * indexed again by their own unique ID number.
+ * indexed again by their own unique ID string.
  * @author ajm
  */
 class JobTable
@@ -31,19 +32,6 @@ public:
      * @param numBartenders # of restaurant bartenders
      */
     JobTable(unsigned = 0, unsigned = 0, unsigned = 0);
-
-    /**
-     * @description: copy constructor.
-     * @param jt jobtable we're copying
-     */
-    JobTable(const JobTable &);
-
-    /**
-     * @description: copy assignment operator.
-     * @param jt jobtable we're copying
-     * @returns a reference to this jobtable.
-     */
-    JobTable &operator=(const JobTable &);
 
     /**
      * @description: destructor.
@@ -66,13 +54,15 @@ public:
      */
     std::shared_ptr<std::vector<std::shared_ptr<Job>>> acquireJobs(std::string, bool);
 
+    //ANCHOR declare a typedef for this ^^^
+
     /**
      * @description: checks a given job flag to see if there is 
      * work to be done.
      * @param key worker id string.
      * @returns true if there is work to be done, false otherwise.
      */
-    bool workToBeDone(std::string);
+    const bool workToBeDone(std::string) const;
 
     /**
      * @description: Accessor method for a given condition variable.
@@ -80,7 +70,7 @@ public:
      * @returns a pointer to a given condition variable; returns nullptr
      * if the provided index is invalid.
      */
-    std::condition_variable &getCV(std::string);
+    std::condition_variable &getCV(std::string) const;
 
     /**
      * @description: Accessor method for a given mutex.
@@ -88,7 +78,12 @@ public:
      * @returns a pointer to a given mutex; returns nullptr
      * if the provided index is invalid.
      */
-    std::mutex &getMutex(std::string);
+    std::mutex &getMutex(std::string) const;
+
+    JobTable(const JobTable &) = delete; ///< JobTable is neither copyable nor movable.
+    JobTable &operator=(const JobTable &) = delete;
+    JobTable(JobTable &&) = delete;
+    JobTable &operator=(JobTable &&) = delete;
 
 private:
     mutable std::map<std::string, std::shared_ptr<WorkerJobData>> dataMap_; ///< worker data map; contains CVs, mutices, job queues, and flags.
@@ -106,10 +101,6 @@ private:
      * @param key worker id string.
      * @returns true if key-value mapping exists, false otherwise.
      */
-    bool validateKey(std::string);
+    const bool validateKey(std::string) const;
 };
 #endif // JOBTABLE_HPP
-
-/**
- * TODO make JobTable uncopyable, yet moveable.
- */
