@@ -30,7 +30,7 @@ public:
           gc_(gc) {}
 
     /**
-     * @description: spins up the Doorman thread.
+     * @description: spins up the Doorman threads.
      **/
     void init();
 
