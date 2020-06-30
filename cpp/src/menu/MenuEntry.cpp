@@ -11,8 +11,3 @@ MenuEntry &MenuEntry::operator=(const MenuEntry &me)
     this->prepTime_ = me.prepTime_;
     return *this;
 }
-
-static const std::shared_ptr<MenuEntry> makeMenuEntry(std::string name, unsigned prepTime)
-{
-    return std::shared_ptr<MenuEntry>(new MenuEntry(name, prepTime));
-}
