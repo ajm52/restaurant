@@ -6,11 +6,15 @@
 #include "GlobalClock.hpp"
 #include "Menu.hpp"
 #include <string>
-#include <memory>
 
 struct Job;
 struct OrderJob;
 
+/**
+ * @class Bartender
+ * @author ajm
+ * @description: A thread-based restaurant bartender. Completes drink orders for parties.
+ */
 class Bartender : public Worker
 {
 public:
@@ -21,28 +25,8 @@ public:
      * @param m restaurant menu
      * @param id bartender id string
      */
-    Bartender(GlobalClock &gc, JobTable &jt, std::shared_ptr<Menu> m, std::string id = "DEFAULT_BID")
+    Bartender(GlobalClock &gc, JobTable &jt, Menu &m, std::string id = "DEFAULT_BID")
         : Worker(gc, jt, m, id) {}
-
-    /**
-     * @description: move constructor.
-     * @param b bartender being moved
-     */
-    Bartender(Bartender &&);
-
-    /**
-     * @description: move assignment operator.
-     * @param b bartender being moved
-     * @returns this bartender.
-     */
-    Bartender &operator=(Bartender &&);
-
-    /**
-     * @description: accessor for the numeric half of this 
-     * bartender's id.
-     * @returns the numeric half of this bartender's id.
-     */
-    const int getIDNumber() const;
 
     /**
      * @description: handler method used to complete SeatingJobs.
@@ -61,12 +45,13 @@ public:
      */
     void handleJob(OrderJob &);
 
-private:
-    Bartender(const Bartender &) = delete;
+    Bartender(const Bartender &) = delete; ///< Bartender is neither copyable nor movable
     Bartender &operator=(const Bartender &) = delete;
+    Bartender(Bartender &&) = delete;
+    Bartender &operator=(Bartender &&) = delete;
 };
 #endif // BARTENDER_HPP
 
 /**
- * TODO once we have switched to string-based keys in JobTable, remove getIDNumber().
+ * TODO implement handleJob(OrderJob)
  */
