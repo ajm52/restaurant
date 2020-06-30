@@ -25,5 +25,6 @@ struct Job
      * generic usage in JobTable.
      */
     virtual void accept(Worker &w) = 0;
+    virtual ~Job() = default;
 };
 #endif // JOB_HPP
