@@ -17,7 +17,7 @@ struct OrderJob : public Job
      * @description: constructor
      * @param o the associated order.
      */
-    OrderJob(Order o) : order_(o) {}
+    OrderJob(Order &o) : order_(o) {}
 
     /**
      * @description: takes advantage of runtime type information to call the correct handler method.
@@ -25,6 +25,6 @@ struct OrderJob : public Job
      */
     void accept(Worker &w) { w.handleJob(*this); }
 
-    Order order_; ///< the associated order.
+    Order &order_; ///< the associated order.
 };
 #endif // ORDERJOB_HPP
