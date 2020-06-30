@@ -44,7 +44,7 @@ public:
      * @param type type of entry to be randomly selected.
      * @returns name of the selected entry.
      **/
-    std::string selectOption(char);
+    const std::string selectOption(char) const;
 
     /**
      * @description: accessor for the menu's options.
@@ -76,9 +76,10 @@ private:
 };
 
 /**
- * TODO: use typedef/alias to reduce verbosity.
+ * TODO look into typedefs for reduced verbosity.
+ * TODO think: would having move sems offer any benefit?
  * 
- * NOTE: Random selection of a MenuEntry will definitely have room for optimization.
+ * NOTE Random selection of a MenuEntry will definitely have room for optimization (if desirable)
  **/
 
 #endif // MENU_HPP

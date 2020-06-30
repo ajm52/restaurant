@@ -19,7 +19,7 @@ Menu &Menu::operator=(const Menu &m)
     return *this;
 }
 
-std::string Menu::selectOption(char entryType)
+const std::string Menu::selectOption(char entryType) const
 {
     // num calculation can be improved using a generic template approach.
     int num = entryType == 'F' ? rand() % this->getNumFoodOptions() : rand() % this->getNumDrinkOptions();
