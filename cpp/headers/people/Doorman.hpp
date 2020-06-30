@@ -5,7 +5,6 @@
 #include "GlobalClock.hpp"
 #include "Foyer.hpp"
 #include "JobTable.hpp"
-#include <vector>
 #include <thread>
 
 /**
@@ -20,12 +19,15 @@ class Doorman
 public:
     /**
      * @description: constructor.
-     * @param d restaurant door
-     * @param f restaurant foyer
-     * @param jt restaurant jobtable
-     * NOTE all parameters must be instantiated before this object.
+     * @param d the door
+     * @param f the foyer
+     * @param jt the jobtable
      **/
-    Doorman(Door &d, Foyer &f, JobTable &jt, GlobalClock &gc) : d_(d), f_(f), jt_(jt), gc_(gc) {}
+    Doorman(Door &d, Foyer &f, JobTable &jt, GlobalClock &gc)
+        : d_(d),
+          f_(f),
+          jt_(jt),
+          gc_(gc) {}
 
     /**
      * @description: spins up the Doorman thread.
@@ -48,6 +50,11 @@ public:
      */
     inline GlobalClock &getClock() { return gc_; }
 
+    Doorman(const Doorman &) = delete; ///< Doorman is neither copyable nor movable.
+    Doorman &operator=(const Doorman &) = delete;
+    Doorman(Doorman &&) = delete;
+    Doorman &operator=(Doorman &&) = delete;
+
 private:
     Door &d_;                     ///< how people come and go.
     Foyer &f_;                    ///< where parties are placed for seating.
@@ -60,4 +67,5 @@ private:
 
 /**
  * TODO implement controlOutbound().
+ * TODO write destructor (consider thread cleanup)
  */
