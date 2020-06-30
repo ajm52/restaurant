@@ -17,17 +17,19 @@ public:
      * Data members are defaulted initialized.
      **/
     Order() : orderId_("DEFAULT_OID"),
-              orders_(),
+              selections_(),
               tableID_() {}
 
     /**
      * @description: main constructor.
      * @param id order id string.
-     * @param orders attached orders.
+     * @param selections attached selectinos.
+     * @param tableID associated table ID.
      **/
-    Order(std::string id, std::vector<std::string> &orders, unsigned tableID) : orderId_(id),
-                                                                                orders_(orders),
-                                                                                tableID_(tableID) {}
+    Order(std::string id, std::vector<std::string> &selections, unsigned tableID)
+        : orderId_(id),
+          selections_(selections),
+          tableID_(tableID) {}
 
     /**
      * @description: copy constructor.
@@ -54,10 +56,10 @@ public:
     inline const std::string &getOrderId() const { return orderId_; }
 
     /**
-     * @description: accessor for this Order's order set; each int represents a selection.
-     * @returns a const reference to this Order's order set
+     * @description: accessor for this Order's selection set; each int represents a selection.
+     * @returns a const reference to this Order's selection set
      */
-    inline const std::vector<std::string> &getOrders() const { return orders_; }
+    inline const std::vector<std::string> &getSelections() const { return selections_; }
 
     /**
      * @description: table ID accessor.
@@ -66,13 +68,13 @@ public:
     inline const unsigned getTableID() const { return tableID_; }
 
 private:
-    std::string orderId_;             ///< id string, unique to each order.
-    std::vector<std::string> orders_; ///< menu selections.
-    unsigned tableID_;                ///< the associated table id.
+    std::string orderId_;                 ///< id string, unique to each order.
+    std::vector<std::string> selections_; ///< menu selections.
+    unsigned tableID_;                    ///< the associated table id.
 };
 
 #endif // ORDER_HPP
 
 /**
- * TODO change getOrders() to getSelections(), as it just makes more sense.
+ * TODO think about whether Order should have move sems; would it offer us anything?
  */
