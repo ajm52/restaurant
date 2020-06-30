@@ -3,6 +3,7 @@
 
 #include <map>
 #include <mutex>
+#include <memory>
 
 class Party;
 
@@ -19,19 +20,6 @@ struct Foyer
     Foyer() : toBeSeated_(), m_() {}
 
     /**
-     * @description: move constructor.
-     * @param f foyer we're moving.
-     */
-    Foyer(Foyer &&);
-
-    /**
-     * @description: move assignment operator.
-     * @param f foyer we're moving.
-     * @returns this foyer after assignment.
-     */
-    Foyer &operator=(Foyer &&);
-
-    /**
      * @description: destructor.
      */
     ~Foyer() = default;
@@ -42,7 +30,7 @@ struct Foyer
      * @param pPtr a pointer to the party to be seated.
      * @returns true if the Party was placed successfully, false otherwise.
      */
-    void putParty(unsigned, Party *);
+    void putParty(unsigned, std::shared_ptr<Party>);
 
     /**
      * @description: remove and return a party from the foyer.
@@ -50,14 +38,15 @@ struct Foyer
      * @returns a pointer to the corresponding party, or nullptr if 
      * no such mapping exists.
      */
-    Party *removeParty(unsigned);
+    std::shared_ptr<Party> removeParty(unsigned);
 
-    std::map<unsigned, Party *> toBeSeated_; ///< map of <Table #, Party*> pairs
-    mutable std::mutex m_;                   ///< foyer mutex.
+    std::map<unsigned, std::shared_ptr<Party>> toBeSeated_; ///< map of <Table #, Party*> pairs
+    mutable std::mutex m_;                                  ///< foyer mutex.
 
-private:
-    Foyer(const Foyer &) = delete; ///< Foyer is uncopyable.
+    Foyer(const Foyer &) = delete; ///< Foyer is neither copyable nor movable.
     Foyer &operator=(const Foyer &) = delete;
+    Foyer(Foyer &&) = delete;
+    Foyer &operator=(Foyer &&) = delete;
 };
 
 #endif // FOYER_HPP

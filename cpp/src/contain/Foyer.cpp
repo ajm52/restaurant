@@ -3,29 +3,18 @@
 #include <map>
 #include <mutex>
 
-Foyer::Foyer(Foyer &&f)
-    : toBeSeated_(std::move(f.toBeSeated_)), m_() {}
-
-Foyer &Foyer::operator=(Foyer &&f)
-{
-    if (this == &f)
-        return *this;
-    toBeSeated_ = std::move(f.toBeSeated_);
-    return *this;
-}
-
-void Foyer::putParty(unsigned id, Party *pPtr)
+void Foyer::putParty(unsigned id, std::shared_ptr<Party> pPtr)
 {
 
     { // begin critical section
         std::lock_guard<std::mutex> lg(m_);
-        toBeSeated_.insert(std::pair<unsigned, Party *>(id, pPtr));
+        toBeSeated_.insert(std::pair<unsigned, std::shared_ptr<Party>>(id, pPtr));
     } // end critical section
 }
 
-Party *Foyer::removeParty(unsigned id)
+std::shared_ptr<Party> Foyer::removeParty(unsigned id)
 {
-    Party *ret = nullptr;
+    std::shared_ptr<Party> ret;
     { // begin critical section
         std::lock_guard<std::mutex> lg(m_);
         auto itr = toBeSeated_.find(id);
