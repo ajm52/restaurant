@@ -107,15 +107,22 @@ public:
     void enterRestaurant();
 
     /**
-     * @description: sends out a notification for service.
+     * @description: sends out a notification for service and waits for a notify.
      */
     void awaitService();
 
     /**
-     * @description: used to select menu options.
-     * @param numOptions 
+     * @description: submits menu selections via OrderService
+     * and awaits the corresponding Order.
      */
-    const std::vector<std::string> selectOptions(unsigned, char) const;
+    void awaitOrder();
+
+    /**
+     * @description: used to select and submit menu options.
+     * @param numOptions # of menu options to be submitted
+     * @param type option type being selected.
+     */
+    void submitSelections(unsigned, char) const;
 
     /**
      * @description: creates an Order with a set of random options off of the menu.
@@ -125,13 +132,6 @@ public:
      */
     Order createOrder(unsigned, char);
     //TODO move this method into OrderService
-
-    /**
-     * @description: used to submit an order to the Waiter.
-     * @param o order being submitted.
-     */
-    void submitOrder(Order);
-    //TODO change name of this method to submitSelections().
 
     /**
      * @description: accessor method for party's service flag.

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <queue>
 #include <mutex>
+#include <future>
 #include <condition_variable>
 #include <memory>
 #include <chrono>
@@ -51,17 +52,16 @@ void Party::run()
     awaitService();
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    // ... Wait some time, make an order, and submit.
-    Order o = createOrder(1, 'F'); //NOTE 1 and 'F' are magic constants! Short for "1 food selection"
-    submitOrder(o);
 
-    // wait for a notification from Waiter that it's received the Order.
+    // ... Wait some time, submit selections for an order.
+    submitSelections(1, 'F'); //NOTE 1 and 'F' are magic constants! Short for "1 food selection"
 
-    // wait again for the Order to arrive.
+    // await Order submission confirmation and arrival
+    awaitOrder();
 
     /**
-     * 2. wait until Waiter notifies that it has picked up the Order.
-     * 3. wait again until the Waiter notifies that the Order has been placed on the Table.
+     * (done) 2. wait until Waiter notifies that it has picked up the Order.
+     * (done) 3. wait again until the Waiter notifies that the Order has been placed on the Table.
      * 4. run a Timer. 
      * 5. Leave the Table, and exit the restaurant. 
      */
@@ -102,30 +102,53 @@ void Party::awaitService()
     }
 
     std::cout << clock_ << " " << getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
+    hasBeenServiced_ = false;
 }
 
-std::vector<std::string> Party::selectOptions(unsigned numOptions, char type)
+void Party::awaitOrder()
 {
+    // wait for a notify from Waiter that it's received the Order via OrderService.
+    std::unique_lock<std::mutex> ul(m_, std::defer_lock);
+    while (!checkServiceFlag())
+    {
+        std::cout << clock_ << " " << getPID() << ": waiting for Order confirm..\n";
+        cv_.wait(ul);
+    }
+    std::cout << clock_ << " " << getPID() << ": Order confirm received.\n";
+    hasBeenServiced_ = false; // lock is reacquired, so we can safely flip the service flag.
+
+    // wait again for the Order to arrive.
+    while (!checkServiceFlag())
+    {
+        std::cout << clock_ << " " << getPID() << ": waiting for Order arrival..\n";
+        cv_.wait(ul);
+    }
+    //TODO add a method to ensure that Order is on the Table.
+
+    std::cout << clock_ << " " << getPID() << ": Order has arrived!\n";
 }
 
-Order Party::createOrder(unsigned count, char type) //TODO move this method into OrderService.
+void Party::submitSelections(unsigned numOptions, char type) const
 {
-    if (!theTable_ || !theMenu_)
-        return Order();
-
-    std::vector<std::string> selections(count);
-    for (auto i = 0; i < count; ++i)
+    std::vector<std::string> selections(numOptions);
+    for (size_t i = 0; i < numOptions; ++i)
     {
         selections.push_back(theMenu_->selectOption(type));
     }
-    std::string orderID = sm_.getNextOrderID();
-    Order o(orderID, selections, theTable_->tableId());
-    return o;
+
+    std::async(std::launch::async, //asynchronous submission of menu selections to OrderService.
+               &OrderService::OrderSubmission::submitOrder,
+               std::make_shared<std::vector<std::string>>(selections), theTable_->tableId());
 }
 
-void Party::submitOrder(Order o)
-{
-    std::cout << clock_ << " " << getPID() << ": Submitting Order " << o.getOrderId() << ".\n";
-    OrderService::forwardOrder(o, theWaiter_);
-    std::cout << clock_ << " " << getPID() << ": " << o.getOrderId() << " submitted.\n";
-}
+// Order Party::createOrder(unsigned count, char type) //TODO move this method into OrderService.
+// {
+//     if (!theTable_ || !theMenu_)
+//         return Order();
+
+//     std::vector<std::string> selections(count);
+
+//     std::string orderID = sm_.getNextOrderID();
+//     Order o(orderID, selections, theTable_->tableId());
+//     return o;
+// }
