@@ -23,7 +23,7 @@ class Menu;
  * @description: Undergoes the Restaurant experience while managing a group of Guests.
  * @author ajm
  **/
-class Party
+class Party : public std::enable_shared_from_this<Party>
 {
 public:
     /**
@@ -39,7 +39,7 @@ public:
          * @param p party.
          * @param w waiter.
          */
-        inline static void setWaiter(Party *p, std::shared_ptr<Waiter> w)
+        inline static void setWaiter(std::shared_ptr<Party> p, std::shared_ptr<Waiter> w)
         {
             p->theWaiter_ = w;
         }
@@ -49,7 +49,7 @@ public:
          * @param p table receiver.
          * @param t restaurant table.
          */
-        inline static void setTable(Party *p, std::shared_ptr<Table> t)
+        inline static void setTable(std::shared_ptr<Party> p, std::shared_ptr<Table> t)
         {
             p->theTable_ = t;
         }
@@ -59,7 +59,7 @@ public:
          * @param p menu receiver.
          * @param m restaurant menu.
          */
-        inline static void setMenu(Party *p, std::shared_ptr<Menu> m)
+        inline static void setMenu(std::shared_ptr<Party> p, std::shared_ptr<Menu> m)
         {
             p->theMenu_ = m;
         }
@@ -68,7 +68,7 @@ public:
          * @description: used by Waiters to signal Parties.
          * @param p signal receiver.
          */
-        static void signalServiceStarted(Party *);
+        static void signalServiceStarted(std::shared_ptr<Party>);
 
         friend class Waiter;
     };
@@ -82,19 +82,6 @@ public:
      * @param pid the party's unique ID.
      */
     Party(GlobalClock &, Restaurant &, SimMonitor &, unsigned, std::string);
-
-    /**
-     * @description: move constructor.
-     * @param p party we're moving.
-     */
-    Party(Party &&);
-
-    /**
-     * @description: move assignment operator.
-     * @param p party we're moving.
-     * @returns a reference to this party.
-     */
-    Party &operator=(Party &&);
 
     /**
      * @description: destructor.
@@ -124,7 +111,11 @@ public:
      */
     void awaitService();
 
-    std::vector<std::string> selectOptions(unsigned, char);
+    /**
+     * @description: used to select menu options.
+     * @param numOptions 
+     */
+    const std::vector<std::string> selectOptions(unsigned, char) const;
 
     /**
      * @description: creates an Order with a set of random options off of the menu.
@@ -133,24 +124,26 @@ public:
      * @returns the created order.
      */
     Order createOrder(unsigned, char);
+    //TODO move this method into OrderService
 
     /**
      * @description: used to submit an order to the Waiter.
      * @param o order being submitted.
      */
     void submitOrder(Order);
+    //TODO change name of this method to submitSelections().
 
     /**
      * @description: accessor method for party's service flag.
      * @returns whether or not this party has been serviced.
      */
-    inline bool checkServiceFlag() { return hasBeenServiced_; }
+    inline const bool checkServiceFlag() const { return hasBeenServiced_; }
 
     /**
      * @description: PID accessor.
      * @returns this party's PID string.
      */
-    inline std::string &getPID() { return pid_; }
+    inline const std::string &getPID() const { return pid_; }
 
     /**
      * @description: clock accessor.
@@ -158,16 +151,10 @@ public:
      */
     inline GlobalClock &getClock() { return clock_; }
 
-    /**
-     * @description: factory method for creating Parties.
-     * @param gc simulation clock.
-     * @param r the restaurant.
-     * @param sm simulation monitor.
-     * @param gCount # of guests.
-     * @param pid unique party id.
-     * @returns a smart pointer to this party.
-     */
-    static std::shared_ptr<Party> makeParty(GlobalClock &, Restaurant &, SimMonitor &, unsigned, std::string);
+    Party(const Party &) = delete; ///< Party is neither copyable nor movable.
+    Party &operator=(const Party &) = delete;
+    Party(Party &&) = delete;
+    Party &operator=(Party &&) = delete;
 
 private:
     GlobalClock &clock_;        ///< simulation clock.
@@ -186,20 +173,10 @@ private:
     /**
      * Synchronization/Threading variables
      */
-    bool hasBeenServiced_;       ///< service flag.
-    std::mutex m_;               ///< party's mutex.
-    std::condition_variable cv_; ///< party's condition variable.
-    std::thread mthread_;        ///< party's thread.
-
-    /**
-     * @description: inaccessible copy constructor; Parties shouldn't be copyable, as they are threaded.
-     */
-    Party(const Party &) = delete;
-
-    /**
-     * @description: inaccessible copy assignment operator.
-     */
-    Party &operator=(const Party &) = delete;
+    mutable bool hasBeenServiced_;       ///< service flag.
+    mutable std::mutex m_;               ///< party's mutex.
+    mutable std::condition_variable cv_; ///< party's condition variable.
+    std::thread mthread_;                ///< party's thread.
 };
 
 #endif // PARTY_HPP

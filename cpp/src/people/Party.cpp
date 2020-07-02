@@ -12,12 +12,11 @@
 #include <iostream>
 #include <queue>
 #include <mutex>
-#include <future>
 #include <condition_variable>
 #include <memory>
 #include <chrono>
 
-void Party::WaiterAccess::signalServiceStarted(Party *p)
+void Party::WaiterAccess::signalServiceStarted(std::shared_ptr<Party> p)
 {
     p->hasBeenServiced_ = true;
     p->cv_.notify_one();
@@ -28,48 +27,14 @@ Party::Party(GlobalClock &gc, Restaurant &r, SimMonitor &sm, unsigned gCount, st
     : clock_(gc),
       theRestaurant_(r),
       sm_(sm),
-      m_(),
-      cv_(),
       pid_(pid),
       guests_(),
       theWaiter_(nullptr),
       theTable_(nullptr),
       theMenu_(nullptr),
-      hasBeenServiced_(false) {}
-
-Party::Party(Party &&p)
-    : clock_(p.clock_),
-      theRestaurant_(p.theRestaurant_),
-      sm_(p.sm_),
+      hasBeenServiced_(false),
       m_(),
-      cv_(),
-      mthread_(std::move(p.mthread_)),
-      pid_(p.pid_),
-      guests_(std::move(p.guests_)),
-      theWaiter_(p.theWaiter_),
-      theTable_(p.theTable_),
-      theMenu_(p.theMenu_),
-      hasBeenServiced_(p.hasBeenServiced_)
-{
-    p.theWaiter_ = nullptr;
-    p.theTable_ = nullptr;
-    p.theMenu_ = nullptr;
-}
-
-Party &Party::operator=(Party &&p)
-{
-    if (this == &p)
-        return *this;
-    // restaurant, clock, sm, m, and cv are not reseatable
-    mthread_ = std::move(p.mthread_);
-    pid_ = p.pid_;
-    guests_ = std::move(p.guests_);
-    theWaiter_ = std::move(p.theWaiter_);
-    theTable_ = std::move(p.theTable_);
-    theMenu_ = std::move(p.theMenu_);
-    hasBeenServiced_ = p.hasBeenServiced_;
-    return *this;
-}
+      cv_() {}
 
 void Party::init()
 {
@@ -79,7 +44,7 @@ void Party::init()
 
 void Party::run()
 {
-    std::cout << getClock() << " " << getPID() << " is awake.\n";
+    std::cout << clock_ << " " << getPID() << " is awake.\n";
 
     enterRestaurant();
 
@@ -110,7 +75,7 @@ void Party::enterRestaurant()
             try
             {
                 std::lock_guard<std::mutex> lg(theRestaurant_.getDoor().getEntryMutex());
-                theRestaurant_.getDoor().getEntryQueue().push(this);
+                theRestaurant_.getDoor().getEntryQueue().push(shared_from_this());
                 break;
             }
             catch (const std::exception &e) //TODO clean up this error handling (eventually)
@@ -126,17 +91,21 @@ void Party::enterRestaurant()
 
 void Party::awaitService()
 {
-    std::cout << getClock() << " " << getPID() << ": Pinging for service...\n";
+    std::cout << clock_ << " " << getPID() << ": Pinging for service...\n";
     theRestaurant_.getDoor().getCV().notify_one(); // notifies a thread to place this in the Foyer, which notifies a Waiter to place this at a Table.
     std::unique_lock<std::mutex> ul(m_);
 
     while (!checkServiceFlag())
     { // waits here until notified by their Waiter.
-        std::cout << getClock() << " " << getPID() << ": Waiting for notification from a Waiter..\n";
+        std::cout << clock_ << " " << getPID() << ": Waiting for notification from a Waiter..\n";
         cv_.wait(ul);
     }
 
-    std::cout << getClock() << " " << getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
+    std::cout << clock_ << " " << getPID() << ": Service notification received.\n"; // at this point, this Party should have access to its Waiter, Table, and Menu.
+}
+
+std::vector<std::string> Party::selectOptions(unsigned numOptions, char type)
+{
 }
 
 Order Party::createOrder(unsigned count, char type) //TODO move this method into OrderService.
@@ -156,12 +125,7 @@ Order Party::createOrder(unsigned count, char type) //TODO move this method into
 
 void Party::submitOrder(Order o)
 {
-    std::cout << getClock() << " " << getPID() << ": Submitting Order " << o.getOrderId() << ".\n";
+    std::cout << clock_ << " " << getPID() << ": Submitting Order " << o.getOrderId() << ".\n";
     OrderService::forwardOrder(o, theWaiter_);
-    std::cout << getClock() << " " << getPID() << ": " << o.getOrderId() << " submitted.\n";
-}
-
-std::shared_ptr<Party> Party::makeParty(GlobalClock &gc, Restaurant &r, SimMonitor &sm, unsigned gCount, std::string pid)
-{
-    return std::make_shared<Party>(gc, r, sm, gCount, pid);
+    std::cout << clock_ << " " << getPID() << ": " << o.getOrderId() << " submitted.\n";
 }
