@@ -26,7 +26,7 @@ public:
      * @param selections attached selectinos.
      * @param tableID associated table ID.
      **/
-    Order(const std::string id, const std::vector<const std::string> &selections, unsigned tableID)
+    Order(const std::string id, const std::shared_ptr<std::vector<std::string>> selections, unsigned tableID)
         : orderId_(id),
           selections_(selections),
           tableID_(tableID) {}
@@ -59,7 +59,7 @@ public:
      * @description: accessor for this Order's selection set; each int represents a selection.
      * @returns a const reference to this Order's selection set
      */
-    inline const std::vector<const std::string> &getSelections() const { return selections_; }
+    inline const std::vector<std::string> getSelections() const { return *selections_; }
 
     /**
      * @description: table ID accessor.
@@ -68,9 +68,9 @@ public:
     inline const unsigned getTableID() const { return tableID_; }
 
 private:
-    std::string orderId_;                       ///< id string, unique to each order.
-    std::vector<const std::string> selections_; ///< menu selections.
-    unsigned tableID_;                          ///< the associated table id.
+    std::string orderId_;                                  ///< id string, unique to each order.
+    std::shared_ptr<std::vector<std::string>> selections_; ///< menu selections.
+    unsigned tableID_;                                     ///< the associated table id.
 };
 
 #endif // ORDER_HPP

@@ -21,7 +21,7 @@ struct Foyer;
  * @description: A restaurant waiter. Inherits from Worker.
  * @author ajm
  */
-class Waiter : public Worker
+class Waiter : public Worker, public std::enable_shared_from_this<Waiter>
 {
 public:
     /**
@@ -33,39 +33,7 @@ public:
      * @param jt the job table.
      * @param menu the restaurant menu.
      */
-    Waiter(std::string, GlobalClock &, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &, std::shared_ptr<Menu>);
-
-    /**
-     * @description: move constructor.
-     * @param w waiter we're moving.
-     */
-    Waiter(Waiter &&);
-
-    /**
-     * @description: move assignment operator.
-     * @param w waiter we're moving.
-     * @returns this with w's member data.
-     */
-    Waiter &operator=(Waiter &&);
-
-    /**
-     * @description: Accessor for foyer.
-     * @returns a pointer to the foyer.
-     */
-    inline Foyer *getFoyer() { return foyer_; }
-
-    /**
-     * @description: Accessor for tablespace.
-     * @returns the restaurant's tables.
-     */
-    inline std::vector<std::shared_ptr<Table>> &getTablespace() { return tablespace_; }
-
-    /**
-     * @description: Splits on '-', returning the second half 
-     * of this waiter's id.
-     * @returns the numeric half of this waiter's id.
-     */
-    const int getIDNumber() const;
+    Waiter(std::string, GlobalClock &, std::vector<std::shared_ptr<Table>> &, Foyer &, JobTable &, Menu &);
 
     /**
      * @description: handler method used to 
@@ -81,22 +49,18 @@ public:
      */
     void handleJob(OrderJob &);
 
-private:
-    /**
-     * user-defined containers.
-     */
-    std::vector<std::shared_ptr<Table>> &tablespace_; ///< where parties are seated.
-    Foyer *foyer_;                                    ///< where Parties wait to be seated.
-
-    Waiter(const Waiter &) = delete;
+    Waiter(const Waiter &) = delete; ///< Waiter is neither copyable nor movable.
     Waiter &operator=(const Waiter &) = delete;
+    Waiter(Waiter &&) = delete;
+    Waiter &operator=(Waiter &&) = delete;
+
+private:
+    std::vector<std::shared_ptr<Table>> &tablespace_; ///< where parties are seated.
+    Foyer &foyer_;                                    ///< where Parties wait to be seated.
 };
 
 /**
- * 
  * TODO add access to Kitchen/Bar, both of which can by done by
  * implementing handleJob(OrderJob&).
- * TODO once JobTable is being keyed on strings, remove getIDNumber().
- * 
  */
 #endif // WAITER_HPP

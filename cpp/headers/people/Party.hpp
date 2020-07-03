@@ -17,6 +17,7 @@ class Guest;
 class Waiter;
 class Table;
 class Menu;
+class OrderMachine;
 
 /**
  * @class Party
@@ -122,16 +123,7 @@ public:
      * @param numOptions # of menu options to be submitted
      * @param type option type being selected.
      */
-    void submitSelections(unsigned, char) const;
-
-    /**
-     * @description: creates an Order with a set of random options off of the menu.
-     * @param count number of options to select.
-     * @param type type of option to select from.
-     * @returns the created order.
-     */
-    Order createOrder(unsigned, char);
-    //TODO move this method into OrderService
+    void submitSelections(unsigned, char);
 
     /**
      * @description: accessor method for party's service flag.
@@ -150,6 +142,12 @@ public:
      * @returns the simulation clock.
      */
     inline GlobalClock &getClock() { return clock_; }
+
+    /**
+     * @description: const accessors. Note that both are const, as these should be read-only.
+     */
+    inline std::shared_ptr<const Waiter> getWaiter() { return theWaiter_; }
+    inline std::shared_ptr<const Table> getTable() { return theTable_; }
 
     Party(const Party &) = delete; ///< Party is neither copyable nor movable.
     Party &operator=(const Party &) = delete;

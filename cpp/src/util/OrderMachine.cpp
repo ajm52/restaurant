@@ -8,12 +8,12 @@
 #include <vector>
 #include <mutex>
 
-void OrderMachine::submitOrder(const std::shared_ptr<const std::vector<const std::string>> selections, const std::shared_ptr<Party> p)
+void OrderMachine::submitOrder(const std::shared_ptr<std::vector<std::string>> selections, const std::shared_ptr<Party> p)
 {
     std::shared_ptr<Order> o;
     { //begin critical
         std::lock_guard<std::mutex> lg(m_);
-        o = std::make_shared<Order>(getNextOrderID(), *selections, p->getTable()->tableId());
+        o = std::make_shared<Order>(getNextOrderID(), selections, p->getTable()->tableId());
         incrOrderCount();
     } //end critical
 

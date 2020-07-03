@@ -13,6 +13,7 @@ Restaurant::Restaurant(GlobalClock &clock, Menu &menu, unsigned tCount, unsigned
       jobTable_(wCount),
       foyer_(),
       door_(),
+      om_(jobTable_),
       menu_(menu),
       tables_(),
       waiters_(),
@@ -35,7 +36,7 @@ void Restaurant::buildTables()
 {
     for (int i = 0; i < tableCount_; ++i)
     {
-        tables_.push_back(std::make_shared<Table>(i));
+        tables_.push_back(std::make_shared<Table>(i, om_));
     }
 }
 

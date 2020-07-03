@@ -1,6 +1,7 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
+#include "OrderMachine.hpp"
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -36,8 +37,9 @@ public:
     /**
      * @description: constructor.
      * @param id table id.
+     * @param om used by seated Parties to make orders.
      */
-    Table(int);
+    Table(int, OrderMachine &);
 
     /**
      * @description: destructor.
@@ -61,11 +63,18 @@ public:
      */
     inline const unsigned tableId() const { return id_; }
 
+    /**
+     * @description: OM accessor.
+     * @returns this table's order machine.
+     */
+    inline OrderMachine &getOrderMachine() { return om_; }
+
 private:
-    mutable bool isOccupied_;      ///< occupation flag.
-    const unsigned id_;            ///< a unique table identifier.
-    std::shared_ptr<Party> party_; ///< pointer to the Party at this Table (null if unoccupied).
-    std::shared_ptr<Order> order_; ///< pointer to the Table's Order.
+    mutable bool isOccupied_;
+    const unsigned id_;
+    OrderMachine &om_;
+    std::shared_ptr<Party> party_; ///< null if unoccupied.
+    std::shared_ptr<Order> order_;
 };
 
 #endif // TABLE_HPP

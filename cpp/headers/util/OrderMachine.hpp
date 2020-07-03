@@ -28,7 +28,7 @@ public:
          * @param selections menu selections made by Party
          * @param p party making the order
          */
-    void submitOrder(const std::shared_ptr<const std::vector<const std::string>>, const std::shared_ptr<Party>);
+    void submitOrder(const std::shared_ptr<std::vector<std::string>>, const std::shared_ptr<Party>);
 
     /**
      * @description: computes and returns the next Order ID string.

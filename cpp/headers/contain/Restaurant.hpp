@@ -2,6 +2,7 @@
 #define RESTAURANT_HPP
 
 #include "GlobalClock.hpp"
+#include "OrderMachine.hpp"
 #include "Door.hpp"
 #include "Foyer.hpp"
 #include "Waiter.hpp"
@@ -83,36 +84,29 @@ public:
      */
     inline GlobalClock &getClock() { return clock_; }
 
-private:
-    GlobalClock &clock_; ///< simulation clock.
-    /**
-     * primitives.
-     */
-    unsigned tableCount_;  ///< # of tables in restaurant.
-    unsigned waiterCount_; ///< # of waiters in restaurant.
-    unsigned partyCount_;  ///< # of parties in the simulation.
-
-    /**
-     * user-defined containers.
-     */
-    JobTable jobTable_;                          ///< communication interface for waiters.
-    Foyer foyer_;                                ///< the foyer.
-    Door door_;                                  ///< the door.
-    Menu &menu_;                                 ///< the restaurant menu.
-    std::vector<std::shared_ptr<Table>> tables_; ///< the restaurant's tables.
-
-    //ANCHOR look into typedef for this^^^
-
-    /**
-     * threaded actor(s).
-     */
-    std::vector<std::shared_ptr<Waiter>> waiters_; ///< waiter staff.
-    Doorman doorman_;                              ///< the restaurant's doorman.
-
     Restaurant(const Restaurant &) = delete; ///< Restaurant is uncopyable and unmovable.
     Restaurant &operator=(const Restaurant &) = delete;
     Restaurant(Restaurant &&) = delete;
     Restaurant &operator=(Restaurant &&) = delete;
+
+private:
+    GlobalClock &clock_;
+
+    unsigned tableCount_;
+    unsigned waiterCount_;
+    unsigned partyCount_;
+
+    JobTable jobTable_; ///< comm interface for waiters.
+    Foyer foyer_;
+    Door door_;
+    OrderMachine om_;
+    Menu &menu_;
+    std::vector<std::shared_ptr<Table>> tables_;
+
+    //ANCHOR look into typedef for this^^^
+
+    std::vector<std::shared_ptr<Waiter>> waiters_;
+    Doorman doorman_;
 };
 
 #endif // RESTAURANT_HPP

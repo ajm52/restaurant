@@ -7,7 +7,7 @@
 #include "Table.hpp"
 #include "Restaurant.hpp"
 #include "SimMonitor.hpp"
-#include "OrderService.hpp"
+#include "OrderMachine.hpp"
 #include "Order.hpp"
 #include <iostream>
 #include <queue>
@@ -128,27 +128,13 @@ void Party::awaitOrder()
     std::cout << clock_ << " " << getPID() << ": Order has arrived!\n";
 }
 
-void Party::submitSelections(unsigned numOptions, char type) const
+void Party::submitSelections(unsigned numOptions, char type)
 {
     std::vector<std::string> selections(numOptions);
     for (size_t i = 0; i < numOptions; ++i)
     {
         selections.push_back(theMenu_->selectOption(type));
     }
-
-    std::async(std::launch::async, //asynchronous submission of menu selections to OrderService.
-               &OrderService::OrderSubmission::submitOrder,
-               std::make_shared<std::vector<std::string>>(selections), theTable_->tableId());
+    auto sPtr = std::make_shared<std::vector<std::string>>(selections);
+    theTable_->getOrderMachine().submitOrder(sPtr, shared_from_this());
 }
-
-// Order Party::createOrder(unsigned count, char type) //TODO move this method into OrderService.
-// {
-//     if (!theTable_ || !theMenu_)
-//         return Order();
-
-//     std::vector<std::string> selections(count);
-
-//     std::string orderID = sm_.getNextOrderID();
-//     Order o(orderID, selections, theTable_->tableId());
-//     return o;
-// }

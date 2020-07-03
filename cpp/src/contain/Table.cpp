@@ -1,10 +1,12 @@
 #include "Table.hpp"
 #include "Party.hpp"
+#include "OrderMachine.hpp"
 #include <memory>
 
-Table::Table(int id)
+Table::Table(int id, OrderMachine &om)
     : isOccupied_(false),
       id_(id),
+      om_(om),
       party_(),
       order_() {}
 

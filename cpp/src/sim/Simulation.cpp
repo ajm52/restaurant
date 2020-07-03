@@ -134,7 +134,7 @@ void Simulation::run()
     std::shared_ptr<Menu> menu = createMenu("meta/menu.md");
     std::cout << " done.\n"
               << clock_ << " Simulation: Building Restaurant...";
-    std::shared_ptr<Restaurant> r = std::make_shared<Restaurant>(clock_, menu, tableCount_, waiterCount_, partyCount_);
+    std::shared_ptr<Restaurant> r = std::make_shared<Restaurant>(clock_, *menu, tableCount_, waiterCount_, partyCount_);
     std::cout << " done.\n"
               << clock_ << " Simulation: Building Parties...";
     buildSimParties(*r);
