@@ -143,6 +143,8 @@ public:
      */
     inline GlobalClock &getClock() { return clock_; }
 
+    inline void notify() { cv_.notify_one(); }
+
     /**
      * @description: const accessors. Note that both are const, as these should be read-only.
      */

@@ -34,24 +34,11 @@ public:
      * @param m restaurant menu
      * 
      */
-    Worker(GlobalClock &gc, JobTable &jt, std::shared_ptr<Menu> m, std::string id = "DEFAULT_WID")
+    Worker(GlobalClock &gc, JobTable &jt, Menu &m, std::string id = "DEFAULT_WID")
         : Person(id),
           gc_(gc),
           jt_(jt),
           menu_(m) {}
-
-    /**
-     * @description: move constructor.
-     * @param w worker being moved
-     */
-    Worker(Worker &&);
-
-    /**
-     * @description: move assignment operator.
-     * @param w worker being moved
-     * @returns a reference to this worker.
-     */
-    Worker &operator=(Worker &&);
 
     /**
      * @description: destructor.
@@ -67,13 +54,6 @@ public:
      * @description: the worker thread's main course of action.
      */
     void run();
-
-    /**
-     * @description: Splits on '-', returning the second half 
-     * of this waiter's id.
-     * @returns the numeric half of this waiter's id.
-     */
-    virtual const int getIDNumber() const;
 
     /**
      * @description: Accessor for the job table.
@@ -105,16 +85,18 @@ public:
      */
     virtual void handleJob(OrderJob &) = 0;
 
+    ///< Worker is neither copyable nor movable
+    Worker(const Worker &) = delete;
+    Worker &operator=(const Worker &) = delete;
+    Worker(Worker &&) = delete;
+    Worker &operator=(Worker &&) = delete;
+
 protected:
     GlobalClock &gc_;                        ///< simulation clock.
     JobTable &jt_;                           ///< simulation job table.
-    std::shared_ptr<Menu> menu_;             ///< restaurant menu.
+    Menu &menu_;                             ///< restaurant menu.
     std::vector<std::shared_ptr<Job>> jobs_; ///< worker's current jobs.
     std::thread t_;                          ///< worker thread.
-
-private: ///< Workers are only moveable, not copyable.
-    Worker(const Worker &) = delete;
-    Worker &operator=(const Worker &) = delete;
 };
 
 /**

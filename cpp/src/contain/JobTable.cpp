@@ -24,6 +24,7 @@ void JobTable::queueJob(std::string key, std::shared_ptr<Job> job)
         std::lock_guard<std::mutex> lg(dataMap_[key]->m_);
         dataMap_[key]->jobs_.push(job);
         dataMap_[key]->workToBeDone_ = true;
+        dataMap_[key]->cv_.notify_one();
     } //end critical section
 }
 

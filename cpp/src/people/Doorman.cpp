@@ -29,6 +29,8 @@ void Doorman::controlInbound()
 
         // begin critical section; wait(ul) automatically locks on return.
 
+        std::string wID = "W-0"; //NOTE this is a magic constant
+
         while (!d_.getEntryQueue().empty()) // transfer all queued Parties into the Foyer (or as many as possible until Restaurant hits cap)
         {
             auto pPtr = d_.getEntryQueue().front();
@@ -44,16 +46,10 @@ void Doorman::controlInbound()
             //TODO write a method that maps tIDs to wIDs.
             //for now, we assume only one waiter.
 
-            std::string wID = "W-0"; //NOTE this is a magic constant
-
             std::shared_ptr<SeatingJob> jPtr = std::make_shared<SeatingJob>(tID);
             jt_.queueJob(wID, jPtr);
-
-            jt_.getCV(wID).notify_one(); // Notify Waiter that a Party is in the Foyer.
-
             std::cout << getClock() << " Doorman[I]: Notified " << wID << "; " << pPtr->getPID() << " is in the Foyer.\n";
         }
-
         ul.unlock(); // end critical section
     }
 }

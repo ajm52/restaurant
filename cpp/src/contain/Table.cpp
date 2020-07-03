@@ -23,3 +23,8 @@ bool Table::WaiterAccess::seatParty(std::shared_ptr<Table> t, std::shared_ptr<Pa
         return false;
     }
 }
+
+void Table::WaiterAccess::notifyParty(std::shared_ptr<Table> t)
+{
+    t->party_->notify();
+}

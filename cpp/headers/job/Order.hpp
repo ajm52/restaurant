@@ -67,6 +67,15 @@ public:
      */
     inline const unsigned getTableID() const { return tableID_; }
 
+    /**
+     * @description: order type accessor.
+     */
+    inline constexpr char getOrderType() const
+    {
+        assert(selections_->size() > 0 && (*selections_)[0].length() > 0);
+        return (*selections_)[0][0];
+    }
+
 private:
     std::string orderId_;                                  ///< id string, unique to each order.
     std::shared_ptr<std::vector<std::string>> selections_; ///< menu selections.

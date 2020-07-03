@@ -8,27 +8,6 @@
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 
-Worker::Worker(Worker &&w)
-    : Person(w.id_),
-      gc_(w.gc_),
-      jt_(w.jt_),
-      menu_(std::move(w.menu_)),
-      jobs_(std::move(w.jobs_)),
-      t_(std::move(w.t_)) {}
-
-Worker &Worker::operator=(Worker &&w)
-{
-    if (this == &w)
-        return *this;
-    id_ = w.id_;
-    gc_ = w.gc_;
-    jt_ = w.jt_;
-    menu_ = std::move(w.menu_);
-    jobs_ = std::move(w.jobs_);
-    t_ = std::move(w.t_);
-    return *this;
-}
-
 void Worker::init()
 {
     std::thread t(&Worker::run, std::ref(*this));
@@ -41,15 +20,15 @@ void Worker::run()
     while (true)
     {
 
-        std::unique_lock<std::mutex> ul(*getJobTable().getMutex(getIDNumber())); //begin critical section
+        std::unique_lock<std::mutex> ul(getJobTable().getMutex(getId())); //begin critical section
 
-        while (!getJobTable().workToBeDone(getIDNumber())) //waits here until there is work to be done.
+        while (!getJobTable().workToBeDone(getId())) //waits here until there is work to be done.
         {
-            getJobTable().getCV(getIDNumber())->wait(ul);
+            getJobTable().getCV(getId()).wait(ul);
         }
 
         std::cout << getClock() << " " << getId() << ": Work to be done. Acquiring jobs...\n";
-        std::shared_ptr<std::vector<std::shared_ptr<Job>>> jobs = this->getJobTable().acquireAllJobs(this->getIDNumber(), true);
+        std::shared_ptr<std::vector<std::shared_ptr<Job>>> jobs = getJobTable().acquireJobs(getId(), true);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -78,18 +57,4 @@ void Worker::run()
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 
     } // end main while loop
-}
-
-const int Worker::getIDNumber() const
-{
-    std::vector<std::string> tokens;
-    boost::algorithm::split(tokens, this->getId(), boost::algorithm::is_any_of("-"));
-    if (tokens.size() >= 2)
-    {
-        return std::stoi(tokens[1]);
-    }
-    else
-    {
-        return -1;
-    }
 }

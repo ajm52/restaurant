@@ -31,6 +31,20 @@ public:
          * @param p to be seated.
          */
         static bool seatParty(std::shared_ptr<Table>, std::shared_ptr<Party>);
+
+        /**
+         * @description: party notifier method.
+         * @param t table where the party is seated.
+         */
+        static void notifyParty(std::shared_ptr<Table>);
+
+        /**
+         * @description: used to place an Order on a Table.
+         * @param t table receiving an order.
+         * @param o the order.
+         */
+        static inline void placeOrder(std::shared_ptr<Table> t, std::shared_ptr<Order> o) { t->order_ = o; }
+
         friend class Waiter;
     };
 

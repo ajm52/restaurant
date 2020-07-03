@@ -38,5 +38,15 @@ void Waiter::handleJob(SeatingJob &sj)
 
 void Waiter::handleJob(OrderJob &oj) //TODO flesh out this handler.
 {
-    std::cout << getClock() << " " << getId() << ": handling OJ for order " << oj.order_->getOrderId() << std::endl;
+    std::cout << getClock() << " " << getId() << ": handling OJ (" << oj.order_->getOrderId() << ")" << std::endl;
+    auto tID = oj.order_->getTableID();
+
+    Table::WaiterAccess::notifyParty(tablespace_[tID]); //first, notify Party that their Order has been picked up.
+
+    //then, place job in correct job queue
+    //TODO implement OrderStatus to allow conditional handling here.
+    //NOTE for now, we'll assume we're passing OJ to Bartender.
+    //NOTE for now, we're assuming it's a drink order and we're passing it to B-0.
+    std::string bID = "B-0";
+    jt_.queueJob(bID, std::make_shared<OrderJob>(oj));
 }
