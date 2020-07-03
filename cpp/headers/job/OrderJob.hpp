@@ -4,6 +4,7 @@
 #include "Job.hpp"
 #include "Order.hpp"
 #include "Worker.hpp"
+#include <memory>
 
 /**
  * @struct OrderJob
@@ -17,7 +18,7 @@ struct OrderJob : public Job
      * @description: constructor
      * @param o the associated order.
      */
-    OrderJob(Order &o) : order_(o) {}
+    OrderJob(std::shared_ptr<Order> o) : order_(o) {}
 
     /**
      * @description: takes advantage of runtime type information to call the correct handler method.
@@ -25,6 +26,6 @@ struct OrderJob : public Job
      */
     void accept(Worker &w) { w.handleJob(*this); }
 
-    Order &order_; ///< the associated order.
+    std::shared_ptr<Order> order_; ///< the associated order.
 };
 #endif // ORDERJOB_HPP
