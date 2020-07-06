@@ -2,7 +2,34 @@
 #define ORDER_HPP
 
 #include <string>
+#include <memory>
 #include <vector>
+
+class Party;
+class Waiter;
+class Bartender;
+class OrderMachine;
+
+/**
+ * @enum OrderStatus
+ * @description: used to describe the status of an order.
+ * @author ajm
+ */
+enum class OrderStatus
+{
+    Created,
+    QueuedForSubmission,
+    QueuedForPrep,
+    ReceivedForPrep,
+    BeingPrepared,
+    ReadyToDeliver,
+    QueuedForDelivery,
+    EnRouteForDelivery,
+    Delivered,
+    DeliveryAcknowledged,
+    ConsumptionUnderway,
+    Consumed
+};
 
 /**
  * @class Order
@@ -12,13 +39,26 @@
 class Order
 {
 public:
+    class OrderAccess
+    {
+        static inline void setStatus(std::shared_ptr<Order> o, OrderStatus os)
+        {
+            o->status_ = os;
+        }
+        friend class Party;
+        friend class Waiter;
+        friend class Bartender;
+        friend class OrderMachine;
+    };
+
     /**
      * @description: constructor.
      * Data members are defaulted initialized.
      **/
     Order() : orderId_("DEFAULT_OID"),
               selections_(),
-              tableID_() {}
+              tableID_(),
+              status_(OrderStatus::Created) {}
 
     /**
      * @description: main constructor.
@@ -26,10 +66,12 @@ public:
      * @param selections attached selectinos.
      * @param tableID associated table ID.
      **/
-    Order(const std::string id, const std::shared_ptr<std::vector<std::string>> selections, unsigned tableID)
+    Order(const std::string id, const std::string wid, const std::shared_ptr<std::vector<std::string>> selections, unsigned tableID)
         : orderId_(id),
+          wID_(wid),
           selections_(selections),
-          tableID_(tableID) {}
+          tableID_(tableID),
+          status_(OrderStatus::Created) {}
 
     /**
      * @description: copy constructor.
@@ -49,23 +91,15 @@ public:
      */
     ~Order() = default;
 
-    /**
-     * @description: accessor for the order's id string.
-     * @returns this order's id string.
-     */
     inline const std::string &getOrderId() const { return orderId_; }
 
-    /**
-     * @description: accessor for this Order's selection set; each int represents a selection.
-     * @returns a const reference to this Order's selection set
-     */
+    inline const std::string getWID() const { return wID_; }
+
     inline const std::vector<std::string> getSelections() const { return *selections_; }
 
-    /**
-     * @description: table ID accessor.
-     * @returns the table ID associated with this order.
-     */
     inline const unsigned getTableID() const { return tableID_; }
+
+    inline const OrderStatus getOrderStatus() const { return status_; }
 
     /**
      * @description: order type accessor.
@@ -77,9 +111,11 @@ public:
     }
 
 private:
-    std::string orderId_;                                  ///< id string, unique to each order.
-    std::shared_ptr<std::vector<std::string>> selections_; ///< menu selections.
-    unsigned tableID_;                                     ///< the associated table id.
+    std::string orderId_;
+    std::string wID_;
+    std::shared_ptr<std::vector<std::string>> selections_;
+    unsigned tableID_;
+    OrderStatus status_;
 };
 
 #endif // ORDER_HPP

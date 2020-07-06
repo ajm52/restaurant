@@ -45,6 +45,12 @@ public:
      */
     void handleJob(OrderJob &);
 
+    /**
+     * @description: queues a prepared order for table delivery.
+     * @param oj to be delivered.
+     */
+    void queueOrderForDelivery(OrderJob &);
+
     Bartender(const Bartender &) = delete; ///< Bartender is neither copyable nor movable
     Bartender &operator=(const Bartender &) = delete;
     Bartender(Bartender &&) = delete;
